@@ -1,0 +1,236 @@
+* {
+    background-color: rgb(50,50,60);
+}
+
+#banner {
+    position: absolute;
+    top: 0%;
+    color: white;
+    font-size: 50px;
+    font-family: 'Dosis', sans-serif;
+    margin: auto;
+    border-color: white;
+    border-width: 3px;
+    border-style:solid;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    width: 100%;
+    height: 100px;
+    max-height: 100px;
+    /*align-items: center;
+    align-self: center;
+    align-content: center;
+    text-align: center;
+    padding: 5px;
+    background-color: rgb(40,40,50);*/
+}
+#banner_name {
+    color: white;
+    text-decoration: none;
+    align-content: center;
+    align-items: center;
+    align-self: center;
+    text-align: center;
+}
+#home_link {
+    text-decoration: none;
+}
+
+.banner_button {
+    color: white;
+    width: 5%;
+    height: 98px;
+    font-size: 22px;
+    position: absolute;
+    outline: none;
+    border: solid;
+    border-width: 1px;
+    border-top: 0px;
+}
+.banner_button:focus, .menu_elem_button:focus{
+    outline: none;
+}
+.banner_button:active {
+    background-color: rgb(20, 20, 20);
+}
+
+#newpost_button {
+    top: 0%;
+    right: 15%;
+}
+#profile_button {
+    top: 0%;
+    right:10%;
+}
+#friends_button{
+    top: 0%;
+    right: 5%;
+}
+#quit_button {
+    top: 0%;
+    right: 0%;
+    border-right: 0px;
+}
+#right_side_option_menu {
+    background-color: rgb(40,40,40);
+    position: absolute;
+    right: 8%;
+    top: 170px;
+    border-style: solid;
+    border-color: white;
+    width: 300px;
+    height: 370px;
+
+}
+
+.menu_elem:hover {
+    background-color: rgb(128, 122, 122);
+}
+.menu_elem:active {
+    background-color: rgb(0, 0, 0);
+}
+.menu_elem {
+    color: white;
+    font-family: 'Dosis', sans-serif;
+    font-size: 25px;
+    list-style-type: none;
+    margin: 7px 3px;
+    /*border-radius: 15px;*/
+    text-align: center;
+}
+.menu_elem_link {
+    text-decoration: none;
+}
+
+.menu_elem_button:hover {
+    background-color: rgb(128, 122, 122);
+}
+.menu_elem_button:active {
+    background-color: rgb(0, 0, 0);
+}
+.menu_elem_button {
+    color: white;
+    font-family: 'Dosis', sans-serif;
+    font-size: 25px;
+    margin: 2px 2px;
+    border-radius: 15px;
+    text-align: center;
+    width: 290px;
+}
+
+#profile {
+
+}
+
+#profile_pic {
+    height: 250px;
+    width: 250px;
+    position: absolute;
+    top: 170px;
+    left: 100px;
+}
+#profile_name {
+    position: absolute;
+    top: 430px;
+    left: 100px;
+    color:white;
+    font-family: 'Dosis', sans-serif;
+    font-size: 25px;
+    max-width: 250px;
+}
+
+#profile_points {
+    position: absolute;
+    top: 480px;
+    left: 100px;
+    border-color: white;
+    border-width: 1px;
+    border-style: groove;
+    width: 250px;
+    max-width: 250px;
+}
+.profile_stats {
+    float: left;
+    color: white;
+    font-family: 'Dosis', sans-serif;
+    font-size: 15px;
+    list-style-type: none;
+    margin-left: 5px;
+}
+#subscription_date {
+    color: white;
+    font-size: 15px;
+    font-family: 'Dosis', sans-serif;
+}
+#friend_number {
+    color: white;
+    font-size: 15px;
+    font-family: 'Dosis', sans-serif;
+}
+#follower_number {
+    color: white;
+    font-size: 15px;
+    font-family: 'Dosis', sans-serif;
+}
+#allori_number {
+    color: white;
+    font-size: 15px;
+    font-family: 'Dosis', sans-serif;
+}
+
+#profile_info {
+    position: absolute;
+    top: 170px;
+    left: 400px;
+    width: 1000px;
+    max-width: 1000px;
+}
+.profile_info_category {
+    color: white;
+    font-size: 25px;
+    font-family: 'Dosis', sans-serif;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+#profile_description {
+    color: white;
+    font-size: 20px;
+    font-family: 'Dosis', sans-serif;
+    
+}
+#profile_posts {
+    border-color: white;
+    border-style: groove;
+    width: 1000px;
+    height: 300px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+#profile_posts::-webkit-scrollbar{    /*NASCONDE LA SCROLLBAR IN CHROME SAFARI E OPERA, PER FIREFOX GESTITO CON SCROLLBAR-WIDTH*/
+    display: none;
+}
+
+#chat {
+    color: white;
+    font-family: 'Dosis', sans-serif;
+    font-size: 20px;
+    text-align: center;
+    position: absolute;
+    right: 8%;
+    bottom: 0%;
+    border-style: inset;
+    border-color: white;
+    border-radius: 15px;
+    width: 300px;
+    height: 50px;
+    text-decoration: none;
+}
+#chat:hover {
+    background-color: white;
+    color: black;
+}
+#chat:active {
+    background-color: black;
+    color: white;
+}
