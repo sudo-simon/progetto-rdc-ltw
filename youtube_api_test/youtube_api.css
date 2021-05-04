@@ -9,6 +9,9 @@
     left: 5%;
     width: 100%;
 }
+.banner {
+    background-color: antiquewhite;
+}
 #banner_clickable {
     border-radius: 6px;
     border-color: black;
