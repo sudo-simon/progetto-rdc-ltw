@@ -3,7 +3,7 @@ let fs = require('fs');
 
 var i = 0;
 function fileDownloadServerSide() {
-    //var downloadFileId = '0BwwA4oUTeiV1UVNwOHItT0xfa2M';
+    
     var fileToDownload = document.getElementById("file-to-download-id").value;
     var dest_path = '/uploads/drive_upload_'+i+'.jpg';  //AGGIUNGERE CHECK PER CONTROLLARE ESTENSIONE FILE IMMAGINE
     i++;
