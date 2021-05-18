@@ -1,0 +1,50 @@
+*:not(.g-signin2) {
+    background-color: #1a1a1d;
+}
+
+h1{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size:x-large;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+}
+a {
+    text-decoration: none;
+}
+
+.container {
+    /*text-align: center;*/
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+#login-form {
+    color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: medium;
+    font-weight: 500;
+}
+.login-form-entry {
+    color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.login-page-button {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: medium;
+    font-weight: 500;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: #950740;
+    color: white;
+    padding: 10px;
+}
+.login-page-button:hover {
+    color: #950740;
+    border-color: white;
+    background-color:white;
+    transition-duration: 0.6s;
+}
+
