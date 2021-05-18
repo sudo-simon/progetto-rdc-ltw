@@ -20,7 +20,7 @@ class User {
             courses = [],
             totalCfu = 0,
             birthDate = birthday,
-            subscriptionDate = Date.now().toString()
+            subscriptionDate = new Date().toLocaleDateString()
         };
     }
 
@@ -86,7 +86,7 @@ class Post {
         this.youtubeUrl = "";
         this.dbImage = "";
         this.driveImage = "";
-        this.creationDate = Date.now().toString();
+        this.creationDate = new Date().toLocaleDateString();
         this.commentList = [];
     }
 
