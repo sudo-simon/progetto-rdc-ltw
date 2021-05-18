@@ -1,0 +1,22 @@
+{
+    "_id": "",
+    "_rev": "",
+
+    "postId": "p-0000",
+    "postAuthorId": "username",
+    "textContent": "text",
+    "youtubeUrl": "URL",
+    "driveImage": "driveId",
+    "dbImage": "URL",
+    "cfu": 0,
+    "creationDate": "01/01/1970",
+    "commentList": [
+        {
+            "_id": "",
+            "_rev": "",
+
+            "commentAuthorId": "username",
+            "comment": "text"
+        }
+    ]
+}
