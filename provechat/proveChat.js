@@ -2,7 +2,7 @@ var amqp = require('amqplib/callback_api');
 var req = require("request");
 var uuid = require("uuid");
 const nano = require('nano')('http://admin:admin@localhost:5984');
-var prove = nano.use("prove");
+var prove = nano.use("prova_partitioned");
 
 /*
   per provare il codice eseguire su terminale prima 
@@ -43,7 +43,8 @@ function nuovaChat(chat) {
         }
         connection.close();
         var x = {
-          "_id": exchange,
+          "_id": "chat"+":"+exchange,
+          "exchange":exchange,
           "nome_chat": nome_chat,
           "membri_chat": []
         }
@@ -83,7 +84,7 @@ function nuoviMembri(members, exchange) {
           channel.bindQueue(element+exchange, exchange, '', {}, () => { connection.close() });
           //crea la coda nel DB
           var x = {
-            "_id": element + exchange,
+            "_id": "codaChat"+":"+element+exchange,
             "user": element,
             "chat_id": exchange,
             "messaggi": []
@@ -150,7 +151,7 @@ function ascoltaChat(element, exchange) {
         console.log("\n\n2\n\n");
         throw error1;
       }
-      channel.assertExchange(exchange, 'fanout', { durable: true });
+      /*channel.assertExchange(exchange, 'fanout', { durable: true });
       channel.assertQueue(element + exchange, { durable: true }, function (error2, q) {
         if (error2) {
           console.log("\n\n3\n\n");
@@ -159,7 +160,7 @@ function ascoltaChat(element, exchange) {
         console.log(" [*] Waiting for messages in %s  .To exit press CTRL+C", q.queue);
         console.log("message count: " + q.messageCount);
         console.log("consumer count: " + q.consumerCount);
-        channel.bindQueue(element + exchange, exchange, '');
+        channel.bindQueue(element + exchange, exchange, '');*/
         //console.log("biding effettuato per "+element+exchange);
 
         
@@ -183,7 +184,7 @@ function ascoltaChat(element, exchange) {
         }, { noAck: true });
       
       
-      })
+      //})
     })
   })
 }
@@ -208,7 +209,7 @@ function eliminaMembro(membro, exchange) {
                       console.log("CHIUSURA")}
           console.log("chiusura canale");
           connection.close();
-          eliminaDocDB(membro + exchange);
+          eliminaDocDB("codaChat"+":"+membro+exchange);
           eliminaChatDaProfiloDB(exchange, membro);
           eliminaProfiloDaChatDB(membro, exchange);
         });
@@ -236,7 +237,7 @@ function eliminaChat(chat, exchange) {
         chat.chat_members.forEach((element) => eliminaMembro(element, exchange));
         setTimeout(()=>{channel.deleteExchange(exchange, {}, () => {
           connection.close();
-          eliminaDocDB(exchange);
+          eliminaDocDB("chat"+":"+exchange);
         });
       },1000)
       })
@@ -297,7 +298,7 @@ function eliminaDocDB(id) {
 }
 
 function eliminaChatDaProfiloDB(exchange, element) {
-  prove.get(element, function (error, foo) {
+  prove.get("account"+":"+element, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
@@ -323,7 +324,7 @@ function eliminaChatDaProfiloDB(exchange, element) {
 
 
 function eliminaProfiloDaChatDB(element, exchange) {
-  prove.get(exchange, (err, body) => {
+  prove.get("chat"+":"+exchange, (err, body) => {
     if (err) return;
     else {
       const index = body.membri_chat.indexOf(element);
@@ -345,7 +346,7 @@ function eliminaProfiloDaChatDB(element, exchange) {
 }
 
 function updateChatDB(exchange, element) {
-  prove.get(exchange, function (error, foo) {
+  prove.get("chat"+":"+exchange, function (error, foo) {
     if (error) {
       if (error.statusCode == 404) updateChatDB(exchange, element);
       else {
@@ -371,7 +372,7 @@ function updateChatDB(exchange, element) {
 
 
 function updateChatProfiloDB(exchange, element) {
-  prove.get(element, function (error, foo) {
+  prove.get("account"+":"+element, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
@@ -392,7 +393,7 @@ function updateChatProfiloDB(exchange, element) {
 
 
 function addMSGQueue(queue,msg){
-  prove.get(queue, function (error, foo) {
+  prove.get("codaChat"+":"+queue, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
@@ -412,8 +413,8 @@ function addMSGQueue(queue,msg){
 
 
 var chat = {
-  chat_name: "chat per capire",
-  chat_members: ["giova_mad", "aldo_sbaglio", "giacomino007"]
+  chat_name: "avvocati",
+  chat_members: ["aldo_10", "Elisa404", "giacomo007","giorgiaLa","giovanni101","mattia.avv"]
 }
 
 //PRIMO BLOCCO
@@ -421,36 +422,36 @@ var chat = {
 
 
 //SECONDO BLOCCO
-//nuoviMembri(['giacomino007'],"ce3fc81e-4571-4782-9164-570cfdacdd3c");
+//nuoviMembri(['aldo_10'],"49b138d1-16d4-4bca-8ebb-7ea7addb729e");
 
 
 //TERZO BLOCCO
 var messaggio={
   id_messaggio: "prova",
-  mittente: "aldo_sbaglio",
+  mittente: "aldo_10",
   testo: "!!!---ack-stop-listen---!!!!",
   timestamp:(Date().split(" ").slice(1,5)),
   stop:0
 }
-//inviaMessaggio(messaggio,"112edcb9-84b9-4bda-9545-699aceb73e29",()=>{});
+//inviaMessaggio(messaggio,"49b138d1-16d4-4bca-8ebb-7ea7addb729e",()=>{});
 
 
 //QUARTO BLOCCO
 
 
-/*ascoltaChat("aldo_sbaglio","112edcb9-84b9-4bda-9545-699aceb73e29");*/
-//ascoltaChat("giova_mad","112edcb9-84b9-4bda-9545-699aceb73e29");
-/*ascoltaChat("giacomino007","112edcb9-84b9-4bda-9545-699aceb73e29");*/
+/*ascoltaChat("aldo_10","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
+ascoltaChat("Elisa404","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
+ascoltaChat("giacomo007","49b138d1-16d4-4bca-8ebb-7ea7addb729e");*/
 
 //QUINTO BLOCCO
-//eliminaMembro("giova_mad","faa236de-f3aa-48c4-ac29-17d6beab20ff");
+//eliminaMembro("giacomo007","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
 
 //SESTO BLOCCO
-//eliminaChat(chat,"112edcb9-84b9-4bda-9545-699aceb73e29");
+eliminaChat(chat,"49b138d1-16d4-4bca-8ebb-7ea7addb729e");
 
 /*var p={
-  "_id":"dario_b0",
-  "username":"",
+  "_id":"account:Elisa404",
+  "username":"Elisa404",
   "nome":"",
   "cognome":"",
   "email":"",
@@ -461,7 +462,7 @@ var messaggio={
   "postList":[],
   "chat":[],
   "infos":{}
-}
+}*/
 
-creaDocDB(p);*/
+//creaDocDB(p);
 
