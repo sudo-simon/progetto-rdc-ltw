@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+
+    <head>
+        <title>Iscriviti</title>
+        <!-- CSS Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+        <!-- CSS Locale -->
+        <link href="styles/sign-dark.css" rel="stylesheet" type="text/css" title="default">
+        <link href="styles/sign-light.css" rel="alternate stylesheet" type="text/css" title="alternate">
+        <link href="styles/sign.css" rel="stylesheet" type="text/css">
+    </head>
+
+    <body>
+        <div class="container">
+            <!-- Dark/Light Mode -->
+            <div>
+                <a href="#" class="link-secondary my-link" onclick="setActiveStyleSheet('default'); return false;">Dark</a>
+                |
+                <a href="#" class="link-secondary my-link" onclick="setActiveStyleSheet('alternate'); return false;">Light</a>
+            </div>
+
+            <!-- Pulsante Accedi e Logo -->
+            <div class="switch-button">
+                <div class="form-container">
+                    <form action="index.html">
+                        <button type="submit" class="btn btn-danger">Accedi</button>
+                    </form>
+                </div>
+                <img class="logo" src="assets/logo2/logo_small.png" alt="logo">
+            </div>
+
+            <!-- Form di Iscrizione -->
+            <form id="signupRegistr" name="signupRegistr">
+                <!-- (ALERT): Email già in uso -->
+                <div class="alert alert-warning" id="email-alert2" role="alert">
+                    <strong>ATTENZIONE</strong>: email già in uso.
+                </div>
+                <!-- Nome e Cognome -->
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="exampleInputName" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="exampleInputName1" name="nome" required>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="exampleInputSurname" class="form-label">Cognome</label>
+                            <input type="text" class="form-control" id="exampleInputSurname1" name="cognome" required>
+                        </div>
+                    </div>
+                  </div>
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="examlpe@studenti.uniroma1.it" required>
+                </div>
+                <!-- (ALERT): Email sbagliata -->
+                <div class="alert alert-warning" id="email-alert1" role="alert">
+                    <strong>ATTENZIONE</strong>: inserire un'email '@studenti.uniroma1.it'
+                </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" name="password" required>
+                </div>
+                <!-- Conferma Password -->
+                <div class="mb-3">
+                    <label for="exampleInputPassword2" class="form-label">Conferma Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword2" name="conferma" required>
+                </div>
+                <!-- (ALERT): Password -->
+                <div class="alert alert-warning" id="psw-alert" role="alert">
+                    <strong>ATTENZIONE</strong>: le password inserite non combaciano.
+                </div>
+                <!-- Submit -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end my-submit">
+                    <button type="submit" class="btn btn-primary">Invio</button>
+                </div>
+            </form>  
+        </div>
+        
+        <!-- (MODAL): Info Verifica Email -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel"><strong>Attenzione</strong></h5>
+                    </div>
+                    <!-- Body -->
+                    <div class="modal-body">
+                        Ti abbiamo inviato un'<strong>email di verifica</strong>. Clicca sul <strong>link</strong> in essa contenuto per verificare la tua identità.
+                    </div>
+                    <div class="modal-footer">
+                        <button id="myBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Capito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+        
+        <!-- Script Firebase -->
+        <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-firestore.js"></script>
+            <!-- Locale -->
+            <script type="text/javascript" src="scripts/firebase-config.js"></script>
+        <!-- Script Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+        <!-- Script JQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Script Locali -->
+        <script type="text/javascript" src="scripts/signup-auth.js"></script>
+        <script type="text/javascript" src="scripts/styleswitcher.js"></script>
+    </body>
+    
+</html>
