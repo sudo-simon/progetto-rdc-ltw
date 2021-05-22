@@ -1,0 +1,38 @@
+{
+  "name": "sapiens",
+  "version": "1.0.0",
+  "description": "Social network per studenti Sapienza",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sudo-simon/progetto-sapiens.git"
+  },
+  "keywords": [
+    "social",
+    "network",
+    "sapienza",
+    "università"
+  ],
+  "author": "Dario Basile, Luca Di Matteo, Simone Palmieri",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/sudo-simon/progetto-sapiens/issues"
+  },
+  "homepage": "https://github.com/sudo-simon/progetto-sapiens#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "google-auth-library": "^7.0.4",
+    "googleapis": "^39.2.0",
+    "http": "0.0.1-security",
+    "nano": "^9.0.3",
+    "php-express": "0.0.3",
+    "php-node": "0.0.2",
+    "uuid": "^8.3.2"
+  }
+}

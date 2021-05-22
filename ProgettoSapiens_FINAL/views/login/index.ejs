@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="it">
+
+    <head>
+        <title>Accedi</title>
+        <!-- Meta -->
+        <meta name="keywords" content="social, università, sapienza">
+        <meta name="author" content="Sapiens">
+        <meta name="GENERATOR" content="Visual Studio Code">
+        <!-- CSS Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+        <!-- CSS Locale -->
+        <link href="css/sign-dark.css" rel="stylesheet" type="text/css" title="default">
+        <link href="css/sign-light.css" rel="alternate stylesheet" type="text/css" title="alternate">
+        <link href="css/sign.css" rel="stylesheet" type="text/css">
+    </head>
+
+    <body>
+        <div class="container">
+            <!-- Dark/Light Mode ("styleswitcher.js") -->
+            <div>
+                <a href="#" class="link-secondary my-link" onclick="setActiveStyleSheet('default'); return false;">Dark</a>
+                |
+                <a href="#" class="link-secondary my-link" onclick="setActiveStyleSheet('alternate'); return false;">Light</a>
+            </div>
+
+            <!-- Pulsante Iscriviti e Logo -->
+            <div class="switch-button">
+                <div class="form-container">
+                    <form action="signup.html">
+                        <button type="submit" class="btn btn-danger">Iscriviti</button>
+                    </form>
+                </div>
+                <img class="logo" src="assets/logo2/logo_small.png" alt="logo">
+            </div>
+
+            <!-- Form di Accesso -->
+            <form id="loginRegistr" name="loginRegistr">
+                <!-- Email -->
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" id="exampleInputEmail1" name="email" required>
+                    <span class="input-group-text" id="basic-addon2">@studenti.uniroma1.it</span>
+                </div>
+                <!-- (ALERT): email non verificata -->
+                <div class="alert alert-warning" id="email-alert1" role="alert">
+                    <strong>ATTENZIONE</strong>: l'email inserita non è stata verificata. Controlla la casella di posta elettronica.
+                </div>
+                <!-- (ALERT): utente non registrato -->
+                <div class="alert alert-warning" id="email-alert2" role="alert">
+                    <strong>ATTENZIONE</strong>: l'email inserita non è registrata.
+                </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" name="password" required>
+                </div>
+                <!-- (ALERT): password sbagliata -->
+                <div class="alert alert-warning" id="psw-alert" role="alert">
+                    <strong>ATTENZIONE</strong>: la password inserita non è corretta.
+                </div>
+                <!-- Recupero Password -->
+                <div>
+                    <a class="link-primary my-link" id="myLink" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Password dimenticata?</a>
+                </div>
+                <!-- Submit -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end my-submit">
+                    <button type="submit" class="btn btn-primary">Invio</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- (MODAL): Password Reset -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel"><strong>Ripristino Password</strong></h5>
+                        <button type="button" data-bs-dismiss="modal">X</button>
+                    </div>
+                    <!-- Body -->
+                    <div class="modal-body">
+                        <form id="resetRegistr" name="resetRegistr">
+                            <div class="mb-3">
+                                <!-- Input Email -->
+                                <label for="exampleInputEmail2" class="form-label modal-label">Inserire l'email:</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" id="exampleInputEmail2" name="email" required>
+                                    <span class="input-group-text" id="basic-addon2">@studenti.uniroma1.it</span>
+                                </div>
+                                <!-- (ALERT) WARNING: email non registrata -->
+                                <div class="alert alert-warning" id="reset-alert1" role="alert">
+                                    <strong>ATTENZIONE</strong>: l'email inserita non è registrata.
+                                </div>
+                                <!-- (ALERT) SUCCESS: email inviata con successo -->
+                                <div class="alert alert-success" id="reset-alert2" role="alert">
+                                    <strong>OK</strong>: email inviata con successo. Controlla la casella di posta elettronica.
+                                </div>
+                                <!-- Submit -->
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end my-submit">
+                                    <button id="myBtn" type="submit" class="btn btn-secondary">Invio</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        
+        <!-- SCRIPT -->
+        <!-- Script Firebase -->
+        <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-firestore.js"></script>
+            <!-- Locale -->
+            <script type="text/javascript" src="js/firebase-config.js"></script>
+        <!-- Script Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+        <!-- Script JQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Script Locali -->
+        <script type="text/javascript" src="js/login-auth.js"></script>
+        <script type="text/javascript" src="js/styleswitcher.js"></script>
+    </body>
+
+</html>
