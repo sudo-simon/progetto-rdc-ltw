@@ -1,8 +1,65 @@
 var amqp = require('amqplib/callback_api');
-var req = require("request");
+var express = require('express');
 var uuid = require("uuid");
 const nano = require('nano')('http://admin:admin@localhost:5984');
+var cors=require("cors")
+
 var prove = nano.use("prova_partitioned");
+var app = express();
+
+app.use(cors());
+app.use(express.json());
+
+
+app.post("/chat/creaChat",function(req, res){
+  var myEx = nuovaChat(req.body);
+    res.send(myEx);
+})
+
+app.post("/chat/update",function(req, res){
+  var idRecived=req.body.id;
+  var revRecived=req.body.rev;
+ 
+  var response={
+    update:"n",
+    doc:{}
+  }
+  getDocDB(idRecived,(doc)=>{
+    if (doc._rev!=revRecived){
+      response.update="y",
+      response.doc=doc
+    }
+    res.send(JSON.stringify(response))
+  })
+});
+
+app.post("/chat/invia",function(req, res){
+  var messaggio=req.body.messaggio;
+  var ex=req.body.ex;
+  inviaMessaggio(messaggio,ex,()=>{});
+ res.send("ok") 
+})
+
+app.post("/chat/ascolta",function(req,res){
+  var u=req.body.username;
+  var e=req.body.exchange;
+  ascoltaChat(u,e);
+  updateListening(u,e);
+  res.send("now i'm listening")
+})
+
+app.post("/chat/esci",function(req,res){
+  var username=req.body.user;
+  var exchange=req.body.ex;
+  eliminaMembro(username,exchange);
+  res.send("ok");
+})
+
+app.post("/chat/consume",function(req, res){
+  messageConsumed(req.body.username,req.body.exchange);
+  res.send("ok");
+});
+app.listen(8887);
 
 /*
   per provare il codice eseguire su terminale prima 
@@ -49,7 +106,7 @@ function nuovaChat(chat) {
           "membri_chat": []
         }
         creaDocDB(x);
-        nuoviMembri(chat.chat_members, exchange);
+        nuoviMembri(chat.chat_members, exchange,nome_chat);
       })
     })
   })
@@ -60,7 +117,7 @@ function nuovaChat(chat) {
   e esegue il binding tra le code e l'exchange 
 */
 
-function nuoviMembri(members, exchange) {
+function nuoviMembri(members, exchange,nome_chat) {
   members.forEach(function (element) {
 
     amqp.connect('amqp://localhost', function (error0, connection) {
@@ -79,28 +136,27 @@ function nuoviMembri(members, exchange) {
             throw error2;
           }
           console.log(" [*] Waiting for messages in %s", q.queue);
-          console.log("message count: " + q.messageCount);
-          console.log("consumer count: " + q.consumerCount);
+          /*console.log("message count: " + q.messageCount);
+          console.log("consumer count: " + q.consumerCount);*/
           channel.bindQueue(element+exchange, exchange, '', {}, () => { connection.close() });
           //crea la coda nel DB
           var x = {
             "_id": "codaChat"+":"+element+exchange,
             "user": element,
             "chat_id": exchange,
+            "is_listening":"n",
+            "to_consume":"n",
             "messaggi": []
           }
           creaDocDB(x);
 
           //aggiorna chat nel profilo nel DB
-          updateChatProfiloDB(exchange, element);
+          updateChatProfiloDB(exchange, element,nome_chat);
 
           //aggiorna membri_chat nella chat nel DB
-          updateChatDB(exchange, element);
-
-
+          updateChatDB(exchange, element);          
         })
       })
-
     })
   })
 
@@ -168,11 +224,11 @@ function ascoltaChat(element, exchange) {
           var mittente=JSON.parse(msg.content.toString()).mittente;
           var stop=JSON.parse(msg.content.toString()).stop;
          /* var content=msg.content.toString();*/
-          if (mittente != element && stop!=1) {
+          if (stop!=1) {
             
             console.log(" [" + element + "] %s", msg.content.toString());
-            addMSGQueue(element+exchange,JSON.parse(msg.content.toString()))
             //metti messaggio sulla coda 
+            addMSGQueue(element+exchange,JSON.parse(msg.content.toString()));
             
           }
           else if (mittente==element && stop==1) {
@@ -303,7 +359,7 @@ function eliminaChatDaProfiloDB(exchange, element) {
       return console.log("I failed");
     }
 
-    const index = foo.chat.indexOf(exchange);
+    const index = foo.chat.findIndex(arr => arr.includes(exchange));
     if (index > -1) {
       foo.chat.splice(index, 1);
     }
@@ -371,12 +427,12 @@ function updateChatDB(exchange, element) {
 };
 
 
-function updateChatProfiloDB(exchange, element) {
+function updateChatProfiloDB(exchange, element,nome_chat) {
   prove.get("account"+":"+element, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
-    foo.chat.push(exchange);
+    foo.chat.push([nome_chat,exchange]);
     prove.insert(foo,
       function (error, response) {
         if (!error) {
@@ -397,6 +453,7 @@ function addMSGQueue(queue,msg){
     if (error) {
       return console.log("I failed");
     }
+    foo.to_consume="y";
     foo.messaggi.push(msg);
     prove.insert(foo,
       function (error, response) {
@@ -411,10 +468,62 @@ function addMSGQueue(queue,msg){
   })
 }
 
+function updateListening(u,e){
+  prove.get("codaChat"+":"+u+e, function (error, foo) {
+    if (error) {
+      return console.log("I failed");
+    }
+    foo.is_listening="y";
+    prove.insert(foo,
+      function (error, response) {
+        if (!error) {
+          console.log(response);
+          console.log("it worked");
+        } else {
+          console.log("riprovo");
+          updateListening(u,e);
+        }
+      });
+  })
+}
+
+function messageConsumed(u,e){
+  prove.get("codaChat"+":"+u+e, function (error, foo) {
+    if (error) {
+      return console.log("I failed");
+    }
+    foo.to_consume="n";
+    prove.insert(foo,
+      function (error, response) {
+        if (!error) {
+          console.log(response);
+          console.log("it worked");
+        } else {
+          console.log("riprovo");
+          messageConsumed(u,e);
+        }
+      });
+  })
+}
+
+function getDocDB(id,callback) {
+  prove.get(id,function(error,doc){
+    if (error) {
+      throw error
+    }
+    callback(doc);
+  })
+}
+
 
 var chat = {
-  chat_name: "avvocati",
-  chat_members: ["aldo_10", "Elisa404", "giacomo007","giorgiaLa","giovanni101","mattia.avv"]
+  chat_name: "LAW",
+  chat_members: [
+    "dario_b0",
+    "Elisa404",
+    "aldo_10",
+    "giorgiaLa"
+  ]
 }
 
 //PRIMO BLOCCO
@@ -426,28 +535,28 @@ var chat = {
 
 
 //TERZO BLOCCO
-var messaggio={
+/*var messaggio={
   id_messaggio: "prova",
   mittente: "aldo_10",
   testo: "!!!---ack-stop-listen---!!!!",
   timestamp:(Date().split(" ").slice(1,5)),
   stop:0
-}
+}*/
 //inviaMessaggio(messaggio,"49b138d1-16d4-4bca-8ebb-7ea7addb729e",()=>{});
 
 
 //QUARTO BLOCCO
 
 
-/*ascoltaChat("aldo_10","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
-ascoltaChat("Elisa404","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
-ascoltaChat("giacomo007","49b138d1-16d4-4bca-8ebb-7ea7addb729e");*/
+///ascoltaChat("aldo_10","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
+//ascoltaChat("Elisa404","9799b5e3-0f92-4769-9796-092e9352e0e8");
+//ascoltaChat("giacomo007","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
 
 //QUINTO BLOCCO
 //eliminaMembro("giacomo007","49b138d1-16d4-4bca-8ebb-7ea7addb729e");
 
 //SESTO BLOCCO
-eliminaChat(chat,"49b138d1-16d4-4bca-8ebb-7ea7addb729e");
+//eliminaChat(chat,"c04f4c9f-fd92-4ac7-abee-22b336595d69");
 
 /*var p={
   "_id":"account:Elisa404",

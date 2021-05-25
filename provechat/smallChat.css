@@ -1,6 +1,27 @@
 body {font-family: Arial, Helvetica, sans-serif;}
 * {box-sizing: border-box;}
 
+  
+#chat *::-webkit-scrollbar {
+  display: none;
+  font-family: Arial, Helvetica, sans-serif;
+  
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+
+
+.text-small {
+  font-size: 0.9rem !important;
+}
+
+
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+
 /* Button used to open the chat form - fixed at the bottom of the page */
 /*.open-button {
   background-color: #555;
@@ -83,7 +104,9 @@ body {font-family: Arial, Helvetica, sans-serif;}
   font-size: 50px;
   cursor: pointer;
   display: none;
-  background-color: rgb(252, 206, 206);
+  background-color: rgb(250, 231, 231);
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .chat div{
@@ -157,8 +180,8 @@ padding: 1px;
 .boxChatScroll{
   overflow-y:scroll;
   scrollbar-width: thin;
-  scrollbar-color: #8d1d1d #eb6b6b 
-
+  scrollbar-color: #8d1d1d #eb6b6b ;
+  
 }
 
 .boxChatScroll::-webkit-scrollbar {
@@ -213,13 +236,13 @@ padding: 1px;
 .messaggio{
   width: 100%;
   height: fit-content;
-  margin-top: 5%;
+  margin-top: 12%;
 }
 
 .textmsgMio{
   border-radius: 10px;
-  background-color: #eee;
-  color: #fff;
+  background-color: rgb(253, 181, 181);
+  color: #000;
   width: 70%;
   height: fit-content;
   float: right;
