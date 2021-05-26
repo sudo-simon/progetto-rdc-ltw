@@ -104,7 +104,7 @@ function loadProfile(profileUser){
     
     $("#profile_pic").attr("src",propic);
     $("#name").prepend(name);
-    $("#date").append(username);
+    $("#date").append(date);
     $("#friends").append(friends);
     $("#vote").append(vote);
     $("#description").append(description);
