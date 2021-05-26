@@ -3,28 +3,31 @@ $(document).ready(function(){
   
   if (localStorage.user==undefined){
   var u={
-    "_id": "account:Elisa404",
-    "_rev": "32-6947839388be843f42aa766012ca3b3d",
+    "_id": "user:Elisa404",
+    "_rev": "5-b2916b82e4a42606674750d1eec37843",
     "username": "Elisa404",
-    "nome": "Elisa",
-    "cognome": "",
+    "nome": "ELisa",
+    "cognome": "Parioli",
     "email": "",
     "password": "",
     "googleId": "",
     "profilePic": "",
     "friendList": [
-     "dario_b0",
-     "aldo_10"
+      "dario_b0",
+      "aldo_10"
     ],
     "postList": [],
     "chat": [
-     [
-      "LAW",
-      "c04f4c9f-fd92-4ac7-abee-22b336595d69"
-     ]
+      [
+        "nuova",
+        "0c1e2999-88df-473d-8f67-727811a82db9"
+      ]
     ],
-    "infos": {}
-   }
+    "infos": {
+      "description": "Sono Elisa e il mio motto molto originale è 'CARPE DIEM'"
+    }
+  }
+  
    localStorage.setItem("user",JSON.stringify(u))
   };
  
@@ -266,9 +269,13 @@ function caricaListaChat(){
   if (l!=[]){
   for (var i in l){
     var c=l[i][0];
+    var ex=l[i][1];
+    var display;
+    if (JSON.parse(localStorage.getItem("codaChat:"+JSON.parse(localStorage.user).username+ex)).to_consume=="n") display="none";
+    else display="block";
     $(".chatList").append("<li class='list-group-item chatListEl d-flex justify-content-between align-items-start'>\
                             <div class='nomeChat'>"+c+"</div>\
-                              <span class='badge miobadgechat rounded-pill counterChat' id='counterChat"+c+"' style='margin-right: 30px;'>0</span>\
+                              <span class='badge miobadgechat rounded-pill counterChat' id='counterChat"+c+"' style='margin-right: 30px; display:"+display+";'></span>\
                           </li>");
   }
     $(".chatListEl").click(function (e){

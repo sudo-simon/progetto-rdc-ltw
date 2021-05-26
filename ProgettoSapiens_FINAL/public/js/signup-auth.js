@@ -60,7 +60,7 @@ $(document).ready(function() {
 
         // {JQuery}: redirezione alla pagina di LOGIN dopo la chiusura del modal (*)
         $('#myBtn').click(function() {
-            window.location = 'index.html';
+            window.location = '/login';
         });
     });
 });

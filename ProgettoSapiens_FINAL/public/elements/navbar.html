@@ -10,7 +10,7 @@
                 <img class="logo" src="assets/logo2/logo_small.png" alt="sapiens_logo.png">
             </a>
             <!-- Barra di ricerca -->
-            <form action="search.html" id="searchRegistr" name="searchRegistr">
+            <form action="/search" id="searchRegistr" name="searchRegistr">
                 <div class="search-bar-div">
                     <input type="text" class="form-control search-bar" list="datalistOptions" title="barra_di_ricerca" placeholder="Cerca..">
                     <datalist id="datalistOptions">
@@ -23,15 +23,15 @@
             <ul class="nav justify-content-end">
                 <!-- Pulsante Home -->
                 <li class="nav-item">
-                    <a class="nav-link" href="home.html">Home</a>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
                 <!-- Pulsante Profilo -->
                 <li class="nav-item">
-                    <a class="nav-link" href="profile.html">Profilo</a>
+                    <a class="nav-link" id="pulsanteProfilo" href="profile.html">Profilo</a>
                 </li>
                 <!-- Pulsante Amici -->
                 <li class="nav-item">
-                    <a class="nav-link" href="friends.html">Amici</a>
+                    <a class="nav-link" href="/friends">Amici</a>
                 </li>
                 <!-- Dropdown Opzioni -->
                 <li class="nav-item dropdown">
@@ -112,6 +112,8 @@
 
     <!-- SCRIPT -->
     <script type="text/javascript" src="js/settings.js"></script>
-
+    <script>$(document).ready(function(){
+        $("#pulsanteProfilo").attr("href","/profile?user="+JSON.parse(localStorage.user).username)
+    })</script>
 </body>
 </html>

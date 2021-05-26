@@ -4,7 +4,7 @@ var uuid = require("uuid");
 const nano = require('nano')('http://admin:admin@localhost:5984');
 var cors=require("cors")
 
-var prove = nano.use("prova_partitioned");
+var db = nano.use("sapiens");
 var app = express();
 
 app.use(cors());
@@ -279,7 +279,7 @@ function eliminaMembro(membro, exchange) {
 
 function eliminaChat(chat, exchange) {
   //var exchange = Math.random().toString(36).substr(2, 7);
-  //per fare delle prove l'exchange non è randomico,altrimenti decommentare la riga sopra e commentare quella sotto
+  //per fare delle db l'exchange non è randomico,altrimenti decommentare la riga sopra e commentare quella sotto
   amqp.connect('amqp://localhost', function (error0, connection) {
     if (error0) {
       throw error0;
@@ -317,7 +317,7 @@ FUNZIONI PER IL DB
 
 
 function creaDocDB(x) {
-  prove.insert(x,
+  db.insert(x,
     function (error, response) {
       if (!error) {
         console.log(response);
@@ -335,12 +335,12 @@ function creaDocDB(x) {
 
 
 function eliminaDocDB(id) {
-  prove.get(id, function (error, foo) {
+  db.get(id, function (error, foo) {
     if (error) {
       console.log(error);
       return console.log("I failed");
     }
-    prove.destroy(id, foo._rev,
+    db.destroy(id, foo._rev,
       function (error, response) {
         if (!error) {
           console.log(response);
@@ -354,7 +354,7 @@ function eliminaDocDB(id) {
 }
 
 function eliminaChatDaProfiloDB(exchange, element) {
-  prove.get("account"+":"+element, function (error, foo) {
+  db.get("user"+":"+element, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
@@ -364,7 +364,7 @@ function eliminaChatDaProfiloDB(exchange, element) {
       foo.chat.splice(index, 1);
     }
 
-    prove.insert(foo,
+    db.insert(foo,
       function (error, response) {
         if (!error) {
           console.log(response);
@@ -380,14 +380,14 @@ function eliminaChatDaProfiloDB(exchange, element) {
 
 
 function eliminaProfiloDaChatDB(element, exchange) {
-  prove.get("chat"+":"+exchange, (err, body) => {
+  db.get("chat"+":"+exchange, (err, body) => {
     if (err) return;
     else {
       const index = body.membri_chat.indexOf(element);
       if (index > -1) {
         body.membri_chat.splice(index, 1);
       }
-      prove.insert(body,
+      db.insert(body,
         function (error, response) {
           if (!error) {
             console.log(response);
@@ -402,7 +402,7 @@ function eliminaProfiloDaChatDB(element, exchange) {
 }
 
 function updateChatDB(exchange, element) {
-  prove.get("chat"+":"+exchange, function (error, foo) {
+  db.get("chat"+":"+exchange, function (error, foo) {
     if (error) {
       if (error.statusCode == 404) updateChatDB(exchange, element);
       else {
@@ -411,7 +411,7 @@ function updateChatDB(exchange, element) {
     }
     else if (!error) {
       foo.membri_chat.push(element);
-      prove.insert(foo,
+      db.insert(foo,
         function (error, response) {
           if (!error) {
             console.log(response);
@@ -428,12 +428,12 @@ function updateChatDB(exchange, element) {
 
 
 function updateChatProfiloDB(exchange, element,nome_chat) {
-  prove.get("account"+":"+element, function (error, foo) {
+  db.get("user"+":"+element, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.chat.push([nome_chat,exchange]);
-    prove.insert(foo,
+    db.insert(foo,
       function (error, response) {
         if (!error) {
           console.log(response);
@@ -449,13 +449,13 @@ function updateChatProfiloDB(exchange, element,nome_chat) {
 
 
 function addMSGQueue(queue,msg){
-  prove.get("codaChat"+":"+queue, function (error, foo) {
+  db.get("codaChat"+":"+queue, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.to_consume="y";
     foo.messaggi.push(msg);
-    prove.insert(foo,
+    db.insert(foo,
       function (error, response) {
         if (!error) {
           console.log(response);
@@ -469,12 +469,12 @@ function addMSGQueue(queue,msg){
 }
 
 function updateListening(u,e){
-  prove.get("codaChat"+":"+u+e, function (error, foo) {
+  db.get("codaChat"+":"+u+e, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.is_listening="y";
-    prove.insert(foo,
+    db.insert(foo,
       function (error, response) {
         if (!error) {
           console.log(response);
@@ -488,12 +488,12 @@ function updateListening(u,e){
 }
 
 function messageConsumed(u,e){
-  prove.get("codaChat"+":"+u+e, function (error, foo) {
+  db.get("codaChat"+":"+u+e, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.to_consume="n";
-    prove.insert(foo,
+    db.insert(foo,
       function (error, response) {
         if (!error) {
           console.log(response);
@@ -507,7 +507,7 @@ function messageConsumed(u,e){
 }
 
 function getDocDB(id,callback) {
-  prove.get(id,function(error,doc){
+  db.get(id,function(error,doc){
     if (error) {
       throw error
     }
@@ -559,7 +559,7 @@ var chat = {
 //eliminaChat(chat,"c04f4c9f-fd92-4ac7-abee-22b336595d69");
 
 /*var p={
-  "_id":"account:Elisa404",
+  "_id":"user:Elisa404",
   "username":"Elisa404",
   "nome":"",
   "cognome":"",

@@ -1,25 +1,43 @@
 $(document).ready(function() {
-
+    var user=JSON.parse(localStorage.user);
     // aggiungo alla pagina "i" card amici
-    var i;
+    var friendList=user.friendList;
+    var nFriend=friendList.length;
+    var i=0;
 
     /*$.get("elements/friend-card.html", function(data) {       // PROVA
         for(i=0;i<30;i++) {
             $("#amici").prepend(data);
         }
     })*/
-
-    for(i=0;i<30;i++) {
-        var propic = "assets/icons/placeholder-profile-sq.jpg";
-        var profile = "#";  // url
-        var name = "Nome Cognome";  // ATT: con nomi troppo lunghi ci sono problemi di formattazione
-        $("#amici").prepend('<!-- card -->'+
-            '<div class="card shadow">'+
-                '<img src="'+propic+'" class="card-img-top" alt="immagine_profilo">'+
-                '<div class="card-body">'+
-                    '<a href="'+profile+'" class="stretched-link">'+name+'</a>'+
-                '</div>'+
-            '</div>');
+    var friend;
+    while (i<15 && i<nFriend) {
+        friend=friendList[i];
+        console.log(friend); //username dell'amico
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify({username:friend}),
+            contentType: 'application/json',
+            url: 'http://localhost:8080/gestione/friend',      
+            success: function(data) {
+              var res=JSON.parse(data);
+              var propic;
+              if (res.profilePic=="") propic= "assets/icons/placeholder-profile-sq.jpg";
+              else  propic=res.profilePic;
+              var profile = "/profile?user="+res.username;  // url
+              var name = res.nome+" "+res.cognome;  // ATT: con nomi troppo lunghi ci sono problemi di formattazione
+              $("#amici").prepend('<!-- card -->'+
+                  '<div class="card shadow">'+
+                      '<img src="'+propic+'" class="card-img-top" alt="immagine_profilo">'+
+                      '<div class="card-body">'+
+                          '<a href="'+profile+'" class="stretched-link">'+name+'</a>'+
+                      '</div>'+
+                  '</div>');
+              }
+          });
+        
+       
+        i++;
     }
 
 })

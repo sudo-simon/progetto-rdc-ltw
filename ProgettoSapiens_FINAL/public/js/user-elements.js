@@ -15,7 +15,8 @@ $(document).ready(function() {
         var name = "Nome Cognome";
         var date = "00/00/0000";
         var friends = "0000";
-        var degrees = "0";
+        var vote = "00";
+        
         $("#persone").prepend('<!-- elemento -->'+
             '<div class="user-elem">'+
                 '<img class="propic img-thumbnail" id="profile_pic" src="'+propic+'" alt="profile_picture">'+
@@ -23,7 +24,7 @@ $(document).ready(function() {
                     '<a href="'+profile+'" class="stretched-link"><h4>'+name+'</h4></a>'+
                     '<li class="profile_stats">Iscritto dal: '+date+'</li>'+
                     '<li class="profile_stats">Amici: '+friends+'</li>'+
-                    '<li class="profile_stats">Lauree: '+degrees+'</li>'+
+                    '<li class="profile_stats">Voto: '+vote+'/30</li>'+
                 '</div>'+
             '</div>'+
             '<hr>');

@@ -33,16 +33,16 @@
     <div id="chat" class="chat">
         <span class="chatHead" id="classHead">
             <span class="goBackChat"><i class="fas fa-caret-left fa-2x"></i></span>
-            <span class="chatNome">Chat</span>
+            <span class="chatNome">Messaggi</span>
             <span class="closeChat"><i id="closeBtn" class="fas fa-minus "></i></span>
         </span>
         <div class="boxChat" id="startBtn" style="display: block;">
-            <div class="btn-onOpen" id="leMieChat">Le mie chat</div>
-            <div class="btn-onOpen" id="nuovaChat" style="top:38px;">Crea una nuova chat</div>
+            <div class="btn-onOpen rounded-3" id="leMieChat">Le mie chat</div>
+            <div class="btn-onOpen rounded-3" id="nuovaChat" style="top:38px;">Nuova chat</div>
         </div>
         <div class="boxChat" id="creaNuovaChat" style="line-height: 31px;">
-            <label for="nomeNuovaChat" style="font-size: 25px;position:relative; margin-right: 120px;color: black;">Nome Chat:</label>
-            <input type="text" id="nomeNuovaChat" placeholder="nome della nuova chat"
+            <!--label for="nomeNuovaChat" style="font-size: 25px;position:relative; margin-right: 120px;color: black;">Nome Chat:</label-->
+            <input type="text" id="nomeNuovaChat" placeholder="Nome chat"
                 style="width:255px;height:45px;font-size:20px;">
 
 
@@ -60,7 +60,7 @@
             </div>
 
 
-            <div class="btn-onOpen" id="inviaNuovaChat" style="margin-top: 0px;">CREA</div>
+            <div class="btn-onOpen rounded-3 btn-onOpen-crea" id="inviaNuovaChat" style="margin-top: 0px;">CREA</div>
         </div>
         <div class="boxChat boxChatScroll" id="listaChat">
             <ul class="list-group chatList">
