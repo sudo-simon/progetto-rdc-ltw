@@ -1,38 +1,36 @@
 const uuid = require('uuid');
 
 class User {
-    constructor(username,nome,cognome,email,hashedPassword,birthday,googleId) {
-        this._id = uuid.v4();
-        this._rev = "";
+    constructor(username,nome,cognome,email,password,googleId) {
+        this._id = 'user:'+uuid.v4();
 
         this.username = username;   
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
-        this.hashedPassword = hashedPassword;   //previo SHA-512 LATO SERVER
+        this.password = password;   //previo SHA-512 LATO SERVER
         this.googleId = googleId;   //null nel caso di registrazione via mail, !null nel caso di google signin
-        this.profilePic = "";
+        this.profilePic = "assets/icons/placeholder-profile-sq.jpg";
         this.friendList = [];
         this.postList = [];
         this.chatList = [];
         this.infos = {
             description: "",
             courses: [],
-            totalCfu: 0,
-            birthDate: birthday,
+            media: 0.0,
             subscriptionDate: new Date().toLocaleDateString()
         };
     }
 
-    assignRev(_rev) {this._rev = _rev;} //ASSEGNA IL _REV (?)
+    //assignRev(_rev) {this._rev = _rev;} //ASSEGNA IL _REV (?)
 
-    updatePassword(newHashedPassword) {       //AGGIORNA LA PASSWORD
-        this.hashedPassword = newHashedPassword;
+    updatePassword(newPassword) {       //AGGIORNA LA PASSWORD, inutile
+        this.password = newPassword;
     }
 
     //IMPLEMENTARE UNA FUNZIONE DI VERIFICA DELLA HASHED PASSWORD SUL SERVER
 
-    updateProfilePic(profilePic) {      //CAMBIA IMMAGINE PROFILO
+    updateProfilePic(profilePic) {      //CAMBIA IMMAGINE PROFILO, inutile
         this.profilePic = profilePic;
     }
 
@@ -45,7 +43,7 @@ class User {
             this.friendList.splice(this.friendList.indexOf(friendId),1);}
     }
 
-    addPost(postId) {                   //AGGIUNGE UN POST
+    addPost(postId) {                   //AGGIUNGE UN POST, inutile
         this.postList.push(postId);
     }
     removePost(postId) {                //CANCELLA UN POST
@@ -61,7 +59,7 @@ class User {
             this.chatList.splice(this.chatList.indexOf(chatId),1);}
     }
 
-    updateDescription(description) {    //AGGIORNA LA DESCRIZIONE PERSONALE
+    updateDescription(description) {    //AGGIORNA LA DESCRIZIONE PERSONALE, inutile
         this.infos.description = description;
     }
     addCourse(course) {                 //AGGIUNGE UN CORSO SEGUITO
@@ -76,26 +74,31 @@ class User {
 
 
 class Post {
-    constructor(postId,postAuthorId) {
-        this._id = uuid.v4();
-        this._rev = "";
+    constructor(postAuthorId) {
+        this._id = 'post:'+uuid.v4();
 
-        this.postId = postId;
+        //this.postId = postId;
         this.postAuthorId = postAuthorId;
+        this.authorProfilePic = "";
         this.textContent = "";
         this.youtubeUrl = "";
         this.dbImage = "";
+        this.dbVideo = "",
+        this.dbAudio = "",
         this.driveImage = "";
         this.creationDate = new Date().toLocaleDateString();
         this.commentList = [];
+        this.voto = 0.0;
+        this.totVoti = 0.0;
+        this.numVoti = 0;
     }
 
-    assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
+    //assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
 
-    addText(textContent) {              //AGGIUNGE IL CONTENUTO TESTUALE DEL POST
+    addText(textContent) {              //AGGIUNGE IL CONTENUTO TESTUALE DEL POST, inutile
         this.textContent = textContent;
     }
-    addYTVideo(youtubeUrl) {            //AGGIUNGE IL LINK A UN VIDEO YT EMBEDDED
+    addYTVideo(youtubeUrl) {            //AGGIUNGE IL LINK A UN VIDEO YT EMBEDDED, inutile
         this.youtubeUrl = youtubeUrl;
     }
     addDbImage(dbImage) {               //AGGIUNGE IL LINK A UN'IMMAGINE CONTENUTA NEL SERVER
@@ -107,7 +110,7 @@ class Post {
         this.driveImage = driveImage;}
     }
     
-    addComment(comment) {               //AGGIUNGE UN COMMENTO
+    addComment(comment) {               //AGGIUNGE UN COMMENTO, inutile
         this.commentList.push(comment);
     }
 
@@ -122,31 +125,29 @@ class Post {
 
 class Comment {
     constructor(commentAuthorId,commentText){
-        this._id = uuid.v4();
-        this._rev = "";
+        this._id = 'comment:'+uuid.v4();
 
         this.commentAuthorId = commentAuthorId;
         this.commentText = commentText;
     }
 
-    assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
+    //assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
 }
 
 
 
 class Chat {
     constructor(chatId,chatName){
-        this._id = uuid.v4();
-        this._rev = "";
+        this._id = 'chat:'+uuid.v4();
 
         this.chatId = chatId;
         this.chatName = chatName;
         this.chatMembers = [];
     }
 
-    assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
+    //assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
 
-    updateChatName(newChatName) {       //CAMBIA IL NOME DELLA CHAT
+    updateChatName(newChatName) {       //CAMBIA IL NOME DELLA CHAT, inutile
         this.chatName = newChatName;
     }
 
@@ -163,16 +164,17 @@ class Chat {
 
 class ChatQuery {
     constructor(username,chatId,queryId){
-        this._id = uuid.v4();
-        this._rev = "";
+        this._id = 'codaChat:'+username+uuid.v4();
 
         this.user = username;
         this.chatId = chatId;
         this.queryId = queryId;
         this.messageList = [];
+        this.is_listening = "";
+        this.to_consume = "";
     }
 
-    assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
+    //assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
 
     addMessage(chatMessage) {           //AGGIUNGE UN MESSAGGIO ALLA CHAT
         this.messageList.push(chatMessage);
@@ -188,15 +190,14 @@ class ChatQuery {
 
 class ChatMessage {
     constructor(messageId,sender,text){
-        this._id = uuid.v4();
-        this._rev = "";
+        this._id = 'messaggioChat:'+uuid.v4();
 
         this.messageId = messageId;
         this.sender = sender;
         this.text = text;
     }
 
-    assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
+    //assignRev(_rev){this._rev = _rev;}  //ASSEGNA IL _REV (?)
 }
 
 
