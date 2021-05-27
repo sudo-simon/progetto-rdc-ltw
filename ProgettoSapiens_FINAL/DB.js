@@ -38,11 +38,12 @@ class DB {
 
 
     getUser(username) {
-        this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
+        return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
             if(data.docs.length != 0){
                 return data.docs[0];
             }
-            else{ return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
+            else{ 
+                return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
             return -1;
@@ -70,17 +71,19 @@ class DB {
 
     addFriend(username,friendToAdd_id) {            //AGGIUNGE SOLO L'ID DELLO USER NEL DB ALLA LISTA AMICI
         let user;
-        this.db.partitionedFind('user', { 'selector' : { 'username' : username}}).then((data) => {
+        return this.db.partitionedFind('user', { 'selector' : { 'username' : username}}).then((data) => {
             user = data.docs[0];
+            if (user.friendList.indexOf(friendToAdd_id)==-1){
             user.friendList.push(friendToAdd_id);
 
-            this.db.insert(user).then((data) => {
+            return this.db.insert(user).then((data) => {
                 return 0;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
                 return -1;
             });
-
+             }
+             else return -1;
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
             return -1;

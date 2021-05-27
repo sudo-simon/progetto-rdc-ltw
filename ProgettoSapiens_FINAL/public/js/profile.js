@@ -25,41 +25,29 @@
 
 })*/
 
-
+    
 $(document).ready(function() {
     var user=JSON.parse(localStorage.user);
-    var profileUser;
-    if (GetURLParameter("user")==user.username) {
+    var profileUser=GetURLParameter("user");
+    //if (GetURLParameter("user")==user.username) {
         $.ajax({
-            type: 'POST',
-            data: JSON.stringify({id:user._id,rev:user._rev}),
+            type: 'GET',
+            data: JSON.stringify({username:profileUser}),
             contentType: 'application/json',
-            url: 'http://localhost:8080/chat/update',						
+            url: 'http://localhost:8080/gestione/getuser?user='+profileUser,						
             success: function(data) {
               var res=JSON.parse(data);
-              if (res.update=="y")  {
+              if (profileUser==user.username && res.update=="y")  {
                 console.log("-----UPDATE-----");
-                localStorage.setItem("user",JSON.stringify(res.doc));
+                localStorage.setItem("user",JSON.stringify(res));
               }
-              user=JSON.parse(localStorage.user);
-              loadProfile(user);
+              loadProfile(res);
                 
               }
           });
  
-    }
-    else {
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify({username:GetURLParameter("user")}),
-            contentType: 'application/json',
-            url: 'http://localhost:8080/gestione/friend',      
-            success: function(data) {
-                loadProfile(JSON.parse(data))
-            }
-        })
-    } //get del user di cui si vole caricare il profilo
-    // info profilo
+    
+
     
 
 
@@ -95,7 +83,7 @@ function loadProfile(profileUser){
     var name = profileUser.nome+" "+profileUser.cognome;
     var username=profileUser.username;
     var date = "00/00/0000";
-    var friends = profileUser.friendList.length;
+    var friends = user.friendList.length;
     var vote = "00"+"/30";
     var description;
     if (profileUser.infos.description==undefined) description=profileUser.nome+" non ha ancora inserito una descrizione del suo profilo"
@@ -111,7 +99,7 @@ function loadProfile(profileUser){
 
     // se (condizione=true) mostra il pulsante AGGIUNGI AGLI AMICI nella pagina di profilo
     if (profileUser.username!=user.username && user.friendList.indexOf(profileUser.username)==-1){
-    var addBtn = '<button type="submit" class="btn btn-danger shadow-sm onclick="aggiungiAmico()">Aggiungi agli amici</button>';
+    var addBtn = '<button type="submit" class="btn btn-danger shadow-sm" id="btnAddFriend" onclick="aggiungiAmico(\''+profileUser.username+'\')">Aggiungi agli amici</button>';
     if(true)
         $("#profile_points").after(addBtn);
     }
@@ -197,4 +185,35 @@ function loadProfile(profileUser){
             '</div>'+
         '</div>');
     }*/
+}
+
+function aggiungiAmico(newFriendUsername){
+    var user=JSON.parse(localStorage.user).username;
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: 'http://localhost:8080/gestione/addFriend?user='+user+"&newfriend="+newFriendUsername,						
+        success: function(data) {
+            if (data=="0") {
+                console.log("aggiunto");
+                $("#btnAddFriend").remove();
+
+                var toast=' <div class="toast btn btn-danger shadow-sm" id="myToast" style="max-width: fit-content;">\
+                                <div class="toast-body"> \
+                                    AGGIUNTO\
+                                </div>\
+                            </div>';
+
+                $("#profile_points").after(toast);
+                $("#myToast").toast({
+                    delay: 2000
+                });
+                $("#myToast").toast("show");
+        }
+            else console.log("non aggiunto");    
+            
+          }
+      });
+
+
 }

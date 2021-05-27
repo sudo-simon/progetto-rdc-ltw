@@ -27,14 +27,18 @@ const nano = require('nano')('http://admin:admin@localhost:5984');//LIBRERIA COU
 var amqp = require('amqplib/callback_api');
 
 //var cors=require("cors");
+const db = nano.use('sapiens');          //CONSULTARE API COUCHDB
 
+var DB=require("./DB");
+const { setTimeout } = require('timers');
+var sapiensDB=new DB("sapiens");
 
 const app = express();
 
 //app.use(cors());
 
 const server = http.Server(app);
-const db = nano.use('sapiens');          //CONSULTARE API COUCHDB
+
 
 const host = 'localhost';
 const port = process.env.PORT || 8080;
@@ -103,13 +107,20 @@ app.post('/drivedownload', function (req, res) {
 
 //----------------------GESTIONE--------------------------------
 
- app.post("/gestione/friend",function(req,res){
-    var user_id="user:"+req.body.username;
-    getDocDB(user_id,(doc)=>{
-      res.send(JSON.stringify(doc));
-    })
+ app.get("/gestione/getuser",function(req,res){
+ 
+    var username=req.query.user
+    sapiensDB.getUser(username).then((doc)=>{res.send(JSON.stringify(doc))});   
 
  });  
+
+ app.get("/gestione/addFriend",function(req,res){
+  var username=req.query.user;
+  var newFriend=req.query.newfriend;
+  sapiensDB.addFriend(username,newFriend).then((ret)=>{
+    res.send(ret.toString());
+  })
+ });
 
 
 

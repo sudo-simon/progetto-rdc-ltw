@@ -13,12 +13,11 @@ $(document).ready(function() {
     var friend;
     while (i<15 && i<nFriend) {
         friend=friendList[i];
-        console.log(friend); //username dell'amico
         $.ajax({
-            type: 'POST',
+            type: 'GET',
             data: JSON.stringify({username:friend}),
             contentType: 'application/json',
-            url: 'http://localhost:8080/gestione/friend',      
+            url: 'http://localhost:8080/gestione/getuser?user='+friend,      
             success: function(data) {
               var res=JSON.parse(data);
               var propic;
