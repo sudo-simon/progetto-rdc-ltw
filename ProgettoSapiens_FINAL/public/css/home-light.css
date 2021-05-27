@@ -8,6 +8,6 @@ body {
 }
 /* Fine Navbar */
 
-.col-lg-9 {
+.container-fluid {
     background-color: #880a30 !important;
 }

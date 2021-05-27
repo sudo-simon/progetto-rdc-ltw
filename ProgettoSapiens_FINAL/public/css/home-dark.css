@@ -28,10 +28,9 @@ body {
         background-color: #2d2d2f !important;
         color: honeydew !important;
     }
-    /* Fine Impostazioni*/
-    
+    /* Fine Impostazioni*/  
 /* Fine Navbar */
 
-.col-lg-9 {
+.container-fluid {
     background-color: #6e0726 !important;
 }

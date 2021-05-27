@@ -56,7 +56,7 @@ $(document).ready(function() {
             var user = firebase.auth().currentUser;
             // Controllo che l'email sia verificata
             if(user.emailVerified) {
-                window.location = 'home.html';
+                window.location = '/';
             } else {
                 auth.signOut().then(() => {
                     //alert("ATTENZIONE: Email non verificata!")
