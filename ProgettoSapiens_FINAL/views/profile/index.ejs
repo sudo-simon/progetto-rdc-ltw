@@ -17,7 +17,6 @@
         <!-- qui viene inserita la NAVBAR mediante lo script jQuery in navbar.js -->
         <div class="container h-100" id="profile">
             <div class="row h-100">
-                <!-- Colonna di sinistra -->
                 <div class="col-lg colonna-sx" style="background-color: dimgrey">
                     <div class="row">
                         <!-- Immagine del profilo -->
@@ -49,11 +48,11 @@
                     <div class="post" id="post">
                         <!-- form nuovo post -->
                         <div class="nuovo p-4 rounded-3 shadow">
-                            <form action="">
+                            <form onsubmit="return addPost()">
                                 <textarea class="form-control" id="testo_post" placeholder="Crea nuovo post"></textarea>
                                 <hr>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <input class="form-control ricerca-file" id="formFile" type="file">
+                                    <input class="form-control ricerca-file" id="formFile" type="file" accept="image/*,audio/*,video/*">
                                     <!--button type="button" class="btn btn-outline-secondary rounded-0">Drive</button-->
                                     <button type="submit" class="btn btn-outline-secondary rounded-0">Pubblica</button>
                                 </div>
@@ -81,7 +80,8 @@
         <script type="text/javascript" src="js/navbar.js"></script>
         <script type="text/javascript" src="js/styleswitcher.js"></script>
         <script type="text/javascript" src="js/profile.js"></script>
-        <script type="text/javascript" src="js/posts.js"></script>
+        <!-- <script type="text/javascript" src="js/posts.js"></script> -->
+        <script type="text/javascript" src="js/profile-feed.js"></script>
     </body>
 
 </html>

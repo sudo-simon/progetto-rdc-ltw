@@ -170,3 +170,63 @@ function loadFeed(postList) {
     }
 
 }
+
+
+function addPost() {
+    let textContent = document.getElementById('testo_post').value;
+    let mediaContent = document.getElementById('formFile').value;
+    let user = JSON.parse(localStorage.getItem('user'));
+    
+    let img_src = "";
+    let video_src = "";
+    let audio_src = "";
+    let youtube_src = ""; 
+    let drive_src = "";
+
+    if(mediaContent != "" && mediaContent != null){
+
+        switch(mediaContent.split('.')[-1]){
+            case 'jpg':
+    
+            case 'png':
+    
+            case 'jpeg':
+    
+            case 'mp3':
+    
+            case 'mp4':
+    
+            default:
+                break;
+        }
+    }
+
+    
+
+    let obj = { 
+        authorId: user.username,
+        textContent: textContent,
+        youtubeUrl: youtube_src,
+        dbImage: img_src,
+        dbVideo: video_src,
+        dbAudio: audio_src,
+        driveImage: drive_src
+    }
+
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(obj),
+        contentType: 'application/json',
+        url: 'http://localhost:8080/createpost',      //SERVER POST
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        //dataType: 'json',
+        //async: false,
+        success: function(data){
+            return true;                           
+        }                                               
+    });
+
+    //return false;
+}
