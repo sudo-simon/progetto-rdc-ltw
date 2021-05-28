@@ -4,9 +4,10 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var feed = document.getElementById('post');
+//var yt_players = [];
 
 function onYouTubeIframeAPIReady() {            //NEEDED TO INIT?
-    /////////
+    init_feed();
 }
 
 function init_feed() {
@@ -17,7 +18,6 @@ function init_feed() {
     else { return false; }
 
     let obj = { username: user.username };
-    let postList;
 
     $.ajax({
         type: 'POST',
@@ -27,13 +27,20 @@ function init_feed() {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         },
+        dataType: 'json',
+        //async: false,
         success: function(data){
-            postList = JSON.parse(data.body);                //oggetto con indici interi crescenti a partire da 0
+            loadFeed(data);                            //oggetto con indici interi crescenti a partire da 0
         }                                                    //for(i) postList.i.author = ... / postList[i].author =
     });
 
     ///////////////////////////ALGORITMO DI RENDERIZZAZIONE DEI POST NELLA HOME
 
+
+}
+
+
+function loadFeed(postList) {
     var youtube_i = 0;
 
     for (let i=0; i<postList.numItems; i++){
@@ -46,10 +53,19 @@ function init_feed() {
         let img_src = postList[i.toString()].dbImage;
         let video_src = postList[i.toString()].dbVideo;
         let audio_src = postList[i.toString()].dbAudio;
-        let youtube_src = postList[i.toString()].youtubeUrl;        
+        let youtube_src = postList[i.toString()].youtubeUrl; 
+        
+        let img_visibility = 'visually-hidden'; 
+        let video_visibility = 'visually-hidden'; 
+        let audio_visibility = 'visually-hidden';
+        let youtube_visibility = 'visually-hidden';
+        if(img_src != "") { img_visibility = ""; }
+        else if(video_src != "") { video_visibility = ""; }
+        else if(audio_src != "") { audio_visibility = ""; }
+        else if(youtube_src != "") { youtube_visibility = ""; }
 
 
-        feed.append('<!-- post -->'+
+        feed.innerHTML += ('<!-- post -->'+
         '<div class="singolo-post p-3 rounded-3 shadow">'+
             '<div class="row">'+
                 '<div class="post-pic col-1">'+
@@ -77,7 +93,7 @@ function init_feed() {
                             '<audio class="'+audio_visibility+'" controls>'+
                                 '<source src="'+audio_src+'" type="audio/mp3">'+
                             '</audio>'+
-                            '<div id="youtube_embed_'+youtube_i+'"></div>'+        //PER LUCA
+                            '<div class="'+youtube_visibility+'" id="youtube_embed_'+youtube_i+'"></div>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
@@ -101,7 +117,7 @@ function init_feed() {
             var player = new YT.Player('youtube_embed_'+youtube_i, {
                 height: "390",
                 width: "640",
-                videoId: youtube_src,
+                videoId: youtube_src.split('=')[1],
                 playerVars: {
                     "playsinline": 1
                 }/*,
@@ -109,8 +125,8 @@ function init_feed() {
                     "onReady": onPlayerReady
                 }*/
             });
+            youtube_i++;
         }
-        youtube_i++;
+        
     }
-
 }

@@ -74,18 +74,18 @@ class User {
 
 
 class Post {
-    constructor(postAuthorId) {
+    constructor(postAuthorId,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage) {
         this._id = 'post:'+uuid.v4();
 
         //this.postId = postId;
         this.postAuthorId = postAuthorId;
         this.authorProfilePic = "";
-        this.textContent = "";
-        this.youtubeUrl = "";
-        this.dbImage = "";
-        this.dbVideo = "",
-        this.dbAudio = "",
-        this.driveImage = "";
+        this.textContent = textContent;
+        this.youtubeUrl = youtubeUrl;
+        this.dbImage = dbImage;
+        this.dbVideo = dbVideo,
+        this.dbAudio = dbAudio,
+        this.driveImage = driveImage;
         this.creationDate = new Date().toLocaleDateString();
         this.commentList = [];
         this.voto = 0.0;

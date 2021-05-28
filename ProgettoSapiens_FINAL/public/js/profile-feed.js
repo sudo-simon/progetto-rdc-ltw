@@ -4,19 +4,50 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var feed = document.getElementById('post');
+var yt_players = { numItems: 0 };
 
 function onYouTubeIframeAPIReady() {            //NEEDED TO INIT?
-    /////////
+
+    init_feed();
+    /*for (let i=0; i<yt_players.numItems; i++){
+        let player = yt_players[i.toString()]
+        var tmp = new YT.Player(player.divId, {
+            height: "390",
+            width: "640",
+            videoId: player.src.split('=')[1],
+            playerVars: {
+                "playsinline": 1
+            }/*,
+            events: {
+                "onReady": onPlayerReady
+            }
+        });
+    }*/
 }
 
 function init_feed() {
+    //console.log('DEBUGGONE');
     let user;
-    if(localStorage.getItem('username') != null){
-        user = localStorage.getItem('username'); }
-    else { return false; }
+    if(localStorage.getItem('user') != null){
+        user = JSON.parse(localStorage.getItem('user'));
+    }
+    else { 
+        return false; }
 
-    let obj = { username: user };
-    let postList;
+    let query = window.location.search;
+    let obj;
+
+    if(query == ""){
+        obj = { username: user.username };
+    }
+    else if(query.split('=')[1] == user.username){
+        obj = { username: user.username };
+    }
+    else{
+        obj = { username: query.split('=')[1] };
+    }
+
+    
 
     $.ajax({
         type: 'POST',
@@ -26,29 +57,45 @@ function init_feed() {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         },
+        dataType: 'json',
+        //async: false,
         success: function(data){
-            postList = data.body;                //oggetto con indici interi crescenti a partire da 0
-        }                                   //for(i) postList.i.author = ... / postList[i].author =
+            loadFeed(data);                //oggetto con indici interi crescenti a partire da 0
+        }                                               //for(i) postList.i.author = ... / postList[i].author =
     });
 
     ///////////////////////////ALGORITMO DI RENDERIZZAZIONE DEI POST NEL PROFILO
 
-    var youtube_i = 0;
+}
+
+
+function loadFeed(postList) {
+    let youtube_i = 0;
+    
 
     for (let i=0; i<postList.numItems; i++){
         let author = postList[i.toString()].postAuthorId;
         let profile = '/profile?user='+author;
-        let propic = postList[i.toString()].authorProfilePic;         
+        let propic = postList[i.toString()].authorProfilePic;        
         let rating = postList[i.toString()].voto;
         let time = postList[i.toString()].creationDate;
         let text = postList[i.toString()].textContent;
         let img_src = postList[i.toString()].dbImage;
         let video_src = postList[i.toString()].dbVideo;
         let audio_src = postList[i.toString()].dbAudio;
-        let youtube_src = postList[i.toString()].youtubeUrl;        
+        let youtube_src = postList[i.toString()].youtubeUrl;    
+        
+        let img_visibility = 'visually-hidden'; 
+        let video_visibility = 'visually-hidden'; 
+        let audio_visibility = 'visually-hidden';
+        let youtube_visibility = 'visually-hidden';
+        if(img_src != "") { img_visibility = ""; }
+        else if(video_src != "") { video_visibility = ""; }
+        else if(audio_src != "") { audio_visibility = ""; }
+        else if(youtube_src != "") { youtube_visibility = ""; }
 
 
-        feed.append('<!-- post -->'+
+        feed.innerHTML += ('<!-- post -->'+
         '<div class="singolo-post p-3 rounded-3 shadow">'+
             '<div class="row">'+
                 '<div class="post-pic col-1">'+
@@ -76,7 +123,7 @@ function init_feed() {
                             '<audio class="'+audio_visibility+'" controls>'+
                                 '<source src="'+audio_src+'" type="audio/mp3">'+
                             '</audio>'+
-                            '<div id="youtube_embed_'+youtube_i+'"></div>'+        //PER LUCA
+                            '<div class="'+youtube_visibility+'" id="youtube_embed_'+youtube_i+'"></div>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
@@ -96,11 +143,20 @@ function init_feed() {
             '</div>'+
         '</div>');
 
+        /*if (youtube_src != ""){
+            yt_players[youtube_i.toString()] = {
+                divId: 'youtube_embed_'+youtube_i, 
+                src: youtube_src
+            };
+            yt_players.numItems += 1;
+            youtube_i++;
+        }*/
+
         if (youtube_src != ""){
             var player = new YT.Player('youtube_embed_'+youtube_i, {
-                height: "390",
-                width: "640",
-                videoId: youtube_src,
+                height: "280",
+                width: "460",
+                videoId: youtube_src.split('=')[1],
                 playerVars: {
                     "playsinline": 1
                 }/*,
@@ -108,8 +164,9 @@ function init_feed() {
                     "onReady": onPlayerReady
                 }*/
             });
+            youtube_i++;
         }
-        youtube_i++;
+        
     }
 
 }

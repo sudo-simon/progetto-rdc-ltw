@@ -1,6 +1,8 @@
 'use strict';
 const sapiens = require('./data_structures');
 const nano = require('nano')('http://admin:admin@localhost:5984');   
+//const bcrypt = require('bcrypt');
+//const saltRounds = 10;
 
 
 class DB {
@@ -13,7 +15,7 @@ class DB {
 
     addUser(username,nome,cognome,email,password,googleId) {
 
-        this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
+        return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
             if(data.docs.length != 0){
                 return false;
             }
@@ -42,16 +44,15 @@ class DB {
             if(data.docs.length != 0){
                 return data.docs[0];
             }
-            else{ 
-                return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
+            else{ return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
             return -1;
         });
     }
 
-    verifyUser(email,password){          
-        this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
+    verifyUser(email,password, callback){          
+        return this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
             if(data.docs.length != 0){
                 let user = data.docs[0];
                 if (password == user.password){
@@ -73,17 +74,15 @@ class DB {
         let user;
         return this.db.partitionedFind('user', { 'selector' : { 'username' : username}}).then((data) => {
             user = data.docs[0];
-            if (user.friendList.indexOf(friendToAdd_id)==-1){
             user.friendList.push(friendToAdd_id);
 
-            return this.db.insert(user).then((data) => {
+            this.db.insert(user).then((data) => {
                 return 0;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
                 return -1;
             });
-             }
-             else return -1;
+
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
             return -1;
@@ -91,20 +90,38 @@ class DB {
     }
 
     getFriendList(username) {
-        let user = this.getUser(username);
-        return user.friendList;
+        let user;
+        return this.getUser(username).then((returned) => {
+            user = returned;
+            return user.friendList;
+        });
+    }
+
+    isFriendOf(userObj,friendToSearch) {
+        let friendList = userObj.friendList;
+        let friendId;
+        return this.getUser(friendToSearch).then((data) => {
+            friendId = data._id;
+            return friendList.includes(friendId);
+            
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        })
     }
 
     getMediaUser(username) {
-        let user = this.getUser(username);
-        let postList = user.postList;
-        let avg, tot=0, i=0;
-        for (let post of postList){
-            tot += post.voto;
-            i++;
-        }
-        avg = tot/i;
-        return avg;
+        let user;
+        return this.getUser(username).then((returned) => {
+            let postList = user.postList;
+            let avg, tot=0, i=0;
+            for (let post of postList){
+                tot += post.voto;
+                i++;
+            }
+            avg = tot/i;
+            return avg;
+        });
     }
 
 
@@ -244,84 +261,102 @@ class DB {
 
     //----------------------------------------------- POST METHODS -------------------------------------
 
-    addPost(username,textContent) {
-        let newPost = new sapiens.Post(username);
-        newPost.textContent = textContent;
+    addPost(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage) {
+        let newPost = new sapiens.Post(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage);
         let post;
-        let user = this.getUser(username);
-        newPost.authorProfilePic = user.profilePic;
+        let user;
+        return this.getUser(username).then((returned) => {
+            user = returned;
+            newPost.authorProfilePic = user.profilePic;
 
-        this.db.insert(newPost).then((data) => {
-            post = this.db.get(data.id);
-            user.postList.unshift(post);
-            
-            this.db.insert(user).then((data) => {
-                return post;
+            this.db.insert(newPost).then((data) => {
+                this.db.get(data.id).then((data) => {
+                    post = data;
+                    user.postList.unshift(post);
+                
+                    this.db.insert(user).then((data) => {
+                        return post;
+                    }).catch((err) => {
+                        console.log('DATABASE ERROR: '+err);
+                        return -1;
+                    });
+
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    return -1;
+                });
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
                 return -1;
             });
-
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+                
         });
-
     }
 
 
     getPostList(username) {
         let result = {};
-        let user = this.getUser(username);
-        let postList = user.postList;
-        let i = 0;
-        for(let post of postList){
-            result[i.toString()] = post;
-            i++;
-        }
-        result.numItems = i+1;
-        return result;
+        let user;
+        return this.getUser(username).then((returned) => {
+            user = returned;
+            let postList = user.postList;
+            let i = 0;
+            for(let post of postList){
+                result[i.toString()] = post;
+                i++;
+            }
+            result.numItems = i;
+            return result;
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        });
     }
 
     getHomeFeed(username) {
         let result = {};
         let i = 0, j = 0;
-        let user = this.getUser(username);        
-        let friendList_tmp = user.friendList;
+        let user;
+        return this.getUser(username).then((returned) => {
+            user = returned;
 
-        while(friendList_tmp.length != 0){                  //aggiunge a "result" i post nell'ordine in cui caricarli, con etichetta "i"                                                             
-            for (let x=friendList_tmp.length-1;x>=0;x--){   //che è un intero crescente. Prende il post più recente di ogni amico, e poi
-                let friendId = friendList_tmp[x];           //il secondo più recente una volta che ha iterato la lista amici, e così via.
-                let friend;
-                this.db.get(friendId).then((data) => {      
-                    friend = data;
+            let friendList_tmp = user.friendList;
 
-                    if(friend.postList.length == 0){ 
-                        friendList_tmp.splice(x,1);      //se l'amico non ha post viene eliminato dalla lista
-                    }   
-                    
-                    else if(friend.postList.length >= j+1){
-                        result[i.toString()] = friend.postList[j];         //post j-esimo dell'amico aggiunto come i-esimo post da caricare
-                        i++;
-                    }
-    
-                    else{
-                        friendList_tmp.splice(x,1);  //se l'amico ha finito i post viene eliminato dalla lista
-                    }
-                }).catch((err) => {
-                    console.log('DATABASE ERROR: '+err);
-                    return -1;
-                });
-                //////////////////// ALGORITMO PER RESTITUIRE I POST DELLA HOME AL CLIENT
-       
+            while(friendList_tmp.length > 0){                  //aggiunge a "result" i post nell'ordine in cui caricarli, con etichetta "i"                                                             
+                for (let x=friendList_tmp.length-1;x>=0;x--){   //che è un intero crescente. Prende il post più recente di ogni amico, e poi
+                    let friendId = friendList_tmp[x];           //il secondo più recente una volta che ha iterato la lista amici, e così via.
+                    let friend;
+                    this.db.get(friendId).then((data) => {      
+                        friend = data;
+
+                        if(friend.postList.length == 0){ 
+                            friendList_tmp.splice(x,1);      //se l'amico non ha post viene eliminato dalla lista
+                        }   
+                        
+                        else if(friend.postList.length >= j+1){
+                            result[i.toString()] = friend.postList[j];         //post j-esimo dell'amico aggiunto come i-esimo post da caricare
+                            i++;
+                        }
+        
+                        else{
+                            friendList_tmp.splice(x,1);  //se l'amico ha finito i post viene eliminato dalla lista
+                        }
+                    }).catch((err) => {
+                        console.log('DATABASE ERROR: '+err);
+                        return -1;
+                    });
+                    //////////////////// ALGORITMO PER RESTITUIRE I POST DELLA HOME AL CLIENT
+        
+                }
+                j++;
+
             }
-            j++;
 
-        }
+            result.numItems = i;
+            return result;                
 
-        result.numItems = i+1;
-
-        return result;                  ///PROMISE!!!!!
+        });        
+        
     }
 
     addVoto(postObj,newVoto) {
@@ -330,7 +365,7 @@ class DB {
         post.totVoti += newVoto;
         post.voto = totVoti/numVoti;
 
-        this.db.insert(post).then((data) => {
+        return this.db.insert(post).then((data) => {
             return 0;
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
@@ -346,7 +381,7 @@ class DB {
         let comment;
         let post;
 
-        this.db.insert(newComment).then((data) => {
+        return this.db.insert(newComment).then((data) => {
             comment = this.db.get(data.id);
 
             this.db.get(postId).then((data) => {
@@ -373,7 +408,7 @@ class DB {
 
     editComment(commentId,newText) {
         let comment;
-        this.db.get(commentId).then((data) => {
+        return this.db.get(commentId).then((data) => {
             comment = data;
             comment.commentText = newText;
 
@@ -387,14 +422,11 @@ class DB {
             console.log('DATABASE ERROR: '+err);
             return -1;
         });
-
-        
-        
     }
 
     deleteComment(commentId) {
         let comment;
-        this.db.get(commentId).then((data) => {
+        return this.db.get(commentId).then((data) => {
             comment = data;
             this.db.destroy(comment._id, comment._rev).then((data) => {
                 return 0;
@@ -407,8 +439,6 @@ class DB {
             console.log('DATABASE ERROR: '+err);
             return -1;
         });
-
-        
     }
 
 }
