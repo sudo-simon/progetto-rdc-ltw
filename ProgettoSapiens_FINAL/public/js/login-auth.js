@@ -1,3 +1,6 @@
+let username
+let db_user='debug_login';
+
 $(document).ready(function() {
     // Nascondo gli alert che sarebbero visualizzati di default
     $('#email-alert1').hide();
@@ -40,11 +43,14 @@ $(document).ready(function() {
 
     // LOGIN
     const loginForm = document.querySelector('#loginRegistr');
+
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const email = loginForm['exampleInputEmail1'].value+'@studenti.uniroma1.it';
         const psw = loginForm['exampleInputPassword1'].value;
+
+        username = email.split('@')[0];
 
         // Rimozione vecchi alert
         $('#email-alert1').hide();
@@ -56,7 +62,31 @@ $(document).ready(function() {
             var user = firebase.auth().currentUser;
             // Controllo che l'email sia verificata
             if(user.emailVerified) {
-                window.location = '/';
+                //////////////////////////////////// AJAX POST NECESSARIA? CI PENSA FIREBASE
+
+                let obj = {
+                    username: username,
+                    email: email,
+                    password: psw
+                }
+                $.ajax({
+                    type: 'POST',
+                    data: JSON.stringify(obj),
+                    contentType: 'application/json',
+                    url: 'http://localhost:8080/verifyuser',      //SERVER POST NEL DATABASE
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    dataType: 'json',
+                    //async: false,
+                    success: function(data){
+                        localStorage.setItem('user', JSON.stringify(data));
+                    }           
+                });
+
+                ////////////////////////////////////
+
+                window.location = '/';          //TORNA ALLA HOME
             } else {
                 auth.signOut().then(() => {
                     //alert("ATTENZIONE: Email non verificata!")
@@ -85,7 +115,9 @@ $(document).ready(function() {
 auth.onAuthStateChanged(user => {
     if(user) {
         console.log('user logged in: ',user);
+        //localStorage.setItem('user', JSON.stringify(db_user));        //LOCALSTORAGE ADD
     } else {
-        console.log('user logged out')
+        console.log('user logged out');
+        localStorage.removeItem('user');              //LOCALSTORAGE REMOVE
     }
 });

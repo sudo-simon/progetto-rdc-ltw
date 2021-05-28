@@ -1,3 +1,6 @@
+let username;
+let db_user = 'debug_signup';
+
 $(document).ready(function() {
     // Nascondo gli alert che sarebbero visualizzati di default
     $('#email-alert2').hide();
@@ -6,10 +9,14 @@ $(document).ready(function() {
 
     // SIGN UP
     const signupForm = document.querySelector('#signupRegistr');
+
     signupForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const email = signupForm['exampleInputEmail1'].value;
+
+        username = email.split('@')[0];
+
         const psw = signupForm['exampleInputPassword1'].value;
         const cpsw = signupForm['exampleInputPassword2'].value;
         const name = signupForm['exampleInputName1'].value+' '+signupForm['exampleInputSurname1'].value;
@@ -37,6 +44,31 @@ $(document).ready(function() {
         auth.createUserWithEmailAndPassword(email,psw).then(() => {
             // Salvataggio dati profilo utente
             var user = firebase.auth().currentUser;
+            //////////////////////////
+
+            let obj = { 
+                username: username, 
+                email: email, 
+                password: psw,
+                nome: name.split(' ')[0],
+                cognome: name.split(' ')[1]
+            }
+            $.ajax({
+                type: 'PUT',
+                data: JSON.stringify(obj),
+                contentType: 'application/json',
+                url: 'http://localhost:8080/createuser',      //SERVER PUT NEL DATABASE
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                dataType: 'json',
+                //async: false,
+                success: function(data){
+                    localStorage.setItem('user', JSON.stringify(data));  
+                }           
+            });
+
+            //////////////////////////
             user.updateProfile({
                 displayName: name
             });
@@ -69,7 +101,9 @@ $(document).ready(function() {
 auth.onAuthStateChanged(user => {
     if(user) {
         console.log('user logged in: ',user);
+        //localStorage.setItem('user', JSON.stringify(db_user));
     } else {
-        console.log('user logged out')
+        console.log('user logged out');
+        localStorage.removeItem('user');
     }
 });
