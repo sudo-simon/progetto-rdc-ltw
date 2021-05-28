@@ -76,7 +76,7 @@ class DB {
             user = data.docs[0];
             user.friendList.push(friendToAdd_id);
 
-            this.db.insert(user).then((data) => {
+            return this.db.insert(user).then((data) => {
                 return 0;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
