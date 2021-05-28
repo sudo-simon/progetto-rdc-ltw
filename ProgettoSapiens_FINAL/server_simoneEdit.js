@@ -12,7 +12,7 @@ var driveDownload = require('./drive-download.js');
 var CLIENT_ID = googleKeys.web.client_id;
 var CLIENT_SECRET = googleKeys.web.client_secret;
 var REDIRECT_URIS = googleKeys.web.redirect_uris;
-var API_KEY = 'AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8';
+var API_KEY = '';
 var GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file';
 
 const {OAuth2Client} = require('google-auth-library');

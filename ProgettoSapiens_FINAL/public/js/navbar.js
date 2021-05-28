@@ -1,5 +1,6 @@
 $.get("elements/navbar.html", function(data) {
 
+
     $("body").prepend(data);
 
 }).then(function() {
@@ -14,6 +15,11 @@ $.get("elements/navbar.html", function(data) {
     $("#inputName").attr("placeholder",name);
     $("#inputSurname").attr("placeholder",surname);
     $("#exampleFormControlTextarea1").attr("placeholder",description);
+    $("#searchInputText").on("keyup",function(){
+        var string=$("#searchInputText").val().replace(/\s+/g,' ').trim();
+        $("#searchRegistr").attr("action","/search?searching="+string);
+    });
+
 
 }).then(function() {
 
@@ -28,3 +34,5 @@ $.get("elements/navbar.html", function(data) {
     });
 
 })
+
+
