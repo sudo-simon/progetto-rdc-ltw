@@ -137,23 +137,23 @@ class DB {
     }*/
 
     findUsersByName(nome) {
-        let people = {};      
+        let people = [];      
         let i = 0;
         let lowerNome = nome.toLowerCase();
         let upperNome = nome.charAt(0).toUpperCase() + nome.slice(1);
 
 
-        this.db.partitionedFind('user', { 'selector' : { 'nome' : upperNome}}).then((data) => {
+        return this.db.partitionedFind('user', { 'selector' : { 'nome' : upperNome}}).then((data) => {
             for(let person of data.docs){
-                people[i.toString()] = person;
+                people.push(person);
                 i++;
             }
-            this.db.partitionedFind('user', { 'selector' : { 'nome' : lowerNome}}).then((data) => {
+            return this.db.partitionedFind('user', { 'selector' : { 'nome' : lowerNome}}).then((data) => {
                 for(let person of data.docs){
-                    people[i.toString()] = person;
+                    people.push(person);
                     i++;
                 }
-                people.numItems = i+1;
+                //people.numItems = i;
                 return people;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
@@ -167,22 +167,22 @@ class DB {
     }
 
     findUsersBySurname(cognome) {
-        let people = {};
+        let people = [];
         let i = 0;
         let lowerCognome = cognome.toLowerCase();
-        let upperCognome = cognnome.charAt(0).toUpperCase() + cognome.slice(1);
+        let upperCognome = cognome.charAt(0).toUpperCase() + cognome.slice(1);
 
-        this.db.partitionedFind('user', { 'selector' : { 'cognome' : upperCognome}}).then((data) => {
+        return this.db.partitionedFind('user', { 'selector' : { 'cognome' : upperCognome}}).then((data) => {
             for(let person of data.docs){
-                people[i.toString()] = person;
+                people.push(person);
                 i++;
             }
-            this.db.partitionedFind('user', { 'selector' : { 'cognome' : lowerCognome}}).then((data) => {
+            return this.db.partitionedFind('user', { 'selector' : { 'cognome' : lowerCognome}}).then((data) => {
                 for(let person of data.docs){
-                    people[i.toString()] = person;
+                    people.push(person);
                     i++;
                 }
-                people.numItems = i+1;
+                //people.numItems = i;
                 return people;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
@@ -194,6 +194,52 @@ class DB {
             return -1;
         });
     }
+    
+    findUsersByNameSurname(nome,cognome){
+        let people = [];
+        let i = 0;
+
+        return this.db.partitionedFind('user', { 'selector' : { 'cognome' : cognome}}).then((data) => {
+            for (let person of data.docs){
+                if( people.find(({username})=>{(username==person.username)}) == undefined){
+                    people.push(person);
+                }
+                i++;
+            }
+            return this.db.partitionedFind('user', { 'selector' : { 'nome' : nome}}).then((data) => {
+                for(let person of data.docs){
+                    if( people.find(({username})=>{(username==person.username)}) == undefined){
+                        people.push(person);
+                    }
+                }
+                return people;
+            }).catch((err) => {
+                console.log('DATABASE ERROR: '+err);
+                return -1;
+            });
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        });
+
+    }
+
+    searchAux (ret,ret2,callback){
+        if (ret2.length==0) callback(ret);
+        else if (ret.length==0) callback(ret2)
+        else{
+        var i=ret.length;
+        for (let person of ret){
+        if (ret2.find( ({ username }) => username==person.username)==undefined){
+          ret2.push(person);
+        }
+        if (i==1) callback(ret2);
+        i=i-1;
+      }
+    }
+    }
+    
+
     
 
     //----------------------------------------------- POST METHODS -------------------------------------

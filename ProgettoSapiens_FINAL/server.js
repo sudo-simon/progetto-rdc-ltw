@@ -88,7 +88,7 @@ app.get('/friends', function (req, res) {
   console.log(req.ip+': friends');
 });
 
-app.get('/search', function (req, res) {
+app.post('/search', function (req, res) {
   res.status(200).render('./search/index.ejs');
   console.log(req.ip+': search');
 });
@@ -105,7 +105,7 @@ app.post('/drivedownload', function (req, res) {
 
 //---------------------- FINE ROUTES----------------------------
 
-//----------------------GESTIONE--------------------------------
+//----------------------ROUTES GESTIONE--------------------------------
 
  app.get("/gestione/getuser",function(req,res){
  
@@ -122,6 +122,39 @@ app.post('/drivedownload', function (req, res) {
   })
  });
 
+ app.get("/gestione/search",function(req,res){
+  var searching=req.query.searching;
+    var nc=searching.split(" ");
+    var nome=nc[0];
+    var cognome=nome;
+    var toSend={
+      list:[]
+    }
+    if (nc[0]=="undefined") res.send(JSON.stringify(toSend));
+    if (nc.length>1) cognome=nc[1];
+    sapiensDB.findUsersByName(nome).then((ret)=>{
+      sapiensDB.findUsersBySurname(cognome).then((ret2)=>{
+        sapiensDB.searchAux(ret,ret2,(r)=>{
+          sapiensDB.findUsersByName(cognome).then((ret3)=>{
+            sapiensDB.findUsersBySurname(nome).then((ret4)=>{
+              sapiensDB.searchAux(r,ret3,(r2)=>{
+                sapiensDB.searchAux(r2,ret4,(r3)=>{
+                  toSend.list=r3;
+                  res.send(JSON.stringify(toSend));
+                })
+              })
+            })
+          })
+        })
+      });
+    })
+  
+    
+ // });
+  
+  
+    
+ })
 
 
 //----------------------FINE GESTIONE----------------------------

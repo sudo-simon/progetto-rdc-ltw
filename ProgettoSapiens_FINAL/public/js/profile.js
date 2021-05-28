@@ -82,8 +82,8 @@ function loadProfile(profileUser){
     else {}//else propic= GET pic at user.propic
     var name = profileUser.nome+" "+profileUser.cognome;
     var username=profileUser.username;
-    var date = "00/00/0000";
-    var friends = user.friendList.length;
+    var date = "00/00/0000"; //profileUser.infos.subscriptionDate;
+    var friends = profileUser.friendList.length;
     var vote = "00"+"/30";
     var description;
     if (profileUser.infos.description==undefined) description=profileUser.nome+" non ha ancora inserito una descrizione del suo profilo"
@@ -198,7 +198,7 @@ function aggiungiAmico(newFriendUsername){
                 console.log("aggiunto");
                 $("#btnAddFriend").remove();
 
-                var toast=' <div class="toast btn btn-danger shadow-sm" id="myToast" style="max-width: fit-content;">\
+                var toast=' <div class="toast btn btn-danger shadow-sm" id="myToast" style="max-width: fit-content;max-width: -moz-fit-content;">\
                                 <div class="toast-body"> \
                                     AGGIUNTO\
                                 </div>\

@@ -1,20 +1,40 @@
 $(document).ready(function() {
+    
+    var searching=GetURLParameter("searching");
+    
+    $.ajax({
+        type: 'GET',
+        url: 'http://localhost:8080/gestione/search?searching='+searching ,						
+        success: function(data) {
+            searchResult(JSON.parse(data).list);
+        }
+      });
 
-    // aggiungo alla pagina "i" elementi user
-    var i;
+})
+function searchResult(list){
+    var len=list.length;
+    var i=0;
     
     /*$.get("elements/user-element.html", function(data) {      // PROVA
         for(i=0;i<30;i++) {
             $("#persone").prepend(data);
         }
     })*/
+    /*var searching=GetURLParameter("searching");
+    var nc=searching.split(" ");
+    if (list.find((element)=>element.nome==nc[0] && element.cognome==nc[1])==undefined && list.find((element)=>element.nome==nc[1] && element.cognome==nc[0])==undefined ){
+        console.log("nessuna corrispondenza esatta");
+    }*/
 
-    for(i=0;i<30;i++) {
-        var propic = "assets/icons/placeholder-profile-sq.jpg";
-        var profile = "#";  // url
-        var name = "Nome Cognome";
-        var date = "00/00/0000";
-        var friends = "0000";
+
+    while (i<30 && i<list.length) {
+        var pUser=list[i];
+        
+        var propic = pUser.profilePic==""?"assets/icons/placeholder-profile-sq.jpg":pUser.profilePic;
+        var profile = "/profile?user="+pUser.username;  // url
+        var name = pUser.nome+" "+pUser.cognome;
+        var date = "00/00/0000"//pUser.infos.subscriptionDate;
+        var friends = pUser.friendList.length;
         var vote = "00";
         
         $("#persone").prepend('<!-- elemento -->'+
@@ -28,6 +48,21 @@ $(document).ready(function() {
                 '</div>'+
             '</div>'+
             '<hr>');
+        i++;
     }
 
-})
+}
+
+//FUNZIONE PER OTTENERE IL VALORE DI UN PARAMETRO NELL'URL
+function GetURLParameter(sParam){
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}
