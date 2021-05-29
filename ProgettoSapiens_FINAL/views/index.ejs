@@ -21,11 +21,11 @@
                     <div class="post" id="post">
                         <!-- form nuovo post -->
                         <div class="nuovo p-4 rounded-3 shadow">
-                            <form action="">
-                                <textarea class="form-control" id="testo_post" placeholder="Crea nuovo post"></textarea>
+                            <form onsubmit="return addPost()">
+                                <textarea class="form-control" id="testo_post" name="testo_post" placeholder="Crea nuovo post"></textarea>
                                 <hr>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <input class="form-control ricerca-file" id="formFile" type="file">
+                                    <input class="form-control ricerca-file" id="formFile" name="formFile" type="file" accept="image/*,audio/*,video/*">
                                     <!--button type="button" class="btn btn-outline-secondary rounded-0">Drive</button-->
                                     <button type="submit" class="btn btn-outline-secondary rounded-0">Pubblica</button>
                                 </div>
@@ -56,6 +56,8 @@
         <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
 
         
+        <!-- <script type="text/javascript" src="js/posts.js"></script> -->
+        <script type="text/javascript" src="js/home-feed.js"></script>
     </body>
 
 </html>

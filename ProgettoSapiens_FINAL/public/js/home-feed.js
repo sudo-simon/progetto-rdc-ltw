@@ -41,6 +41,8 @@ function init_feed() {
 
 
 function loadFeed(postList) {
+    console.log("SEI IN LOADFEED DELLA HOME");
+    console.log(JSON.stringify(postList));
     var youtube_i = 0;
 
     for (let i=0; i<postList.numItems; i++){
@@ -115,8 +117,8 @@ function loadFeed(postList) {
 
         if (youtube_src != ""){
             var player = new YT.Player('youtube_embed_'+youtube_i, {
-                height: "390",
-                width: "640",
+                height: "280",
+                width: "460",
                 videoId: youtube_src.split('=')[1],
                 playerVars: {
                     "playsinline": 1
@@ -129,4 +131,63 @@ function loadFeed(postList) {
         }
         
     }
+}
+
+function addPost() {
+    let textContent = document.getElementById('testo_post').value;
+    let mediaContent = document.getElementById('formFile').value;
+    let user = JSON.parse(localStorage.getItem('user'));
+    
+    let img_src = "";
+    let video_src = "";
+    let audio_src = "";
+    let youtube_src = ""; 
+    let drive_src = "";
+
+    if(mediaContent != "" && mediaContent != null){
+
+        switch(mediaContent.split('.')[-1]){
+            case 'jpg':
+    
+            case 'png':
+    
+            case 'jpeg':
+    
+            case 'mp3':
+    
+            case 'mp4':
+    
+            default:
+                break;
+        }
+    }
+
+    
+
+    let obj = { 
+        authorId: user.username,
+        textContent: textContent,
+        youtubeUrl: youtube_src,
+        dbImage: img_src,
+        dbVideo: video_src,
+        dbAudio: audio_src,
+        driveImage: drive_src
+    }
+
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(obj),
+        contentType: 'application/json',
+        url: 'http://localhost:8080/createpost',      //SERVER POST
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        //dataType: 'json',
+        //async: false,
+        success: function(data){
+            return true;                           
+        }                                                   
+    });
+
+    //return false;
 }

@@ -12,7 +12,7 @@ var driveDownload = require('./drive-download.js');
 var CLIENT_ID = googleKeys.web.client_id;
 var CLIENT_SECRET = googleKeys.web.client_secret;
 var REDIRECT_URIS = googleKeys.web.redirect_uris;
-var API_KEY = '';
+var API_KEY = 'AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8';
 var GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file';
 
 const {OAuth2Client} = require('google-auth-library');
@@ -222,7 +222,7 @@ app.post('/loadprofilefeed', function (req, res){
 
 app.post('/loadhomefeed', function (req, res){
   let username = req.body.username;
-  database.getHomeFeed(username).then((returned) => {
+  database.getHomeFeed(username).then((returned) => {   
     res.send(JSON.stringify(returned));
     console.log(username+' homepage feed load: OK');
   });
@@ -252,12 +252,14 @@ app.post('/loadprofilefeed', function (req, res){       //AJAX RESPONSE PER CARI
 });
 
 app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREAZIONE NUOVO POST
-  let username = req.body.username;
+  let username = req.body.authorId;
+
   console.log('RICEVUTA RICHIESTA DI CREAZIONE POST DA : '+username);
   database.addPost(username,req.body.textContent,req.body.youtubeUrl,req.body.dbImage,
     req.body.dbVideo,req.body.dbAudio,req.body.driveImage).then((returned) => {
-      res.render('/');
-      console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. POST ID = '+returned._id);
+      res.render('./index.ejs');
+      //res.redirect('./profile');
+      console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
     });
 });
 
