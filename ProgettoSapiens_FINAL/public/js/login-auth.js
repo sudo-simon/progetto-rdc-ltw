@@ -81,12 +81,13 @@ $(document).ready(function() {
                     //async: false,
                     success: function(data){
                         localStorage.setItem('user', JSON.stringify(data));
+                        window.location = '/';  //TORNA ALLA HOME
                     }           
                 });
 
                 ////////////////////////////////////
 
-                window.location = '/';          //TORNA ALLA HOME
+                          
             } else {
                 auth.signOut().then(() => {
                     //alert("ATTENZIONE: Email non verificata!")

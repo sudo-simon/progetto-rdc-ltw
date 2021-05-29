@@ -45,12 +45,6 @@ $(document).ready(function() {
                 
               }
           });
- 
-    
-
-    
-
-
 })
 
 
@@ -77,14 +71,12 @@ function GetURLParameter(sParam){
 
 function loadProfile(profileUser){
     var user=JSON.parse(localStorage.user);
-    var propic;
-    if (profileUser.profilePic=="") propic="assets/icons/placeholder-profile-sq.jpg";
-    else {}//else propic= GET pic at user.propic
+    var propic =profileUser.profilePic;
     var name = profileUser.nome+" "+profileUser.cognome;
     var username=profileUser.username;
-    var date = "00/00/0000"; //profileUser.infos.subscriptionDate;
+    var date = profileUser.infos.subscriptionDate;
     var friends = profileUser.friendList.length;
-    var vote = "00"+"/30";
+    var media = profileUser.infos.media+"/30";
     var description;
     if (profileUser.infos.description==undefined) description=profileUser.nome+" non ha ancora inserito una descrizione del suo profilo"
     else description = profileUser.infos.description
@@ -94,7 +86,7 @@ function loadProfile(profileUser){
     $("#name").prepend(name);
     $("#date").append(date);
     $("#friends").append(friends);
-    $("#vote").append(vote);
+    $("#vote").append(media);
     $("#description").append(description);
 
     // se (condizione=true) mostra il pulsante AGGIUNGI AGLI AMICI nella pagina di profilo

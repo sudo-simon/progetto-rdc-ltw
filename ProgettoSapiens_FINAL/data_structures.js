@@ -10,7 +10,7 @@ class User {
         this.email = email;
         this.password = password;   //previo SHA-512 LATO SERVER
         this.googleId = googleId;   //null nel caso di registrazione via mail, !null nel caso di google signin
-        this.profilePic = "assets/icons/placeholder-profile-sq.jpg";
+        this.profilePic = "/assets/icons/placeholder-profile-sq.jpg";
         this.friendList = [];
         this.postList = [];
         this.chatList = [];

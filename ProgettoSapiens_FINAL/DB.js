@@ -38,6 +38,52 @@ class DB {
 
     }
 
+    addChat(chat) {
+
+        return this.db.partitionedFind('chat',{ 'selector' : { 'nome_chat' : chat.nome_chat}}).then((data) => {
+            if(data.docs.length != 0){
+                return false;
+            }
+            else{
+
+                this.db.insert(chat).then((data) => {
+                    return this.db.get(data.id);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    return -1;
+                });
+
+            }
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        });
+
+    }
+
+    addCodaChat(codaChat) {
+
+        return this.db.partitionedFind('codaChat',{ 'selector' : { '_id' : codaChat._id}}).then((data) => {
+            if(data.docs.length != 0){
+                return false;
+            }
+            else{
+                
+                this.db.insert(codaChat).then((data) => {
+                    return this.db.get(data.id);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    return -1;
+                });
+
+            }
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        });
+
+    }
+
 
     getUser(username) {
         return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
@@ -50,6 +96,102 @@ class DB {
             return -1;
         });
     }
+
+    getChat(exchange) {
+        return this.db.partitionedFind('chat',{ 'selector' : { 'exchange' : exchange}}).then((data) => {
+            if(data.docs.length != 0){
+                return data.docs[0];
+            }
+            else{ return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        });
+    }
+
+    getCodaChat(id) {
+        return this.db.partitionedFind('codaChat',{ 'selector' : { '_id' : id}}).then((data) => {
+            if(data.docs.length != 0){
+                return data.docs[0];
+            }
+            else{ return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        });
+    }
+
+    getDocDB(id,callback) {
+        this.db.get(id,function(error,doc){
+          if (error) {
+            console.log(error);
+            throw error;
+          }
+          callback(doc);
+        })
+      }
+
+    
+    eliminaDocDB(id) {
+        this.db.get(id, function (error, foo) {
+            if (error) {
+                console.log(error);
+                return console.log("I failed");
+            }
+            database.db.destroy(id, foo._rev, function (error, response) {
+                if (!error) {
+                    console.log("it worked");
+                } 
+                else {
+                    console.log("riprovo");
+                    this.eliminaDocDB(id);
+                }
+            });
+        })
+    }
+
+
+    eliminaChatDaProfiloDB(exchange, element) {
+        this.getUser(element).then((foo)=>{
+      
+          const index = foo.chatList.findIndex(arr => arr.includes(exchange));
+          if (index > -1) {
+            foo.chatList.splice(index, 1);
+          }
+      
+          this.db.insert(foo,
+            function (error, response) {
+              if (!error) {
+                console.log("it worked");
+              } else {
+                console.log("riprovo");
+                this.eliminaChatDaProfiloDB(exchange, element);
+              }
+            });
+        })
+      
+      }
+
+
+    eliminaProfiloDaChatDB(element, exchange) {
+        this.getChat(exchange).then((body)=>{
+            const index = body.membri_chat.indexOf(element);
+            if (index > -1) {
+              body.membri_chat.splice(index, 1);
+            }
+            this.db.insert(body,
+              function (error, response) {
+                if (!error) {
+                  console.log("it worked");
+                } else {
+                  console.log("riprovo");
+                  this.eliminaProfiloDaChatDB(element, exchange);
+                }
+              });
+          
+        })
+    }
+
 
     verifyUser(email,password, callback){          
         return this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
@@ -247,13 +389,13 @@ class DB {
         else{
         var i=ret.length;
         for (let person of ret){
-        if (ret2.find( ({ username }) => username==person.username)==undefined){
-          ret2.push(person);
+            if (ret2.find( ({ username }) => username==person.username)==undefined){
+                ret2.push(person);
         }
-        if (i==1) callback(ret2);
-        i=i-1;
-      }
-    }
+            if (i==1) callback(ret2);
+                i=i-1;
+            }
+        }
     }
     
 

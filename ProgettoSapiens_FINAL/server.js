@@ -27,11 +27,11 @@ const nano = require('nano')('http://admin:admin@localhost:5984');//LIBRERIA COU
 var amqp = require('amqplib/callback_api');
 
 //var cors=require("cors");
-const db = nano.use('sapiens');          //CONSULTARE API COUCHDB
+//const db = nano.use('sapiens');          //CONSULTARE API COUCHDB
 
 var DB=require("./DB");
 const { setTimeout } = require('timers');
-var sapiensDB=new DB("sapiens");
+var database=new DB("sapiens");
 
 const app = express();
 
@@ -106,18 +106,41 @@ app.post('/drivedownload', function (req, res) {
 //---------------------- FINE ROUTES----------------------------
 
 //----------------------ROUTES GESTIONE--------------------------------
+ 
+app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE
+  console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE');
+  //res.set('Access-Control-Allow-Origin','*');
+  let username = req.body.username;
+  let email = req.body.email;
+  let password = req.body.password;
+  let user;
+  database.verifyUser(email,password).then((returned) => {
+    user = returned;
+
+    if (user == false){
+      res.send('ERR');
+      console.log(req.ip+': UTENTE NON PRESENTE NEL DATABASE/PASSWORD ERRATA = '+username);
+    }
+    else{
+      console.log(req.ip+': UTENTE VERIFICATO = '+username);
+      user.password = "";      
+      res.send(JSON.stringify(user));
+    }
+  });
+  
+});
 
  app.get("/gestione/getuser",function(req,res){
  
     var username=req.query.user
-    sapiensDB.getUser(username).then((doc)=>{res.send(JSON.stringify(doc))});   
+    database.getUser(username).then((doc)=>{res.send(JSON.stringify(doc))});   
 
  });  
 
  app.get("/gestione/addFriend",function(req,res){
   var username=req.query.user;
   var newFriend=req.query.newfriend;
-  sapiensDB.addFriend(username,newFriend).then((ret)=>{
+  database.addFriend(username,newFriend).then((ret)=>{
     res.send(ret.toString());
   })
  });
@@ -132,13 +155,13 @@ app.post('/drivedownload', function (req, res) {
     }
     if (nc[0]=="undefined") res.send(JSON.stringify(toSend));
     if (nc.length>1) cognome=nc[1];
-    sapiensDB.findUsersByName(nome).then((ret)=>{
-      sapiensDB.findUsersBySurname(cognome).then((ret2)=>{
-        sapiensDB.searchAux(ret,ret2,(r)=>{
-          sapiensDB.findUsersByName(cognome).then((ret3)=>{
-            sapiensDB.findUsersBySurname(nome).then((ret4)=>{
-              sapiensDB.searchAux(r,ret3,(r2)=>{
-                sapiensDB.searchAux(r2,ret4,(r3)=>{
+    database.findUsersByName(nome).then((ret)=>{
+      database.findUsersBySurname(cognome).then((ret2)=>{
+        database.searchAux(ret,ret2,(r)=>{
+          database.findUsersByName(cognome).then((ret3)=>{
+            database.findUsersBySurname(nome).then((ret4)=>{
+              database.searchAux(r,ret3,(r2)=>{
+                database.searchAux(r2,ret4,(r3)=>{
                   toSend.list=r3;
                   res.send(JSON.stringify(toSend));
                 })
@@ -187,7 +210,7 @@ google_verify().catch(console.error);
 //register: storing name, email and password and redirecting to home page after signup
 app.post('/user/create', function (req, res) {
     bcrypt.hash(req.body.passwordsignup, saltRounds, function (err,hash) {
-        db.User.create({
+        sapiens.User.create({
             name: req.body.usernamesignup,      //DA MODIFICARE SECONDO COUCHDB
             email: req.body.emailsignup,   
             password: hash   
@@ -201,7 +224,7 @@ app.post('/user/create', function (req, res) {
 
 //login page: storing and comparing email and password,and redirecting to home page after login  
 app.post('/user', function (req, res) {     
-    db.User.findOne({          
+    sapiens.User.findOne({          
         where: {              
             email: req.body.email                //DA MODIFICARE SECONDO I NOSTRI PARAMETRI 
         }     
@@ -375,7 +398,7 @@ app.post("/chat/update",function(req, res){
     update:"n",
     doc:{}
   }
-  getDocDB(idRecived,(doc)=>{
+  database.getDocDB(idRecived,(doc)=>{
     if (doc._rev!=revRecived){
       response.update="y",
       response.doc=doc
@@ -441,7 +464,7 @@ function nuovaChat(chat) {
           "nome_chat": nome_chat,
           "membri_chat": []
         }
-        creaDocDB(x);
+        database.addChat(x);
         nuoviMembri(chat.chat_members, exchange,nome_chat);
       })
     })
@@ -471,9 +494,7 @@ function nuoviMembri(members, exchange,nome_chat) {
             console.log("impossibile unirsi alla chat");
             throw error2;
           }
-          console.log(" [*] Waiting for messages in %s", q.queue);
-          /*console.log("message count: " + q.messageCount);
-          console.log("consumer count: " + q.consumerCount);*/
+          console.log("coda ricezione creata: codaChat:"+element+exchange);
           channel.bindQueue(element+exchange, exchange, '', {}, () => { connection.close() });
           //crea la coda nel DB
           var x = {
@@ -484,7 +505,7 @@ function nuoviMembri(members, exchange,nome_chat) {
             "to_consume":"n",
             "messaggi": []
           }
-          creaDocDB(x);
+          database.addCodaChat(x);
 
           //aggiorna chat nel profilo nel DB
           updateChatProfiloDB(exchange, element,nome_chat);
@@ -498,7 +519,7 @@ function nuoviMembri(members, exchange,nome_chat) {
 
 }
 
-/*La funzione inviaMessaggio invia una stringa (mittente + messaggio) sull'exchange dato
+/*La funzione inviaMessaggio invia una stringa sull'exchange dato
   come parametro (cioè sulla chat scelta) */
 
 
@@ -523,7 +544,7 @@ function inviaMessaggio(messaggio, exchange,callback) {
       console.log(" [x] Sent %s", messaggio + " su " + exchange);
       connection.close();
       callback();
-    }, 100);
+    }, 500);
   });
 
 }
@@ -557,12 +578,12 @@ function ascoltaChat(element, exchange) {
 
         
         channel.consume(element + exchange, function (msg) {
+          if (msg!=null){
           var mittente=JSON.parse(msg.content.toString()).mittente;
           var stop=JSON.parse(msg.content.toString()).stop;
          /* var content=msg.content.toString();*/
           if (stop!=1) {
-            
-            console.log(" [" + element + "] %s", msg.content.toString());
+
             //metti messaggio sulla coda 
             addMSGQueue(element+exchange,JSON.parse(msg.content.toString()));
             
@@ -573,7 +594,7 @@ function ascoltaChat(element, exchange) {
             
           }
           
-        }, { noAck: true });
+        }}, { noAck: true });
       
       
       //})
@@ -601,9 +622,9 @@ function eliminaMembro(membro, exchange) {
                       console.log("CHIUSURA")}
           console.log("chiusura canale");
           connection.close();
-          eliminaDocDB("codaChat"+":"+membro+exchange);
-          eliminaChatDaProfiloDB(exchange, membro);
-          eliminaProfiloDaChatDB(membro, exchange);
+          database.eliminaDocDB("codaChat"+":"+membro+exchange);
+          database.eliminaChatDaProfiloDB(exchange, membro);
+          database.eliminaProfiloDaChatDB(membro, exchange);
         });
       });
       
@@ -629,7 +650,7 @@ function eliminaChat(chat, exchange) {
         chat.chat_members.forEach((element) => eliminaMembro(element, exchange));
         setTimeout(()=>{channel.deleteExchange(exchange, {}, () => {
           connection.close();
-          eliminaDocDB("chat"+":"+exchange);
+          database.eliminaDocDB("chat"+":"+exchange);
         });
       },1000)
       })
@@ -652,11 +673,10 @@ FUNZIONI PER IL DB
 
 
 
-function creaDocDB(x) {
-  db.insert(x,
+/*function creaDocDB(x) {
+  database.db.insert(x,
     function (error, response) {
       if (!error) {
-        console.log(response);
         console.log("chat creata nel db");
         //callback();
       } else {
@@ -664,22 +684,21 @@ function creaDocDB(x) {
         creaDocDB(x);
       }
     });
-}
+}*/
 
 
 
 
 
-function eliminaDocDB(id) {
-  db.get(id, function (error, foo) {
+/*function eliminaDocDB(id) {
+  database.db.get(id, function (error, foo) {
     if (error) {
       console.log(error);
       return console.log("I failed");
     }
-    db.destroy(id, foo._rev,
+    database.db.destroy(id, foo._rev,
       function (error, response) {
         if (!error) {
-          console.log(response);
           console.log("it worked");
         } else {
           console.log("riprovo");
@@ -687,23 +706,19 @@ function eliminaDocDB(id) {
         }
       });
   })
-}
+}*/
 
-function eliminaChatDaProfiloDB(exchange, element) {
-  db.get("user"+":"+element, function (error, foo) {
-    if (error) {
-      return console.log("I failed");
-    }
+/*function eliminaChatDaProfiloDB(exchange, element) {
+  database.getUser(element).then((foo)=>{
 
-    const index = foo.chat.findIndex(arr => arr.includes(exchange));
+    const index = foo.chatList.findIndex(arr => arr.includes(exchange));
     if (index > -1) {
-      foo.chat.splice(index, 1);
+      foo.chatList.splice(index, 1);
     }
 
-    db.insert(foo,
+    database.db.insert(foo,
       function (error, response) {
         if (!error) {
-          console.log(response);
           console.log("it worked");
         } else {
           console.log("riprovo");
@@ -712,33 +727,30 @@ function eliminaChatDaProfiloDB(exchange, element) {
       });
   })
 
-};
+};*/
 
 
-function eliminaProfiloDaChatDB(element, exchange) {
-  db.get("chat"+":"+exchange, (err, body) => {
-    if (err) return;
-    else {
+/*function eliminaProfiloDaChatDB(element, exchange) {
+  database.getChat(exchange).then((body)=>{
       const index = body.membri_chat.indexOf(element);
       if (index > -1) {
         body.membri_chat.splice(index, 1);
       }
-      db.insert(body,
+      database.db.insert(body,
         function (error, response) {
           if (!error) {
-            console.log(response);
             console.log("it worked");
           } else {
             console.log("riprovo");
             eliminaProfiloDaChatDB(element, exchange);
           }
         });
-    }
+    
   })
-}
+}*/
 
 function updateChatDB(exchange, element) {
-  db.get("chat"+":"+exchange, function (error, foo) {
+  database.db.get("chat"+":"+exchange, function (error, foo) {
     if (error) {
       if (error.statusCode == 404) updateChatDB(exchange, element);
       else {
@@ -747,13 +759,12 @@ function updateChatDB(exchange, element) {
     }
     else if (!error) {
       foo.membri_chat.push(element);
-      db.insert(foo,
+      database.db.insert(foo,
         function (error, response) {
           if (!error) {
-            console.log(response);
-            console.log("it worked");
+            console.log("-utente: "+element+" inserito nella lista membri della chat "+exchange);
           } else {
-            console.log("riprovo");
+            console.log("-riprovo a inserire "+element+" nella lista membri della chat "+exchange);
             updateChatDB(exchange, element);
           }
         });
@@ -764,37 +775,31 @@ function updateChatDB(exchange, element) {
 
 
 function updateChatProfiloDB(exchange, element,nome_chat) {
-  db.get("user"+":"+element, function (error, foo) {
-    if (error) {
-      return console.log("I failed");
-    }
-    foo.chat.push([nome_chat,exchange]);
-    db.insert(foo,
-      function (error, response) {
-        if (!error) {
-          console.log(response);
-          console.log("it worked");
-        } else {
-          console.log("riprovo");
-          updateChatProfiloDB(exchange, element);
-        }
-      });
-  })
-
+  database.getUser(element).then((foo)=>{
+    foo.chatList.push([nome_chat,exchange]);
+    database.db.insert(foo,
+    function (error, response) {
+      if (!error) {
+        console.log("-chat inserita in chatList di "+element);
+      } else {
+        console.log("-riprovo a inserire la chat in chatList di "+element);
+        updateChatProfiloDB(exchange,element,nome_chat);
+      }
+    });
+  });
 };
 
 
 function addMSGQueue(queue,msg){
-  db.get("codaChat"+":"+queue, function (error, foo) {
+  database.db.get("codaChat"+":"+queue, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.to_consume="y";
     foo.messaggi.push(msg);
-    db.insert(foo,
+    database.db.insert(foo,
       function (error, response) {
         if (!error) {
-          console.log(response);
           console.log("it worked");
         } else {
           console.log("riprovo");
@@ -805,15 +810,14 @@ function addMSGQueue(queue,msg){
 }
 
 function updateListening(u,e){
-  db.get("codaChat"+":"+u+e, function (error, foo) {
+  database.db.get("codaChat"+":"+u+e, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.is_listening="y";
-    db.insert(foo,
+    database.db.insert(foo,
       function (error, response) {
         if (!error) {
-          console.log(response);
           console.log("it worked");
         } else {
           console.log("riprovo");
@@ -824,15 +828,14 @@ function updateListening(u,e){
 }
 
 function messageConsumed(u,e){
-  db.get("codaChat"+":"+u+e, function (error, foo) {
+  database.db.get("codaChat"+":"+u+e, function (error, foo) {
     if (error) {
       return console.log("I failed");
     }
     foo.to_consume="n";
-    db.insert(foo,
+    database.db.insert(foo,
       function (error, response) {
         if (!error) {
-          console.log(response);
           console.log("it worked");
         } else {
           console.log("riprovo");
@@ -842,15 +845,15 @@ function messageConsumed(u,e){
   })
 }
 
-function getDocDB(id,callback) {
-  db.get(id,function(error,doc){
+/*function getDocDB(id,callback) {
+  database.db.get(id,function(error,doc){
     if (error) {
       console.log(error);
       throw error;
     }
     callback(doc);
   })
-}
+}*/
 
 //--------------FINE CHAT E DB----------------
 

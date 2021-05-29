@@ -20,9 +20,7 @@ $(document).ready(function() {
             url: 'http://localhost:8080/gestione/getuser?user='+friend,      
             success: function(data) {
               var res=JSON.parse(data);
-              var propic;
-              if (res.profilePic=="") propic= "assets/icons/placeholder-profile-sq.jpg";
-              else  propic=res.profilePic;
+              var propic=res.profilePic;
               var profile = "/profile?user="+res.username;  // url
               var name = res.nome+" "+res.cognome;  // ATT: con nomi troppo lunghi ci sono problemi di formattazione
               $("#amici").prepend('<!-- card -->'+

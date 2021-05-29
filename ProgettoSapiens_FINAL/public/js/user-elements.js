@@ -33,9 +33,9 @@ function searchResult(list){
         var propic = pUser.profilePic==""?"assets/icons/placeholder-profile-sq.jpg":pUser.profilePic;
         var profile = "/profile?user="+pUser.username;  // url
         var name = pUser.nome+" "+pUser.cognome;
-        var date = "00/00/0000"//pUser.infos.subscriptionDate;
+        var date = pUser.infos.subscriptionDate;
         var friends = pUser.friendList.length;
-        var vote = "00";
+        var vote = pUser.infos.media;
         
         $("#persone").prepend('<!-- elemento -->'+
             '<div class="user-elem">'+
