@@ -116,7 +116,7 @@ function loadFeed(postList) {
         '</div>');
 
         if (youtube_src != ""){
-            var player = new YT.Player('youtube_embed_'+youtube_i, {
+            new YT.Player('youtube_embed_'+youtube_i, {
                 height: "280",
                 width: "460",
                 videoId: youtube_src.split('=')[1],
@@ -127,8 +127,9 @@ function loadFeed(postList) {
                     "onReady": onPlayerReady
                 }*/
             });
-            youtube_i++;
         }
+        
+        youtube_i++;
         
     }
 }
