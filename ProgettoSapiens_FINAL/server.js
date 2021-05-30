@@ -11,6 +11,7 @@ const {google} = require('googleapis');
 const readline = require('readline');
 
 
+const formidable = require('formidable');
 const fs = require('fs');
 const http = require('http');
 const sapiens = require('./data_structures');
@@ -267,7 +268,7 @@ app.get('/friends', function (req, res) {             //LISTA AMICI
   console.log(req.ip+': friends');
 });
 
-app.post('/search', function (req, res) {              //PAGINA DI RICERCA
+app.post('/search', function (req, res) {        //PAGINA DI RICERCA
   res.status(200).render('./search/index.ejs');
   console.log(req.ip+': search');
 });
@@ -286,15 +287,49 @@ app.post('/loadprofilefeed', function (req, res){       //AJAX RESPONSE PER CARI
 });*/
 
 app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREAZIONE NUOVO POST
-  let username = req.body.authorId;
+  //console.log('RICEVUTA RICHIESTA DI CREAZIONE POST DA : '+username);
+  console.log(req.body);
+  //let form = new formidable({multiples: true});
+  let form = new formidable({multiples: true});
 
-  console.log('RICEVUTA RICHIESTA DI CREAZIONE POST DA : '+username);
-  database.addPost(username,req.body.textContent,req.body.youtubeUrl,req.body.dbImage,
-    req.body.dbVideo,req.body.dbAudio,req.body.driveImage).then((returned) => {
-      //res.render('./index.ejs');
-     // res.redirect('./profile');
-      console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
-    });
+  //form.on('field', (name,value))
+  form.parse(req,  function(err, fields, files){
+    if (err){ console.log(err); res.send(JSON.stringify({ status: 'ERR' })); }
+    //console.log(fields);
+    //console.log(files);
+
+    let username = fields.username;
+    let textContent = fields.textContent;
+    let yt_url = fields.youtubeUrl;
+    let mediaType = fields.mediaType;
+    if (mediaType != ""){
+      var oldPath = files.upload.path;
+      var newPath = path.join(__dirname,'public/user_uploads')+'/'+uuid.v4()+files.upload.name;
+      var dbPath = newPath.split('public/')[1];
+      var rawData = fs.readFileSync(oldPath);
+    }
+    
+    let dbImage = '', dbVideo = '', dbAudio = '', driveImage = '';
+
+    if (mediaType == "image"){ dbImage = dbPath; }
+    else if (mediaType == "audio"){ dbAudio = dbPath; }
+    else if (mediaType == "video"){ dbVideo = dbPath; }
+    
+    if (mediaType == ""){
+      database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
+        res.send(JSON.stringify({ status: 'OK' }));
+        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. NO MEDIA ATTACHED.')
+      });
+    }
+    else{
+      fs.writeFileSync(newPath,rawData);
+      database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
+        res.send(JSON.stringify({ status: 'OK' }));
+        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+      });
+    }
+  })
+
 });
 
 app.post('/drivedownload', function (req, res) {        //AJAX RESPONSE PER DOWNLOAD FILE DA DRIVE UTENTE

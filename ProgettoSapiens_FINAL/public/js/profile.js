@@ -29,6 +29,7 @@
 $(document).ready(function() {
     var user=JSON.parse(localStorage.user);
     var profileUser=GetURLParameter("user");
+    if (profileUser==undefined) profileUser=user.username;
     //if (GetURLParameter("user")==user.username) {
         $.ajax({
             type: 'GET',

@@ -11,6 +11,7 @@ $.get("elements/navbar.html", function(data) {
     var surname = "Cognome";
     var description = "Descrizione";
     
+    $("#profileLink").attr("href","/profile?user="+JSON.parse(localStorage.user).username)
     $("#navPropic").css('background-image',propic);
     $("#inputName").attr("placeholder",name);
     $("#inputSurname").attr("placeholder",surname);
@@ -18,6 +19,7 @@ $.get("elements/navbar.html", function(data) {
     $("#searchInputText").on("keyup",function(){
         var string=$("#searchInputText").val().replace(/\s+/g,' ').trim();
         $("#searchRegistr").attr("action","/search?searching="+string);
+        console.log($("#searchRegistr").attr("action"));
     });
 
 

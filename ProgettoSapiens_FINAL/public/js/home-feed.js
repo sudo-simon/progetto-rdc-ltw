@@ -19,7 +19,6 @@ function init_feed() {
         return false; }
 
     let obj = { username: user.username };
-
     $.ajax({
         type: 'POST',
         data: JSON.stringify(obj),
@@ -31,11 +30,7 @@ function init_feed() {
         dataType: 'json',
         //async: false,
         success: function(data){
-<<<<<<< HEAD
             loadFeed(data.postList);                            //oggetto con indici interi crescenti a partire da 0
-=======
-            loadFeed(data);                                  //oggetto con indici interi crescenti a partire da 0
->>>>>>> 4e4e39d57d67fb3d6df0423c227af02363d1c164
         }                                                    //for(i) postList.i.author = ... / postList[i].author =
     });
 

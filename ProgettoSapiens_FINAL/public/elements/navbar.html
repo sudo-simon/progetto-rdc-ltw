@@ -10,7 +10,7 @@
                 <img class="logo" src="assets/logo2/logo_small.png" alt="sapiens_logo.png">
             </a>
             <!-- Barra di ricerca -->
-            <form action="/search" id="searchRegistr" name="searchRegistr">
+            <form action="/search" id="searchRegistr" name="searchRegistr" method="POST">
                 <div class="search-bar-div">
                     <input type="text" class="form-control search-bar" id="searchInputText" list="datalistOptions" title="barra_di_ricerca" placeholder="Cerca..">
                     </datalist>
@@ -23,7 +23,7 @@
                 </li>
                 <!-- Pulsante Profilo -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/profile">Profilo</a>
+                    <a class="nav-link" id="profileLink" href="/profile">Profilo</a>
                 </li>
                 <!-- Pulsante Amici -->
                 <li class="nav-item">

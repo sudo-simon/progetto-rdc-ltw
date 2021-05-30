@@ -458,6 +458,7 @@ class DB {
 
  
     getHomeFeed(username) {
+        console.log();
         var result = [];
         return this.getUser(username).then((returned) => {
             return this.auxFeedHomeP(returned.friendList,result)
