@@ -15,7 +15,8 @@ function init_feed() {
     if(localStorage.getItem('user') != null){
         user = JSON.parse(localStorage.getItem('user'));
     }
-    else { return false; }
+    else {
+        return false; }
 
     let obj = { username: user.username };
 
@@ -30,7 +31,7 @@ function init_feed() {
         dataType: 'json',
         //async: false,
         success: function(data){
-            loadFeed(data);                            //oggetto con indici interi crescenti a partire da 0
+            loadFeed(data.postList);                            //oggetto con indici interi crescenti a partire da 0
         }                                                    //for(i) postList.i.author = ... / postList[i].author =
     });
 
@@ -40,22 +41,29 @@ function init_feed() {
 }
 
 
-function loadFeed(postList) {
+function loadFeed(unsortedPostList) {
     console.log("SEI IN LOADFEED DELLA HOME");
-    console.log(JSON.stringify(postList));
     var youtube_i = 0;
 
-    for (let i=0; i<postList.numItems; i++){
-        let author = postList[i.toString()].postAuthorId;
+    var postList=unsortedPostList.sort((a,b)=>{
+        var d1=new Date(a.creationDate);
+        var d2=new Date(b.creationDate);
+        if (d1<d2) return 1;  //ordine decrescente
+        else if (d1>d2) return -1;
+        else return 0;
+      });
+
+    for (let i=0; i<postList.length; i++){
+        let author = postList[i].postAuthorId;
         let profile = '/profile?user='+author;
-        let propic = postList[i.toString()].authorProfilePic;   
-        let rating = postList[i.toString()].voto;
-        let time = postList[i.toString()].creationDate;
-        let text = postList[i.toString()].textContent;
-        let img_src = postList[i.toString()].dbImage;
-        let video_src = postList[i.toString()].dbVideo;
-        let audio_src = postList[i.toString()].dbAudio;
-        let youtube_src = postList[i.toString()].youtubeUrl; 
+        let propic = postList[i].authorProfilePic;   
+        let rating = postList[i].voto;
+        let time = postList[i].creationDate;
+        let text = postList[i].textContent;
+        let img_src = postList[i].dbImage;
+        let video_src = postList[i].dbVideo;
+        let audio_src = postList[i].dbAudio;
+        let youtube_src = postList[i].youtubeUrl; 
         
         let img_visibility = 'visually-hidden'; 
         let video_visibility = 'visually-hidden'; 
@@ -80,7 +88,7 @@ function loadFeed(postList) {
                 '</div>'+
                 '<div class="post-body col">'+
                     '<div class="post-info d-flex flex-row">'+
-                        '<div class="post-name"><a href="'+profile+'">'+name+'</a></div>'+
+                        '<div class="post-name"><a href="'+profile+'">'+author+'</a></div>'+
                         '<div class="post-time">'+time+'</div>'+
                     '</div>'+
                     '<div class="post-content">'+

@@ -73,6 +73,10 @@
     margin-right: 0.5rem;
 }
 
+#newPostToP{
+    display: block;
+}
+
 /* RESPONSIVENESS */
 @media only screen and (max-width: 1400px) {    /* xl */
     .info {

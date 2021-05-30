@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     // aggiungo alla pagina "i" post
-    var i;
+    /*var i;
     var k = 0;
 
     for(i=0;i<15;i++) {
@@ -32,9 +32,9 @@ $(document).ready(function() {
             k = 0;
         }
         // questo è quello semplice
-        /*var img_visibility = "visually-hidden";
-        var video_visibility = "visually-hidden";
-        var audio_visibility = "visually-hidden";*/
+        //var img_visibility = "visually-hidden";
+        //var video_visibility = "visually-hidden";
+       // var audio_visibility = "visually-hidden";
         $("#post").append('<!-- post -->'+
         '<div class="singolo-post p-3 rounded-3 shadow">'+
             '<div class="row">'+
@@ -81,6 +81,6 @@ $(document).ready(function() {
                 '<!--button type="button" class="btn btn-outline-secondary rounded-0">Salva</button-->'+
             '</div>'+
         '</div>');
-    }
+    }*/
 
 })

@@ -37,7 +37,7 @@ $(document).ready(function() {
             url: 'http://localhost:8080/gestione/getuser?user='+profileUser,						
             success: function(data) {
               var res=JSON.parse(data);
-              if (profileUser==user.username && res.update=="y")  {
+              if (profileUser==user.username)  {
                 console.log("-----UPDATE-----");
                 localStorage.setItem("user",JSON.stringify(res));
               }
@@ -90,12 +90,13 @@ function loadProfile(profileUser){
     $("#description").append(description);
 
     // se (condizione=true) mostra il pulsante AGGIUNGI AGLI AMICI nella pagina di profilo
-    if (profileUser.username!=user.username && user.friendList.indexOf(profileUser.username)==-1){
-    var addBtn = '<button type="submit" class="btn btn-danger shadow-sm" id="btnAddFriend" onclick="aggiungiAmico(\''+profileUser.username+'\')">Aggiungi agli amici</button>';
-    if(true)
-        $("#profile_points").after(addBtn);
+    if (profileUser.username!=user.username) {
+        $("#newPostToP").css("display","none")
+        if(user.friendList.indexOf(profileUser.username)==-1){
+            var addBtn = '<button type="submit" class="btn btn-danger shadow-sm" id="btnAddFriend" onclick="aggiungiAmico(\''+profileUser.username+'\')">Aggiungi agli amici</button>';
+            $("#profile_points").after(addBtn);
+        }
     }
-
    /* var i;
     var k = 0;
 

@@ -455,50 +455,24 @@ class DB {
         });
     }
 
+
+ 
     getHomeFeed(username) {
-        let result = {};
-        let i = 0, j = 0;
-        let user;
+        var result = [];
         return this.getUser(username).then((returned) => {
-            user = returned;
-
-            let friendList_tmp = user.friendList;
-
-            while(friendList_tmp.length > 0){                  //aggiunge a "result" i post nell'ordine in cui caricarli, con etichetta "i"                                                             
-                for (let x=friendList_tmp.length-1;x>=0;x--){   //che è un intero crescente. Prende il post più recente di ogni amico, e poi
-                    let friendId = friendList_tmp[x];           //il secondo più recente una volta che ha iterato la lista amici, e così via.
-                    let friend;
-                    this.db.get(friendId).then((data) => {      
-                        friend = data;
-
-                        if(friend.postList.length == 0){ 
-                            friendList_tmp.splice(x,1);      //se l'amico non ha post viene eliminato dalla lista
-                        }   
-                        
-                        else if(friend.postList.length >= j+1){
-                            result[i.toString()] = friend.postList[j];         //post j-esimo dell'amico aggiunto come i-esimo post da caricare
-                            i++;
-                        }
-        
-                        else{
-                            friendList_tmp.splice(x,1);  //se l'amico ha finito i post viene eliminato dalla lista
-                        }
-                    }).catch((err) => {
-                        console.log('DATABASE ERROR: '+err);
-                        return -1;
-                    });
-                    //////////////////// ALGORITMO PER RESTITUIRE I POST DELLA HOME AL CLIENT
-        
-                }
-                j++;
-
-            }
-
-            result.numItems = i;
-            return result;                
-
-        });        
-        
+            return this.auxFeedHomeP(returned.friendList,result)
+        }); 
+    }
+    
+    auxFeedHomeP(friendList,result){
+        if (friendList.length==0) return result;
+        else {
+            return this.getUser(friendList[0]).then((returned)=>{
+                Array.prototype.push.apply(result,returned.postList);
+                friendList.shift();
+                return this.auxFeedHomeP(friendList,result);
+            })
+        }
     }
 
     addVoto(postObj,newVoto) {

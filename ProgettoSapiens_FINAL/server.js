@@ -60,7 +60,7 @@ app.use(express.json());
 
 
 //----------------------ROUTES----------------------------
-
+/*
 app.get('/', function (req, res){
     //res.set('Content-Type','text/html');
     res.status(200).render('index.ejs');
@@ -101,12 +101,85 @@ app.post('/drivedownload', function (req, res) {
     res.redirect('/index.php');
 
 });
+*/
 
 
-//---------------------- FINE ROUTES----------------------------
 
-//----------------------ROUTES GESTIONE--------------------------------
- 
+app.get('/hometest', function (req, res){
+  res.status(200).render('./test/provafeed.ejs');
+  console.log(req.ip+': HOME TEST PATH');
+});
+app.get('/logintest', function (req, res){
+  res.status(200).render('./test/test_login/loginprova.ejs');
+  console.log(req.ip+': LOGIN TEST PATH');
+});
+app.get('/googletest', function (req, res){
+  res.status(200).render('./test/google.ejs');
+  console.log(req.ip+': GOOGLE TEST PATH');
+});
+
+app.post('/googlesignin', function (req, res){     //token_id management
+  var id_token = req.body.idToken;
+  console.log('OTTENUTO ID TOKEN: '+id_token);
+});
+app.post('/storeauthcode', function (req, res){   //code management
+
+});
+
+app.get('/auth/google', function(req, res) {
+
+});
+
+app.get('auth/google/callback', function(req, res) {
+
+});
+
+app.get('/', function (req, res){                 //HOMEPAGE
+    //res.set('Content-Type','text/html');
+    res.status(200).render('index.ejs');
+    console.log(req.ip+': home');
+});
+
+app.get('/login', function (req, res) {           //LOGIN
+    //res.set('Content-Type','text/html');
+    res.set('Access-Control-Allow-Origin','https://localhost:8080');
+    res.status(200).render('./login/index.ejs');
+    console.log(req.ip+': login');
+});
+
+app.get('/signup', function (req, res) {          //ISCRIZIONE
+  //res.set('Access-Control-Allow-Origin','https://localhost:8080');
+  res.status(200).render('./signup/index.ejs');
+  console.log(req.ip+': signup');
+});
+
+app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE
+  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');
+  //res.set('Access-Control-Allow-Origin','https://localhost:8080');
+  let username = req.body.username;
+  let email = req.body.email;
+  let password = req.body.password;
+  let nome = req.body.nome;
+  let cognome = req.body.cognome;
+  let newUser;
+  database.addUser(username,nome,cognome,email,password,'').then((returned) => {
+    newUser = returned;
+    if(newUser != -1 && newUser != false){
+      newUser.password = "";
+      res.send(JSON.stringify(newUser));
+      console.log(req.ip+': CREAZIONE UTENTE EFFETTUATA. USERNAME = '+username);
+    }
+    else if(newUser == false){
+      res.send('ERR');
+      console.log(req.ip+': UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
+    }
+    else{
+      res.send('ERR');
+      console.log(req.ip+': ERRORE CREAZIONE UTENTE NEL DATABASE');
+    }
+  });
+});
+
 app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE
   console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE');
   //res.set('Access-Control-Allow-Origin','*');
@@ -129,6 +202,119 @@ app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE N
   });
   
 });
+
+app.get('/profile', function (req, res) {
+  let username;
+  if(req.query.user != undefined){
+    username = req.query.user;
+    let user;
+    database.getUser(username).then((returned) => {
+      user = returned;
+      //res.json(user);
+      res.status(200).render('./profile/index.ejs');
+      console.log(req.ip+': profile = '+username);
+    });
+  }
+  else{
+    res.status(200).render('./profile/index.ejs');
+    console.log(req.ip+': profile');
+  }
+});
+
+app.post('/loadprofileinfo', function (req, res){
+  let searchedUser = req.body.searchedUser;
+  let username = req.body.username;
+  if (searchedUser == ""){ 
+    let response = req.body;
+    response.notSelf = false;
+    response.notFriend = true;
+    res.send(JSON.stringify(response));
+    console.log(username+': own profile page');
+  }
+  else {
+    let response;
+    database.getUser(searchedUser).then((returned) => {
+      response = returned;
+      response.notSelf = true;
+      database.isFriendOf(response,searchedUser).then((returned) => {
+        response.notFriend = !returned;
+        res.send(JSON.stringify(response));
+        console.log(username+' : '+searchedUser+' profile page');
+      });
+      
+    });
+  }
+});
+
+app.post('/loadprofilefeed', function (req, res){
+  let username = req.body.username;
+  database.getPostList(username).then((returned) => {
+    res.send(JSON.stringify(returned));
+    console.log('Profile feed load: OK');
+  })
+});
+
+app.post('/loadhomefeed', function (req, res){
+  let username = req.body.username;
+  database.getHomeFeed(username).then((returned) => {
+    res.send(JSON.stringify({postList:returned}));
+    console.log(username+' homepage feed load: OK');
+  });
+});
+
+app.get('/friends', function (req, res) {             //LISTA AMICI
+  res.status(200).render('./friends/index.ejs');
+  console.log(req.ip+': friends');
+});
+
+app.post('/search', function (req, res) {              //PAGINA DI RICERCA
+  res.status(200).render('./search/index.ejs');
+  console.log(req.ip+': search');
+});
+
+/*app.post('/loadhomefeed', function (req, res) {         //AJAX RESPONSE PER CARICAMENTO FEED HOME
+  let username = req.body.username;
+  let homeFeed = database.getHomeFeed(username);
+  res.json(homeFeed);   //stringify?
+  console.log(req.ip+': home feed response = '+username);
+});
+app.post('/loadprofilefeed', function (req, res){       //AJAX RESPONSE PER CARICAMENTO FEED PROFILO
+  let username = req.body.username;
+  let profileFeed = database.getPostList(username);
+  res.json(profileFeed);  //stringify?
+  console.log(req.ip+': profile feed response = '+username);
+});*/
+
+app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREAZIONE NUOVO POST
+  let username = req.body.authorId;
+
+  console.log('RICEVUTA RICHIESTA DI CREAZIONE POST DA : '+username);
+  database.addPost(username,req.body.textContent,req.body.youtubeUrl,req.body.dbImage,
+    req.body.dbVideo,req.body.dbAudio,req.body.driveImage).then((returned) => {
+      //res.render('./index.ejs');
+     // res.redirect('./profile');
+      console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
+    });
+});
+
+app.post('/drivedownload', function (req, res) {        //AJAX RESPONSE PER DOWNLOAD FILE DA DRIVE UTENTE
+    let file_id = req.body.fileId;
+    //console.log('Tento di scaricare il file '+drive_id);
+    //driveDownloadServerSide('1IGouxfUobqS2c7daYha_QIEPwn-tP44y');
+    driveDownload(file_id);
+    console.log('Successo drive download?');
+    res.redirect('/');
+
+});
+
+
+
+
+//---------------------- FINE ROUTES----------------------------
+
+//----------------------ROUTES GESTIONE--------------------------------
+ 
+
 
  app.get("/gestione/getuser",function(req,res){
  

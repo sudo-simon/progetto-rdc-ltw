@@ -1,7 +1,6 @@
 $(document).ready(function() {
     
     var searching=GetURLParameter("searching");
-    
     $.ajax({
         type: 'GET',
         url: 'http://localhost:8080/gestione/search?searching='+searching ,						
