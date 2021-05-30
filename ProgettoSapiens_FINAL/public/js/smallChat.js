@@ -8,6 +8,7 @@ $.get("elements/smallChat.html", function(data) {
   
 
 setInterval(function(){ 
+  if (localStorage.user!=undefined){
     var toRef={
       id:JSON.parse(localStorage.user)._id,
       rev:JSON.parse(localStorage.user)._rev,
@@ -48,7 +49,7 @@ setInterval(function(){
         
       }
       
-
+    }
   }, 2000);
 
 

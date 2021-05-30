@@ -10,8 +10,9 @@ $.get("elements/navbar.html", function(data) {
     var name = "Nome";
     var surname = "Cognome";
     var description = "Descrizione";
-    
-    $("#profileLink").attr("href","/profile?user="+JSON.parse(localStorage.user).username)
+    if (localStorage.user!=undefined){
+        $("#profileLink").attr("href","/profile?user="+JSON.parse(localStorage.user).username)
+        }
     $("#navPropic").css('background-image',propic);
     $("#inputName").attr("placeholder",name);
     $("#inputSurname").attr("placeholder",surname);

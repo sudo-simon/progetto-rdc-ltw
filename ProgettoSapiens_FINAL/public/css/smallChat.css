@@ -297,13 +297,16 @@ padding: 1px;
 }
 
 .nomeTuo{
+  text-align: left;
   font-size:x-small;
   color: #000;
   width:fit-content;
   margin-left: 5%;
 }
 
-
+@supports (-moz-appearance:none) {
+  #containerMex { line-height: normal; } 
+}
 
 
 
