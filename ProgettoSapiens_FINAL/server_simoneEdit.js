@@ -27,6 +27,9 @@ const readline = require('readline');
 const fs = require('fs');
 const http = require('http');
 const express = require('express');
+//const fileupload = require('express-fileupload');
+const formidable = require('formidable');
+//const formidableMiddleware = require('express-formidable');
 
 //const bcrypt = require('bcrypt');
 //const saltRounds = 10;
@@ -59,7 +62,7 @@ app.use(express.static(path.join(__dirname,'public')));  //USA I CSS E GLI SCRIP
 app.use(express.json());
 //app.use(express.urlencoded());
 app.use(cors());
-//app.set('Access-Control-Allow-Origin','*');       //CORS ERROR DI FIREBASE
+//app.use(fileupload());
 
 
 
@@ -182,6 +185,9 @@ app.get('/profile', function (req, res) {
     });
   }
   else{
+    if (req.query.formFile != undefined || req.query.testo_post != undefined){
+      res.render('./index.ejs');
+    }
     res.status(200).render('./profile/index.ejs');
     console.log(req.ip+': profile');
   }
@@ -252,15 +258,119 @@ app.post('/loadprofilefeed', function (req, res){       //AJAX RESPONSE PER CARI
 });
 
 app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREAZIONE NUOVO POST
-  let username = req.body.authorId;
+  //console.log('RICEVUTA RICHIESTA DI CREAZIONE POST DA : '+username);
+  console.log(req.body);
+  //let form = new formidable({multiples: true});
+  let form = new formidable({multiples: true});
+
+  //form.on('field', (name,value))
+  form.parse(req,  function(err, fields, files){
+    if (err){ console.log(err); res.send(JSON.stringify({ status: 'ERR' })); }
+    //console.log(fields);
+    //console.log(files);
+
+    let username = fields.username;
+    let textContent = fields.textContent;
+    let yt_url = fields.youtubeUrl;
+    let mediaType = fields.mediaType;
+    if (mediaType != ""){
+      var oldPath = files.upload.path;
+      var newPath = path.join(__dirname,'public/user_uploads')+'/'+uuid.v4()+files.upload.name;
+      var dbPath = newPath.split('public/')[1];
+      var rawData = fs.readFileSync(oldPath);
+    }
+    
+    let dbImage = '', dbVideo = '', dbAudio = '', driveImage = '';
+
+    if (mediaType == "image"){ dbImage = dbPath; }
+    else if (mediaType == "audio"){ dbAudio = dbPath; }
+    else if (mediaType == "video"){ dbVideo = dbPath; }
+    
+    if (mediaType == ""){
+      database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
+        res.send(JSON.stringify({ status: 'OK' }));
+        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. NO MEDIA ATTACHED.')
+      });
+    }
+    else{
+      fs.writeFileSync(newPath,rawData);
+      database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
+        res.send(JSON.stringify({ status: 'OK' }));
+        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+      });
+    }
+  })
+  
+  /*let username = req.body.username;
 
   console.log('RICEVUTA RICHIESTA DI CREAZIONE POST DA : '+username);
-  database.addPost(username,req.body.textContent,req.body.youtubeUrl,req.body.dbImage,
-    req.body.dbVideo,req.body.dbAudio,req.body.driveImage).then((returned) => {
-      res.render('./index.ejs');
-      //res.redirect('./profile');
-      console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
+
+  let textContent = req.body.textContent;
+  let file = req.files.upload;
+  let mediaType =  req.body.mediaType;
+  let yt_url = ''; //req.body.youtube_url;
+  let dbImage = '', dbVideo = '', dbAudio = '', driveImage = '';
+
+  if (mediaType == "image"){
+    let path = '../user_uploads/'+file.name+'_'+uuid.v4();
+    let uploadPath = __dirname+'/user_uploads/'+file.name+'_'+uuid.v4();
+    dbImage = path;
+    file.mv(uploadPath, function(err){
+      if(err){ res.status(500).send(err); }
+      else{ 
+        database.addPost(username,textContent,yt_url,dbImage,
+          dbVideo,dbAudio,driveImage).then((returned) => {
+            res.send(JSON.stringify({ status: 'OK' }));
+            //res.redirect('./profile');
+            console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
+          });
+      }
     });
+  }
+  else if(mediaType == "audio"){
+    let path = '../user_uploads/'+file.name+'_'+uuid.v4();
+    let uploadPath = __dirname+'/user_uploads/'+file.name+'_'+uuid.v4();
+    dbAudio = path;
+    file.mv(uploadPath, function(err){
+      if(err){ res.status(500).send(err); }
+      else{ 
+        database.addPost(username,textContent,yt_url,dbImage,
+          dbVideo,dbAudio,driveImage).then((returned) => {
+            res.send(JSON.stringify({ status: 'OK' }));
+            //res.redirect('./profile');
+            console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
+          });
+      }
+    });
+  }
+  else if(mediaType == "video"){
+    let path = '../user_uploads/'+file.name+'_'+uuid.v4();
+    let uploadPath = __dirname+'/user_uploads/'+file.name+'_'+uuid.v4();
+    dbVideo = path;
+    file.mv(uploadPath, function(err){
+      if(err){ res.status(500).send(err); }
+      else{ 
+        database.addPost(username,textContent,yt_url,dbImage,
+          dbVideo,dbAudio,driveImage).then((returned) => {
+            res.send(JSON.stringify({ status: 'OK' }));
+            //res.redirect('./profile');
+            console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
+          });
+      }
+    });
+  }
+  else{
+    database.addPost(username,textContent,yt_url,dbImage,
+      dbVideo,dbAudio,driveImage).then((returned) => {
+        res.send(JSON.stringify({ status: 'OK' }));
+        //res.redirect('./profile');
+        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA.');
+      });
+  }*/
+});
+
+app.post('/updatepropic', function (req, res){
+  let username = req.body.username;
 });
 
 app.post('/drivedownload', function (req, res) {        //AJAX RESPONSE PER DOWNLOAD FILE DA DRIVE UTENTE

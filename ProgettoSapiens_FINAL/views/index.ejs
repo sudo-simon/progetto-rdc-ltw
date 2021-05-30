@@ -11,8 +11,6 @@
         <link rel="stylesheet" href="css/home.css">
         <link rel="stylesheet" href="css/home-dark.css" title="default">
         <link rel="alternate stylesheet" href="css/home-light.css" title="alternate">
-        <link rel="stylesheet" href="css/smallChat.css">
-
     </head>
 
     <body>
@@ -21,15 +19,18 @@
                     <div class="post" id="post">
                         <!-- form nuovo post -->
                         <div class="nuovo p-4 rounded-3 shadow">
-                            <form onsubmit="return addPost()">
+                            <form id="formNuovoPost">
                                 <textarea class="form-control" id="testo_post" name="testo_post" placeholder="Crea nuovo post"></textarea>
                                 <hr>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <input class="form-control ricerca-file" id="formFile" name="formFile" type="file" accept="image/*,audio/*,video/*">
+                                    <input type="text" class="form-control" id="youtube_url" placeholder="YouTube URL">
+                                    <input class="form-control ricerca-file" id="formFile" name="formFile" type="file" accept=".jpg, .jpeg, .png, .mp3, .mp4">
                                     <!--button type="button" class="btn btn-outline-secondary rounded-0">Drive</button-->
-                                    <button type="submit" class="btn btn-outline-secondary rounded-0">Pubblica</button>
+                                    
                                 </div>
                             </form>
+                            <br>
+                            <button onclick="addPost()" class="btn btn-outline-secondary rounded-0">Pubblica</button>
                         </div>
                         <!-- qui appariranno i POST mediante lo script jQuery in "posts.js" -->
                     </div>
@@ -50,12 +51,6 @@
         <script type="text/javascript" src="js/status-auth.js"></script>
         <script type="text/javascript" src="js/navbar.js"></script>
         <script type="text/javascript" src="js/styleswitcher.js"></script>
-        <script type="text/javascript" src="js/posts.js"></script>
-        <script type="text/javascript" src="js/smallChat.js"></script>
-        <!-- Script Fontawesome -->
-        <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
-
-        
         <!-- <script type="text/javascript" src="js/posts.js"></script> -->
         <script type="text/javascript" src="js/home-feed.js"></script>
     </body>

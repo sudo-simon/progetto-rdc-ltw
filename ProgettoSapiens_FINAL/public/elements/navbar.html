@@ -6,14 +6,13 @@
     <nav class="navbar fixed-top navbar-light bg-light shadow">
         <div class="container">
             <!-- Logo -->
-            <a class="navbar-brand" href="home.html">
+            <a class="navbar-brand" href="/">
                 <img class="logo" src="assets/logo2/logo_small.png" alt="sapiens_logo.png">
             </a>
             <!-- Barra di ricerca -->
-            <form action="/search" id="searchRegistr" name="searchRegistr" method="POST">
+            <form action="/search" id="searchRegistr" name="searchRegistr">
                 <div class="search-bar-div">
                     <input type="text" class="form-control search-bar" id="searchInputText" list="datalistOptions" title="barra_di_ricerca" placeholder="Cerca..">
-                    <datalist id="datalistOptions">
                     </datalist>
                 </div>
             </form>
@@ -24,7 +23,7 @@
                 </li>
                 <!-- Pulsante Profilo -->
                 <li class="nav-item">
-                    <a class="nav-link" id="pulsanteProfilo" href="profile.html">Profilo</a>
+                    <a class="nav-link" href="/profile">Profilo</a>
                 </li>
                 <!-- Pulsante Amici -->
                 <li class="nav-item">
@@ -70,7 +69,8 @@
                         <!-- Immagine Profilo -->
                         <div class="mio-container">
                             <div class="profile-pic" id="navPropic">
-                                <a href="#" class="stretched-link profile-pic-stretched-link" aria-label="Cambia Immagine Profilo">Cambia immagine</a>
+                                <a onclick="document.getElementById('inputProPic').click();" class="stretched-link profile-pic-stretched-link" aria-label="Cambia Immagine Profilo">Cambia immagine</a>
+                                <input  style="display: none;" type="file" name="inputProPic" id="inputProPic" accept=".jpg, .jpeg, .png">
                             </div>
                         </div>
                         <!-- Nome -->
@@ -101,18 +101,14 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-primary">Salva</button>
+                    <button type="button" class="btn btn-primary" onclick="updateProfile()">Salva</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- SCRIPT -->
-
     <script type="text/javascript" src="js/settings.js"></script>
-    <script>$(document).ready(function(){
-        $("#pulsanteProfilo").attr("href","/profile?user="+JSON.parse(localStorage.user).username)
-    })</script>
-  
+
 </body>
 </html>

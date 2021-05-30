@@ -31,7 +31,11 @@ function init_feed() {
         dataType: 'json',
         //async: false,
         success: function(data){
+<<<<<<< HEAD
             loadFeed(data.postList);                            //oggetto con indici interi crescenti a partire da 0
+=======
+            loadFeed(data);                                  //oggetto con indici interi crescenti a partire da 0
+>>>>>>> 4e4e39d57d67fb3d6df0423c227af02363d1c164
         }                                                    //for(i) postList.i.author = ... / postList[i].author =
     });
 
@@ -124,7 +128,7 @@ function loadFeed(unsortedPostList) {
         '</div>');
 
         if (youtube_src != ""){
-            var player = new YT.Player('youtube_embed_'+youtube_i, {
+            new YT.Player('youtube_embed_'+youtube_i, {
                 height: "280",
                 width: "460",
                 videoId: youtube_src.split('=')[1],
@@ -135,67 +139,83 @@ function loadFeed(unsortedPostList) {
                     "onReady": onPlayerReady
                 }*/
             });
-            youtube_i++;
         }
+        
+        youtube_i++;
         
     }
 }
 
+
 function addPost() {
+
     let textContent = document.getElementById('testo_post').value;
-    let mediaContent = document.getElementById('formFile').value;
+    let fileArray;
+    let youtubeUrl = document.getElementById('youtube_url').value;
+    if (youtubeUrl != ""){ fileArray = []; }
+    else{ fileArray = document.getElementById('formFile').files; }
+
+    let mediaContent;
+    if(fileArray.length != 0) { mediaContent = fileArray[0]; }
+    else{ mediaContent = ""; }
+
     let user = JSON.parse(localStorage.getItem('user'));
     
-    let img_src = "";
-    let video_src = "";
-    let audio_src = "";
-    let youtube_src = ""; 
-    let drive_src = "";
+    let mediaType = "";
 
-    if(mediaContent != "" && mediaContent != null){
+    if(mediaContent != ""){
 
-        switch(mediaContent.split('.')[-1]){
-            case 'jpg':
-    
-            case 'png':
-    
-            case 'jpeg':
-    
-            case 'mp3':
-    
-            case 'mp4':
-    
+        switch(mediaContent.type){
+            case 'image/jpeg':
+                mediaType = "image";
+                break;
+            case 'image/png':
+                mediaType = "image";
+                break;
+            case 'audio/mpeg':
+                mediaType = "audio";
+                break;
+            case 'video/mp4':
+                mediaType = "video";
+                break;
             default:
                 break;
         }
     }
 
-    
 
-    let obj = { 
-        authorId: user.username,
-        textContent: textContent,
-        youtubeUrl: youtube_src,
-        dbImage: img_src,
-        dbVideo: video_src,
-        dbAudio: audio_src,
-        driveImage: drive_src
-    }
+    let formData = new FormData();
+    formData.append('upload',mediaContent);
+    formData.append('username',user.username);
+    formData.append('textContent',textContent);
+    formData.append('youtubeUrl',youtubeUrl);
+    formData.append('mediaType',mediaType);
+
+    //console.log(formData.get('upload').name+' '+formData.get('username')+' '+formData.get('textContent')+' '+formData.get('mediaType'));
 
     $.ajax({
         type: 'POST',
-        data: JSON.stringify(obj),
-        contentType: 'application/json',
+        data: formData,
+        contentType: false,
+        cache: false,
+        processData: false,
         url: 'http://localhost:8080/createpost',      //SERVER POST
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         },
-        //dataType: 'json',
+        dataType: 'json',
         //async: false,
         success: function(data){
-            return true;                           
-        }                                                   
-    });
+            if (data.status == 'OK'){
+                //document.location.reload();
+                document.location.href = '/profile';
+                //console.log(JSON.stringify(data));
+            }
+            else{
+                alert("Errore nella creazione del post.");
+                return false;
+            }                
+        }                                               
+    });  
 
-    //return false;
 }
