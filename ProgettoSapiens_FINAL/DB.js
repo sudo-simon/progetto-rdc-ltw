@@ -252,48 +252,7 @@ class DB {
         })
     }
 
-    getMediaUser(username) {
-        let user;
-        return this.getUser(username).then((returned) => {
-            let postList = user.postList;
-            let avg, tot=0, i=0;
-            for (let post of postList){
-                tot += post.voto;
-                i++;
-            }
-            avg = tot/i;
-            return avg;
-        });
-    }
 
-
-    /*findUsersByNameSurname(nome,cognome) {
-        let people = {};
-        let i = 0;
-
-        this.db.partitionedFind('user', { 'selector' : { 'cognome' : cognome}}).then((data) => {
-            for (let person of data.docs){
-                people[i.toString()] = person;
-                i++;
-            }
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
-        });
-
-        this.db.partitionedFind('user', { 'selector' : { 'nome' : nome}}).then((data) => {
-            for(let person of data.docs){
-                if(people.includes(persona) == false){          //ERRATO!! non array ma object
-                    people[i.toString()] = person;
-                }
-            }
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
-        });
-
-        return people;
-    }*/
 
     findUsersByName(nome) {
         let people = [];      
@@ -354,34 +313,6 @@ class DB {
         });
     }
     
-    findUsersByNameSurname(nome,cognome){
-        let people = [];
-        let i = 0;
-
-        return this.db.partitionedFind('user', { 'selector' : { 'cognome' : cognome}}).then((data) => {
-            for (let person of data.docs){
-                if( people.find(({username})=>{(username==person.username)}) == undefined){
-                    people.push(person);
-                }
-                i++;
-            }
-            return this.db.partitionedFind('user', { 'selector' : { 'nome' : nome}}).then((data) => {
-                for(let person of data.docs){
-                    if( people.find(({username})=>{(username==person.username)}) == undefined){
-                        people.push(person);
-                    }
-                }
-                return people;
-            }).catch((err) => {
-                console.log('DATABASE ERROR: '+err);
-                return -1;
-            });
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
-        });
-
-    }
 
     searchAux (ret,ret2,callback){
         if (ret2.length==0) callback(ret);

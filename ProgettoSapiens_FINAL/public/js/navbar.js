@@ -20,7 +20,6 @@ $.get("elements/navbar.html", function(data) {
     $("#searchInputText").on("keyup",function(){
         var string=$("#searchInputText").val().replace(/\s+/g,' ').trim();
         $("#searchRegistr").attr("action","/search?searching="+string);
-        console.log($("#searchRegistr").attr("action"));
     });
 
 

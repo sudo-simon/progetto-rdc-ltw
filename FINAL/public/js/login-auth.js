@@ -1,0 +1,123 @@
+let username
+let db_user='debug_login';
+
+$(document).ready(function() {
+    // Nascondo gli alert che sarebbero visualizzati di default
+    $('#email-alert1').hide();
+    $('#email-alert2').hide();
+    $('#psw-alert').hide();
+    $('#reset-alert1').hide();
+    $('#reset-alert2').hide();
+
+    // RESET PASSWORD
+    const resetForm = document.querySelector('#resetRegistr');
+    resetForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+    
+        //Rimozione vecchi alert
+        $('#reset-alert1').hide();
+        $('#reset-alert2').hide();
+
+        var auth = firebase.auth();
+        var emailAddress = resetForm['exampleInputEmail2'].value+'@studenti.uniroma1.it';
+    
+        // Invio link reset password
+        auth.sendPasswordResetEmail(emailAddress).then(function() {
+            //alert("Email inviata.");
+            $('#reset-alert2').fadeTo(2000,500);
+            //window.location = 'index.html';
+        }).catch(function(error) {
+            // Errori
+            var errorCode = error.code;
+            var errorMessage = error.message;
+    
+            console.log('email address not found');
+            console.log(errorCode);
+    
+            if(errorCode=="auth/user-not-found" || errorCode=="auth/invalid-email")
+                //alert("ERR: Email non registrata.");
+                $('#reset-alert1').fadeTo(2000,500);
+        });
+    
+    });
+
+    // LOGIN
+    const loginForm = document.querySelector('#loginRegistr');
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const email = loginForm['exampleInputEmail1'].value+'@studenti.uniroma1.it';
+        const psw = loginForm['exampleInputPassword1'].value;
+
+        username = email.split('@')[0];
+
+        // Rimozione vecchi alert
+        $('#email-alert1').hide();
+        $('#email-alert2').hide();
+        $('#psw-alert').hide();
+
+        // Accesso
+        auth.signInWithEmailAndPassword(email,psw).then(() => {
+            var user = firebase.auth().currentUser;
+            // Controllo che l'email sia verificata
+            if(user.emailVerified) {
+                //////////////////////////////////// AJAX POST NECESSARIA? CI PENSA FIREBASE
+
+                let obj = {
+                    username: username,
+                    email: email,
+                    password: psw
+                }
+                $.ajax({
+                    type: 'POST',
+                    data: JSON.stringify(obj),
+                    contentType: 'application/json',
+                    url: 'http://localhost:8080/verifyuser',      //SERVER POST NEL DATABASE
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    dataType: 'json',
+                    //async: false,
+                    success: function(data){
+                        localStorage.setItem('user', JSON.stringify(data));
+                        window.location = '/';          //TORNA ALLA HOME
+                    }           
+                });
+
+                ////////////////////////////////////
+
+            } else {
+                auth.signOut().then(() => {
+                    //alert("ATTENZIONE: Email non verificata!")
+                    $('#email-alert1').fadeTo(2000,500);
+                });
+            }
+        }).catch(function(error) {
+            // Errori
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log('User did not login correctly');
+            console.log(errorCode);
+
+            if(errorCode=="auth/user-not-found")
+                //alert("Utente non registrato");
+                $('#email-alert2').fadeTo(2000,500);
+
+            else if(errorCode=="auth/wrong-password")
+                //alert("Password non corretta");
+                $('#psw-alert').fadeTo(2000,500);
+        });
+    });
+});
+
+// SIGN AUTH STATUS CHANGES LISTENER
+auth.onAuthStateChanged(user => {
+    if(user) {
+        console.log('user logged in: ',user);
+        //localStorage.setItem('user', JSON.stringify(db_user));        //LOCALSTORAGE ADD
+    } else {
+        console.log('user logged out');
+        localStorage.removeItem('user');              //LOCALSTORAGE REMOVE
+    }
+});

@@ -1,0 +1,116 @@
+.container-fluid {
+    width: 65%;
+}
+
+.post {
+    /*height: 96vh;*/
+    display: block;/*
+    padding-left: 20%;
+    padding-right: 20%;*/
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 7rem;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+    color: honeydew;
+    /*overflow-y: scroll;         /* sezione scrollabile /
+    -ms-overflow-style: none;   /* scrollbar nascosta per IE ed Edge /
+    scrollbar-width: none;      /* scrollbar nascosta per Firefox /
+}
+
+.post::-webkit-scrollbar {
+    display: none;              /* scrollbar nascosta per Chrome, Safari ed Opera */
+}
+
+.nuovo {
+    background-color: white;
+    color: black;
+    margin-bottom: 1.5rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+/* inizio elemento utente (pagina search) */
+.user-elem {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.propic {
+    height: 120px;
+    margin-right: 4rem;
+}
+
+.stretched-link {
+    color: white;
+    text-decoration-line: none;
+}
+
+.stretched-link:hover {
+    color: white;
+    text-decoration-line: none;
+}
+/* fine elemento utente */
+
+
+/* RESPONSIVENESS */
+@media only screen and (max-width: 1400px) {    /* xl */
+    .container-fluid {
+        width: 75% !important;
+    }
+
+    .post {
+        width: 65% !important;
+    }
+}
+
+@media only screen and (max-width: 1200px) {    /* lg */
+    .container-fluid {
+        width: 80% !important;
+    }
+
+    .post {
+        padding-top: 9rem;
+        width: 70% !important;
+    }
+}
+
+@media only screen and (max-width: 992px) {     /* md */
+    .container-fluid {
+        width: 90% !important;
+    }
+
+    .post {
+        width: 80% !important;
+    }
+}
+
+@media only screen and (max-width: 768px) {     /* sm */
+    .info {
+        font-size: small !important;
+    }
+
+    .propic {
+        margin-right: 2rem;
+    }
+
+    .container-fluid {
+        width: 100% !important;
+    }
+
+    .post {
+        width: 90% !important;
+    }
+}
+
+@media only screen and (max-width: 576px) {     /* xs */
+    .propic {
+        height: 100px;
+    }
+
+    .post {
+        width: 90% !important;
+    }
+}

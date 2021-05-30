@@ -1,0 +1,61 @@
+.card {
+    width: 16rem;
+    height: 20rem;
+    margin: 2rem;
+    text-align: center;
+}
+
+.stretched-link {
+    text-decoration-line: none;
+    font-weight: bold;
+    font-size: large;
+    color: #a00e39;
+}
+
+.stretched-link:hover {
+    color: #880a30;
+}
+
+/* RESPONSIVENESS */
+@media only screen and (max-width: 1400px) {    /* xl */
+    .card {
+        width: 15rem !important;
+        height: 19rem !important;
+        margin: 1.2rem !important;
+    }
+}
+
+@media only screen and (max-width: 1200px) {    /* lg */
+    .card {
+        width: 12rem !important;
+        height: 16rem !important;
+    }
+}
+
+@media only screen and (max-width: 992px) {     /* md */
+    .card {
+        width: 9rem !important;
+        height: 14rem !important;
+        margin: 0.9rem !important;
+    }
+
+    .stretched-link {
+        font-size: medium;
+    }
+}
+
+@media only screen and (max-width: 768px) {     /* sm */
+    .card {
+        width: 8rem !important;
+        height: 13rem !important;
+        margin: 0.8rem !important;
+    }
+}
+
+@media only screen and (max-width: 576px) {     /* xs */
+    .card {
+        width: 10rem !important;
+        height: 15rem !important;
+        margin: 1.4rem !important;
+    }
+}
