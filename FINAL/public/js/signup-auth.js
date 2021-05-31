@@ -104,6 +104,6 @@ auth.onAuthStateChanged(user => {
         //localStorage.setItem('user', JSON.stringify(db_user));
     } else {
         console.log('user logged out');
-        localStorage.removeItem('user');
+        localStorage.clear();
     }
 });

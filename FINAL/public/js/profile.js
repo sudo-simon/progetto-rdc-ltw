@@ -89,7 +89,7 @@ function loadProfile(profileUser){
     if (profileUser.username!=user.username) {
         $("#newPostToP").css("display","none")
         if(user.friendList.indexOf(profileUser.username)==-1){
-            var addBtn = '<button type="submit" class="btn btn-danger shadow-sm" id="btnAddFriend" onclick="aggiungiAmico(\''+profileUser.username+'\')">Aggiungi agli amici</button>';
+            var addBtn = '<button type="submit" class="btn btn-danger shadow-sm" id="btnAddFriend" onclick="aggiungiAmico(\''+profileUser.username+'\')">Segui</button>';
             $("#profile_points").after(addBtn);
         }
     }
@@ -108,7 +108,7 @@ function aggiungiAmico(newFriendUsername){
 
                 var toast=' <div class="toast btn btn-danger shadow-sm" id="myToast" style="max-width: fit-content;max-width: -moz-fit-content;">\
                                 <div class="toast-body"> \
-                                    AGGIUNTO AGLI AMICI\
+                                    AGGIUNTO AI SEGUITI\
                                 </div>\
                             </div>';
 
