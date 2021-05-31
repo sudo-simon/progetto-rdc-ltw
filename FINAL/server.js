@@ -3,7 +3,7 @@
 //const googleKeys = require('./credentials.json');
 const sapiens = require('./data_structures');
 const DB = require('./DB');
-var database = new DB("sapiens");
+var database = new DB("sapiens-db");
 
 
 var driveDownload = require('./drive-download.js');
@@ -19,9 +19,6 @@ const {OAuth2Client} = require('google-auth-library');
 const googleClient = ""//new OAuth2Client(CLIENT_ID);
 const {google} = require('googleapis');
 const readline = require('readline');
-//const url = require('url');           (?????????????)
-//const open = require('open');       (????????)
-//const destroyer = require('server-destroy'); (???????????)
 
 
 const fs = require('fs');
@@ -368,7 +365,7 @@ app.get("/gestione/addFriend",function(req,res){
 });
 
 app.get("/gestione/search",function(req,res){
-var searching=req.query.searching;
+  var searching=req.query.searching;
   var nc=searching.split(" ");
   var nome=nc[0];
   var cognome=nome;

@@ -5,7 +5,7 @@ auth.onAuthStateChanged(user => {
         //localStorage.setItem('user',/*user*/);        //LOCALSTORAGE ADD 
     } else {
         console.log('user logged out');
-        localStorage.removeItem('user');          //LOCALSTORAGE REMOVE
+        localStorage.clear();          //LOCALSTORAGE REMOVE
         window.location = '/login';
     }
 });

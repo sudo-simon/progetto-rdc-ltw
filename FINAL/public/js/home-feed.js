@@ -218,7 +218,7 @@ function addPost() {
         success: function(data){
             if (data.status == 'OK'){
                 //document.location.reload();
-                document.location.href = '/profile';
+                document.location.reload();
                 //console.log(JSON.stringify(data));
             }
             else{

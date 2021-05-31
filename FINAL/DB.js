@@ -22,12 +22,10 @@ class DB {
             }
             else{
                 return bcrypt.hash(password, saltRounds).then(function(hash) {
-                    console.log("###########################"+hash);
 
                     let newUser = new sapiens.User(username,nome,cognome,email,hash,googleId);
             
-                    return database.db.insert(newUser).then((data) => { 
-                        console.log("########################## inserito: "+data.username)   
+                    return database.db.insert(newUser).then((data) => {    
                         return database.db.get(data.id);
                     }).catch((err) => {
                         console.log('DATABASE ERROR: '+err);
@@ -193,7 +191,6 @@ class DB {
 
     findUsersByName(nome) {
         let people = [];      
-        let i = 0;
         let lowerNome = nome.toLowerCase();
         let upperNome = nome.charAt(0).toUpperCase() + nome.slice(1);
 
@@ -201,12 +198,10 @@ class DB {
         return this.db.partitionedFind('user', { 'selector' : { 'nome' : upperNome}}).then((data) => {
             for(let person of data.docs){
                 people.push(person);
-                i++;
             }
             return this.db.partitionedFind('user', { 'selector' : { 'nome' : lowerNome}}).then((data) => {
                 for(let person of data.docs){
                     people.push(person);
-                    i++;
                 }
                 //people.numItems = i;
                 return people;
@@ -223,19 +218,16 @@ class DB {
 
     findUsersBySurname(cognome) {
         let people = [];
-        let i = 0;
         let lowerCognome = cognome.toLowerCase();
         let upperCognome = cognome.charAt(0).toUpperCase() + cognome.slice(1);
 
         return this.db.partitionedFind('user', { 'selector' : { 'cognome' : upperCognome}}).then((data) => {
             for(let person of data.docs){
                 people.push(person);
-                i++;
             }
             return this.db.partitionedFind('user', { 'selector' : { 'cognome' : lowerCognome}}).then((data) => {
                 for(let person of data.docs){
                     people.push(person);
-                    i++;
                 }
                 //people.numItems = i;
                 return people;
@@ -334,6 +326,7 @@ class DB {
         console.log();
         var result = [];
         return this.getUser(username).then((returned) => {
+            returned.friendList.push(username);
             return this.auxFeedHomeP(returned.friendList,result)
         }); 
     }
