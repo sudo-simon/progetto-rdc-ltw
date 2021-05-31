@@ -27,10 +27,13 @@ function resetPassword() {
 }
 
 function updateProfile() {
-    let username = JSON.parse(localStorage.getItem('user')).username;
+    let user = JSON.parse(localStorage.getItem('user'));
     let newNome = document.getElementById('inputName').value;
+    if(newNome == "") { newNome = user.nome; }
     let newCognome = document.getElementById('inputSurname').value;
+    if(newCognome == "") { newCognome = user.cognome; }
     let newDesc = document.getElementById('exampleFormControlTextarea1').value;
+    if(newDesc == "") { newDesc = user.infos.description; }
     let fileArray = document.getElementById('inputProPic').files;
     let newProPic;
     let check;
@@ -38,7 +41,7 @@ function updateProfile() {
     else { newProPic = ""; check = "no-file"; }
 
     let formData = new FormData();
-    formData.append('username',username);
+    formData.append('username',user.username);
     formData.append('newNome',newNome);
     formData.append('newCognome',newCognome);
     formData.append('newDesc',newDesc);
