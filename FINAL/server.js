@@ -1,22 +1,22 @@
 'use strict';
 
-const googleKeys = require('./credentials.json');
+//const googleKeys = require('./credentials.json');
 const sapiens = require('./data_structures');
 const DB = require('./DB');
-var database = new DB("sapiens-db");
+var database = new DB("sapiens");
 
 
 var driveDownload = require('./drive-download.js');
 
 
-var CLIENT_ID = googleKeys.web.client_id;
-var CLIENT_SECRET = googleKeys.web.client_secret;
-var REDIRECT_URIS = googleKeys.web.redirect_uris;
+var CLIENT_ID = ""//googleKeys.web.client_id;
+var CLIENT_SECRET = ""//googleKeys.web.client_secret;
+var REDIRECT_URIS = ""//googleKeys.web.redirect_uris;
 var API_KEY = '';
 var GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file';
 
 const {OAuth2Client} = require('google-auth-library');
-const googleClient = new OAuth2Client(CLIENT_ID);
+const googleClient = ""//new OAuth2Client(CLIENT_ID);
 const {google} = require('googleapis');
 const readline = require('readline');
 //const url = require('url');           (?????????????)
@@ -155,7 +155,7 @@ app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE N
   database.verifyUser(email,password).then((returned) => {
     user = returned;
 
-    if (user == false){
+    if (user == false || user==-1){
       res.send('ERR');
       console.log(req.ip+': UTENTE NON PRESENTE NEL DATABASE/PASSWORD ERRATA = '+username);
     }
@@ -333,7 +333,7 @@ app.post('/updateprofile', function (req, res){
   });
 });
 
-app.get('/updatelocalstorage', function (req, res){
+app.post('/updatelocalstorage', function (req, res){
   let username = req.body.username;
   database.getUser(username).then((returned) => {
     res.send(JSON.stringify(returned));

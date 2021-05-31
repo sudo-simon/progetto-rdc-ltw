@@ -1,8 +1,8 @@
 'use strict';
 const sapiens = require('./data_structures');
 const nano = require('nano')('http://admin:admin@localhost:5984');   
-//const bcrypt = require('bcrypt');
-//const saltRounds = 10;
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 
 class DB {
@@ -16,19 +16,33 @@ class DB {
     addUser(username,nome,cognome,email,password,googleId) {
 
         return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
+            const database=this;
             if(data.docs.length != 0){
                 return false;
             }
             else{
+                return bcrypt.hash(password, saltRounds).then(function(hash) {
+                    console.log("###########################"+hash);
 
-                let newUser = new sapiens.User(username,nome,cognome,email,password,googleId);
+                    let newUser = new sapiens.User(username,nome,cognome,email,hash,googleId);
+            
+                    return database.db.insert(newUser).then((data) => { 
+                        console.log("########################## inserito: "+data.username)   
+                        return database.db.get(data.id);
+                    }).catch((err) => {
+                        console.log('DATABASE ERROR: '+err);
+                        return -1;
+                        });
+                
+                    })
+               /* let newUser = new sapiens.User(username,nome,cognome,email,password,googleId);
             
                 this.db.insert(newUser).then((data) => {
                     return this.db.get(data.id);
                 }).catch((err) => {
                     console.log('DATABASE ERROR: '+err);
                     return -1;
-                });
+                });*/
 
             }
         }).catch((err) => {
@@ -55,12 +69,23 @@ class DB {
         return this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
             if(data.docs.length != 0){
                 let user = data.docs[0];
-                if (password == user.password){
+                return bcrypt.compare(password, user.password).then(function(result) {
+                    if (result==true) {
+                        return user;
+                    }
+                    else {
+                        return false
+                    }
+                    // result == true	   //myPlaintextPassword è la password corretta
+                    // result == false     //myPlaintextPassword non è la password corretta
+                });
+                
+                /*if (password == user.password){
                     return user;
                 }
                 else { 
                     return false;
-                }
+                }*/
             }
             else{ return false; }
 
@@ -76,7 +101,7 @@ class DB {
             user = data.docs[0];
             user.friendList.push(friendToAdd);
 
-            this.db.insert(user).then((data) => {
+            return this.db.insert(user).then((data) => {
                 return 0;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);

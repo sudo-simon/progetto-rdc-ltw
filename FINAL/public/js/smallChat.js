@@ -288,7 +288,7 @@ function caricaListaChat(){
     if (queue.to_consume=="n") display="none";
     $(".chatList").append("<li class='list-group-item chatListEl d-flex justify-content-between align-items-start'>\
                             <div class='nomeChat'>"+c+"</div>\
-                              <span class='badge miobadgechat rounded-pill counterChat' id='counterChat"+c+"' style='margin-right: 30px; display:"+display+";'></span>\
+                              <span class='badge miobadgechat rounded-pill counterChat' id='counterChat"+c+"' style='margin-top: 4px; display:"+display+";'>NEW</span>\
                           </li>");
     }
   }

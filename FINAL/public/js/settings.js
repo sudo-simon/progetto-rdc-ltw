@@ -60,7 +60,7 @@ function updateProfile() {
         success: function(data){
             if (data.status == 'OK'){
                 $.ajax({
-                    type: 'GET',
+                    type: 'POST',
                     data: JSON.stringify({username: data.user}),
                     contentType: 'application/json',
                     url: 'http://localhost:8080/updatelocalstorage',      //SERVER GET
