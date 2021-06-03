@@ -1,29 +1,4 @@
-/*auth.onAuthStateChanged(user => {         // DATI TRAMITE FIREBASE (attualmente solo nome, potenzialmente anche url propic)
-    
-    if(user) {
-        // info profilo
-        var user = firebase.auth().currentUser;
-        if(user != null) var name = user.displayName;
-        else {
-            var name = "Nome Cognome";
-            console.log("utente non loggato");
-        }
-        var propic = "assets/icons/placeholder-profile-sq.jpg";
-        var date = "00/00/0000";
-        var friends = "0000";
-        var vote = "0";
-        var description = 'Ciao mi chiamo Andrea e studio Scienze delle Biciclette al politecnico di Bassano del Grappa.'+
-                            'Mi piace bere con gli amici e lanciare i sassi ai bambini.'+
-                            'Il mio più grande difetto è la "n" moscia. Conosciamoci.';
-        $("#profile_pic").attr("src",propic);
-        $("#name").prepend(name);
-        $("#date").append(date);
-        $("#friends").append(friends);
-        $("#vote").append(vote);
-        $("#description").append(description);
-    }
 
-})*/
 
 $(document).ready(function() {
 
@@ -31,6 +6,8 @@ $(document).ready(function() {
     var profileUser=GetURLParameter("user");
     if (profileUser==undefined) profileUser=user.username;
     
+    //In base al valore di "user" nella query dell'url vengono richiesti i dati di uno specifico user
+
         $.ajax({
             type: 'GET',
             data: JSON.stringify({username:profileUser}),
@@ -63,7 +40,7 @@ function GetURLParameter(sParam){
 }
 
 
-//FUNZIONE PER CARICARE I DATI DEL PROFILO DI profileUser
+//FUNZIONE PER CARICARE I DATI di profileUser SULLA PAGINA DEL PROFILO
 
 function loadProfile(profileUser){
     var user=JSON.parse(localStorage.user);
@@ -85,15 +62,17 @@ function loadProfile(profileUser){
     $("#vote").append(media);
     $("#description").append(description);
 
-    // se (condizione=true) mostra il pulsante AGGIUNGI AGLI AMICI nella pagina di profilo
+
     if (profileUser.username!=user.username) {
         $("#newPostToP").css("display","none")
-        if(user.friendList.indexOf(profileUser.username)==-1){
+        if(user.friendList.indexOf(profileUser.username)==-1){      // se (condizione=true) mostra il pulsante AGGIUNGI AI SEGUITI nella pagina di profilo
             var addBtn = '<button type="submit" class="btn btn-danger shadow-sm" id="btnAddFriend" onclick="aggiungiAmico(\''+profileUser.username+'\')">Segui</button>';
             $("#profile_points").after(addBtn);
         }
     }
 }
+
+// FUNZIONE ASSOCIATA ALLA PRESSIONE DEL BOTTONE PER AGGIUNGERE AI SEGUITI
 
 function aggiungiAmico(newFriendUsername){
     var user=JSON.parse(localStorage.user).username;

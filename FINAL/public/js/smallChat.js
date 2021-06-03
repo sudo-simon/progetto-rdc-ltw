@@ -7,6 +7,8 @@ $.get("elements/smallChat.html", function(data) {
 }).then(function() {
   
 
+//PERIODICAMENTE VERIFICA SE È NECESSARIO UN AGGIORANMETNO DEI DATI DI USER,CHAT E CODE DI RICEZIONE NEL LOCAL STORAGE
+
 setInterval(function(){ 
   if (localStorage.user!=undefined){
     var toRef={
@@ -53,7 +55,8 @@ setInterval(function(){
   }, 2000);
 
 
-  $("#tondoChat").click(function(){
+  //APERTURA DELLA FINESTRA DELLA CHAT
+    $("#tondoChat").click(function(){
     $(this).hide();
     $("#chat").show();
   });
@@ -61,20 +64,21 @@ setInterval(function(){
 
   $(".closeChat").click(function(){c()});
 
-
+  //UN CLICK ESTERNO AL BOX DELLA CHAT LA FARÀ CHIUDERE
   $(document).mouseup(function (e) {
     if ($(e.target).closest(".chat").length=== 0) {c();}
 });
 
- 
+  
+  //BOTTONE PER LA LISTA DELLE CHAT
   $("#leMieChat").click(function(){
     $("#startBtn").hide();
-    //CHIAMATA AL DB PER OTTENERE TUTTE LE CHAT
     caricaListaChat();
     $("#listaChat").show();
   });
 
 
+  //BOTTONE PER LA SEZIONE DI CREAZIONE DI UNA NUOVA CHAT
   $("#nuovaChat").click(function(){
     $("#startBtn").hide();
     caricaListaAmici();
@@ -82,6 +86,7 @@ setInterval(function(){
   });
 
 
+  //BOTTONE ASSOCIATO AD OGNI ELEMENTO NELLA LISTA DELLE CHAT
   $(".chatListEl").click(function (){
     var n=(this.getElementsByClassName("nomeChat")[0]).textContent;
     $("#listaChat").hide();
@@ -100,7 +105,7 @@ setInterval(function(){
 
  
 
-
+  //FUNZIONE CHE GESTICSE IL COMPORTAMENTO DEL TASTO goBackChat PER ANDARE ALLA SEZIONE PRECEDENTE
   $(".goBackChat").click(function(){
     if ($("#startBtn").css("display")!="none") c(); 
     else if ($("#listaChat").css("display")!="none"){
@@ -124,6 +129,7 @@ setInterval(function(){
   })
 
 
+  //FUNZIONE PER INVIARE UN MESSAGGIO
   $("#invia").click(function(){
     var txtmx=$("#testoMessaggio").val();
     if (txtmx!=""){
@@ -157,6 +163,8 @@ setInterval(function(){
   }
 })
   
+
+  //FUNZIONE ASSOCIATA CLICK DEL TASTO PER CREARE UNA NUOVA CHAT
   $("#inviaNuovaChat").click(function(){
     if ($("#nomeNuovaChat").val()==""){
       var tooltip = new bootstrap.Tooltip(document.getElementById("nomeNuovaChat"), {title:"inserisci un nome per la chat",trigger : 'hover'});
@@ -172,9 +180,8 @@ setInterval(function(){
     membri.push(JSON.parse(localStorage.user).username)
     var items = document.getElementById("listaAggiungiAmici").getElementsByTagName("li");
     for (var i = 0; i < items.length; ++i) {
-  // do something with items[i], which is a <li> element
-    if(items[i].getElementsByTagName("input")[0].checked==true){
-      membri.push(items[i].getElementsByTagName("label")[0].textContent);
+      if(items[i].getElementsByTagName("input")[0].checked==true){
+        membri.push(items[i].getElementsByTagName("label")[0].textContent);
 }
 }
   var chat={
@@ -188,13 +195,15 @@ $('.goBackChat').trigger('click');
     type: 'POST',
     data: JSON.stringify(chat),
         contentType: 'application/json',
-                url: 'http://localhost:8080/chat/creaChat',						
+                url: 'http://localhost:8080/chat/creaChat',			//CREA CHAT E CODE DI RICEZIONE CON RABBITMQ E LE SALVA SUL DATABASE		
                 success: function(data) {
                     console.log(JSON.stringify(data));
                 }
             });    
   })
   
+
+  //BISOGNA INTERROMPERE LA CONNESSIONE CON IL SERVER DI RABBITMQ AL MOMENTO IN CUI SI LASCIA LA PAGINA
   $(window).on("beforeunload",function(){
     var l=JSON.parse(localStorage.user).chatList;
     var username=JSON.parse(localStorage.user).username;
@@ -233,24 +242,23 @@ $('.goBackChat').trigger('click');
 
 });
 
-function gestisciResponseCreaChat(e){
-  if (e.target.readyState == 4 && e.target.status == 200) {
-    console.log(e.responseText);
-  }
-}
 
-
+//FUNZIONE PER LA CHIUSURA DEL BOX DELLA CHAT
 function c(){
   $("#chat").css("display","none");
   $("#tondoChat").show();
 }
 
+
+
+//L'HEADER DELLA CHAT VIENE SETTATO IN BASE ALLA CHAT IN CUI CI SI TROVA
 function setChatHeader(nome){
   $(".chatNome").text((nome));
 
 }
 
 
+//FUNZIONE CHE STAMPA UN MESSAGGIO NEL BOX DEI MESSAGGI DI UNA CHAT
 function stampa(el){
   var ora=el.timestamp[3];
   var data=el.timestamp[0]+"/"+el.timestamp[1]+"/"+el.timestamp[2];
@@ -267,12 +275,8 @@ function stampa(el){
   return mex;
 }
 
-function saveLocalUser(u){
-  for (var key in u) {
-    localStorage.setItem(key,u[key])
-  }
-}
 
+//FUNZIONE CHE CARICA LA LISTA DELLE CHAT QUANDO CI SI TROVA NELLA SEZIONE APPOSITA E SI RICEVE UN AGGIORNAMENTO SULLA LISTA DELLE CHAT DELL'USER
 function caricaListaChat(){
   $(".chatList").html("");
   
@@ -292,6 +296,7 @@ function caricaListaChat(){
                           </li>");
     }
   }
+    //GESTIONE DEL CLICK PER I NUOVI ELEMENTI INSERITI
     $(".chatListEl").click(function (e){
       $("#listaChat").hide();
       setChatHeader((this.getElementsByClassName("nomeChat")[0]).textContent);
@@ -308,6 +313,8 @@ function caricaListaChat(){
   }
 }
 
+
+//FUNZIONE CHE CARICA LA LISTA DEI SEGUITI NELLA SEZIONE DI CREAZIONE DI UNA NUOVA CHAT
 function caricaListaAmici(){
   $("#listaAggiungiAmici").html("");
   var l=JSON.parse(localStorage.user).friendList;
@@ -327,7 +334,9 @@ function caricaListaAmici(){
 }
                                         
 
-
+//FUNZIONE CHE AGGIORNA IL VALORE DELA CHIAVE KEY DEL LOCAL STORAGE E SE NECESSARIO 
+//(toRef contiene il campo _rev, se non è uguale a quello sul database si riceve come rispota l'aggiornamento)
+//AFTER È UNA FUNZIONE DI CALLBACK
 function updateLocalStorage(toRef,key,after){
   $.ajax({
     type: 'POST',
@@ -350,6 +359,8 @@ function updateLocalStorage(toRef,key,after){
 
 }
 
+
+//FUNZIONE ASSOCIATA AL TASTO PER USCIRE DA UNA CHAT
 function settingChatClick(n) {
   $(".settingChat").click(function(){
     $(this).tooltip('hide');
@@ -382,6 +393,8 @@ function settingChatClick(n) {
   });
 }
 
+
+//FUNZIONE CHE APRE UNA CONNESSIONE CON IL MESSAGE BROKER RABBITMQ SE NON È GIÀ APERTA
 function ascoltaChat(item){
   if (item.is_listening=="n"){
   $.ajax({
@@ -427,6 +440,8 @@ function ascoltaChat(item){
 
 }
 
+
+//FUNZIONE CHE STAMPA LA LISTA DI MESSAGGI DI UNA CHAT, INVOCATA QUANDO SI RICEVONO NUOVI MESSAGGI O QUANDO SI APRE LA CHAT PER LA PRIMA VOLTA
 function printMSG(chat_name){
   var index= JSON.parse(localStorage.user).chatList.findIndex(arr => arr.includes(chat_name));
   var ex=JSON.parse(localStorage.user).chatList[index][1];
