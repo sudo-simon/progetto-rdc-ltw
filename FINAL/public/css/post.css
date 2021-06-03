@@ -53,6 +53,17 @@
     margin-top: 0.5rem;
 }
 
+.youtube {
+    max-height: 20rem;
+    max-width: 100%;
+    width: 100%;
+    height: 15rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.5rem;
+}
+
 .form-select {
     width: 20%;
     border-color: gray;

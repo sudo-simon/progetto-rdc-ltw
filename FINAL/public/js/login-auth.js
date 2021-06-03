@@ -1,5 +1,4 @@
 let username
-let db_user='debug_login';
 
 $(document).ready(function() {
     // Nascondo gli alert che sarebbero visualizzati di default
@@ -62,7 +61,6 @@ $(document).ready(function() {
             var user = firebase.auth().currentUser;
             // Controllo che l'email sia verificata
             if(user.emailVerified) {
-                //////////////////////////////////// AJAX POST NECESSARIA? CI PENSA FIREBASE
 
                 let obj = {
                     username: username,
@@ -78,14 +76,13 @@ $(document).ready(function() {
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     dataType: 'json',
-                    //async: false,
+                    //async: false,     //solo debugging
                     success: function(data){
-                        localStorage.setItem('user', JSON.stringify(data));
+                        localStorage.setItem('user',JSON.stringify(data));  //SETTO IL LOCALSTORAGE
                         window.location = '/';          //TORNA ALLA HOME
                     }           
                 });
 
-                ////////////////////////////////////
 
             } else {
                 auth.signOut().then(() => {
@@ -115,7 +112,6 @@ $(document).ready(function() {
 auth.onAuthStateChanged(user => {
     if(user) {
         console.log('user logged in: ',user);
-        //localStorage.setItem('user', JSON.stringify(db_user));        //LOCALSTORAGE ADD
     } else {
         console.log('user logged out');
         localStorage.clear();              //LOCALSTORAGE REMOVE

@@ -26,7 +26,7 @@ function resetPassword() {
 
 }
 
-function updateProfile() {
+function updateProfile() {      //Aggiornamento informazioni profilo.
     let user = JSON.parse(localStorage.getItem('user'));
     let newNome = document.getElementById('inputName').value;
     if(newNome == "") { newNome = user.nome; }
@@ -59,10 +59,10 @@ function updateProfile() {
             'X-Requested-With': 'XMLHttpRequest'
         },
         dataType: 'json',
-        //async: false,
+        //async: false,     //solo debugging
         success: function(data){
             if (data.status == 'OK'){
-                $.ajax({
+                $.ajax({        //Seconda AJAX per aggiornamento immediato del localstorage.
                     type: 'POST',
                     data: JSON.stringify({username: data.user}),
                     contentType: 'application/json',

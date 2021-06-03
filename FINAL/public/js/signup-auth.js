@@ -1,5 +1,4 @@
 let username;
-let db_user = 'debug_signup';
 
 $(document).ready(function() {
     // Nascondo gli alert che sarebbero visualizzati di default
@@ -62,13 +61,13 @@ $(document).ready(function() {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 dataType: 'json',
-                //async: false,
+                //async: false,     //solo debugging
                 success: function(data){
-                    localStorage.setItem('user', JSON.stringify(data));  
+                    localStorage.setItem('user', JSON.stringify(data));  //SETTO IL LOCALSTORAGE
                 }           
             });
 
-            //////////////////////////
+            
             user.updateProfile({
                 displayName: name
             });
@@ -101,7 +100,6 @@ $(document).ready(function() {
 auth.onAuthStateChanged(user => {
     if(user) {
         console.log('user logged in: ',user);
-        //localStorage.setItem('user', JSON.stringify(db_user));
     } else {
         console.log('user logged out');
         localStorage.clear();

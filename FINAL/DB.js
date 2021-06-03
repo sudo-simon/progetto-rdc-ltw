@@ -32,16 +32,7 @@ class DB {
                         return -1;
                         });
                 
-                    })
-               /* let newUser = new sapiens.User(username,nome,cognome,email,password,googleId);
-            
-                this.db.insert(newUser).then((data) => {
-                    return this.db.get(data.id);
-                }).catch((err) => {
-                    console.log('DATABASE ERROR: '+err);
-                    return -1;
-                });*/
-
+                });
             }
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
@@ -77,13 +68,6 @@ class DB {
                     // result == true	   //myPlaintextPassword è la password corretta
                     // result == false     //myPlaintextPassword non è la password corretta
                 });
-                
-                /*if (password == user.password){
-                    return user;
-                }
-                else { 
-                    return false;
-                }*/
             }
             else{ return false; }
 
@@ -93,7 +77,7 @@ class DB {
         });
     }
 
-    addFriend(username,friendToAdd) {               //AGGIUNGE SOLO L'ID DELLO USER NEL DB ALLA LISTA AMICI
+    addFriend(username,friendToAdd) {               //AGGIUNGE SOLO L'ID DELLO USER ALLA LISTA AMICI
         let user;
         return this.db.partitionedFind('user', { 'selector' : { 'username' : username}}).then((data) => {
             user = data.docs[0];
@@ -112,7 +96,7 @@ class DB {
         });
     }
 
-    updateInfos(username,newNome,newCognome,newDesc,newProPic){
+    updateInfos(username,newNome,newCognome,newDesc,newProPic){     //Aggiorna le info modificabilii dall'utente nel DB.
         let user;
         return this.getUser(username).then((returned) => {
             user = returned;
@@ -133,7 +117,7 @@ class DB {
         });
     }
 
-    getFriendList(username) {
+    getFriendList(username) {       //Metodo per facilitare la restituzione della lista amici.
         let user;
         return this.getUser(username).then((returned) => {
             user = returned;
@@ -141,31 +125,7 @@ class DB {
         });
     }
 
-    isFriendOf(userObj,friendToSearch) {
-        let friendList = userObj.friendList;
-        let friend;
-        return this.getUser(friendToSearch).then((data) => {
-            friend = data.username;
-            return friendList.includes(friend);
-            
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
-        })
-    }
-
-    getTotalCfu(username) {
-        let total = 0;
-        return this.getUser(username).then((returned) => {
-            let postList = returned.postList;
-            for(let post of postList){
-                total += post.cfu;
-            }
-            return total;
-        });
-    }
-
-    addCfu(/*post,*/postId,ownerUsername,voterUsername){
+    addCfu(/*post,*/postId,ownerUsername,voterUsername){        //Aggiunge un voto al post selezionato e all'autore del post.
         return this.getUser(ownerUsername).then((returned) => {
             let user = returned;
             
@@ -189,7 +149,7 @@ class DB {
         });
     }
 
-    findUsersByName(nome) {
+    findUsersByName(nome) {         //Metodo di  ricerca usato nelle query.
         let people = [];      
         let lowerNome = nome.toLowerCase();
         let upperNome = nome.charAt(0).toUpperCase() + nome.slice(1);
@@ -203,7 +163,6 @@ class DB {
                 for(let person of data.docs){
                     people.push(person);
                 }
-                //people.numItems = i;
                 return people;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
@@ -216,7 +175,7 @@ class DB {
         });
     }
 
-    findUsersBySurname(cognome) {
+    findUsersBySurname(cognome) {           //Metodo di ricerca usato nelle query.
         let people = [];
         let lowerCognome = cognome.toLowerCase();
         let upperCognome = cognome.charAt(0).toUpperCase() + cognome.slice(1);
@@ -229,7 +188,6 @@ class DB {
                 for(let person of data.docs){
                     people.push(person);
                 }
-                //people.numItems = i;
                 return people;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
@@ -243,7 +201,7 @@ class DB {
     }
     
 
-    searchAux (ret,ret2,callback){
+    searchAux (ret,ret2,callback){          //Metodo ausiliario dei precedenti.
         if (ret2.length==0) callback(ret);
         else if (ret.length==0) callback(ret2)
         else{
@@ -262,33 +220,14 @@ class DB {
 
     //----------------------------------------------- POST METHODS -------------------------------------
 
-    addPost(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage) {
+    addPost(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage) {      //Creazione nuovo post.
         let newPost = new sapiens.Post(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage);
-        //let post;
         let user;
+
         return this.getUser(username).then((returned) => {
             user = returned;
             newPost.authorProfilePic = user.profilePic;
             newPost.postAuthorName = user.nome+' '+user.cognome;
-
-            /* this.db.insert(newPost).then((data) => {
-                this.db.get(data.id).then((data) => {
-                    post = data;
-                    user.postList.unshift(post);
-                
-                    this.db.insert(user).then((data) => {
-                        return post;
-                    }).catch((err) => {
-                        console.log('DATABASE ERROR: '+err);
-                        return -1;
-                    });
-
-                }).catch((err) => {
-                    console.log('DATABASE ERROR: '+err);
-                    return -1;
-                });*/
-
-
             user.postList.unshift(newPost);
             
             this.db.insert(user).then((data) => {
@@ -302,7 +241,7 @@ class DB {
     }
 
 
-    getPostList(username) {
+    getPostList(username) {         //Ritorna la lista dei post di un utente sotto forma di JSON.
         let result = {};
         let user;
         return this.getUser(username).then((returned) => {
@@ -322,7 +261,7 @@ class DB {
     }
 
 
-    getHomeFeed(username) {
+    getHomeFeed(username) {         //Ritorna la lista dei post degli utenti seguiti da "username", da caricare nella home.
         console.log();
         var result = [];
         return this.getUser(username).then((returned) => {
@@ -331,7 +270,7 @@ class DB {
         }); 
     }
     
-    auxFeedHomeP(friendList,result){
+    auxFeedHomeP(friendList,result){    //Ausiliaria di getHomeFeed.
         if (friendList.length==0) return result;
         else {
             return this.getUser(friendList[0]).then((returned)=>{
@@ -342,9 +281,9 @@ class DB {
         }
     }
 
-    //----------------------------------------------- COMMENT METHODS -------------------------------------
+    //----------------------------------------------- COMMENT METHODS (IMPLEMENTAZIONE FUTURA) -------------------------------------
 
-    addComment(postId,authorId,commentText) {
+    addComment(postId,authorId,commentText) {       
         let newComment = new sapiens.Comment(authorId,commentText);
         let comment;
         let post;

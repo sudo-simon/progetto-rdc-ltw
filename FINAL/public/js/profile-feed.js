@@ -1,34 +1,17 @@
-var tag = document.createElement('script');
+var tag = document.createElement('script');     //Inserimento dinamico dello script nella pagina (YT best practice).
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var feed = document.getElementById('post');
-//var yt_players = { numItems: 0 };
 
 
 
 function onYouTubeIframeAPIReady() {            //NEEDED TO INIT
-
     init_feed();
-    /*for (let i=0; i<yt_players.numItems; i++){
-        let player = yt_players[i.toString()]
-        var tmp = new YT.Player(player.divId, {
-            height: "390",
-            width: "640",
-            videoId: player.src.split('=')[1],
-            playerVars: {
-                "playsinline": 1
-            }/*,
-            events: {
-                "onReady": onPlayerReady
-            }
-        });
-    }*/
 }
 
 function init_feed() {
-    //console.log('DEBUGGONE');
     let user;
     if(localStorage.getItem('user') != null){
         user = JSON.parse(localStorage.getItem('user'));
@@ -60,7 +43,7 @@ function init_feed() {
             'X-Requested-With': 'XMLHttpRequest'
         },
         dataType: 'json',
-        //async: false,
+        //async: false, //solo debugging
         success: function(data){
             loadFeed(data);                             //oggetto con indici interi crescenti a partire da 0
         }                                               //for(i) postList.i.author = ... / postList[i].author =
@@ -90,6 +73,8 @@ function loadFeed(postList) {
         let audio_src = postList[i.toString()].dbAudio;
         let youtube_src = postList[i.toString()].youtubeUrl;    
         let upvoters = postList[i.toString()].upvoters;
+
+        //Parametri per la corretta visualizzazione di ogni post generato.
         
         let img_visibility = 'visually-hidden'; 
         let video_visibility = 'visually-hidden'; 
@@ -133,7 +118,7 @@ function loadFeed(postList) {
                             '<audio class="'+audio_visibility+'" controls>'+
                                 '<source src="'+audio_src+'" type="audio/mp3">'+
                             '</audio>'+
-                            '<div class="'+youtube_visibility+'" id="youtube_embed_'+youtube_i+'"></div>'+
+                            '<div class="'+youtube_visibility+' youtube" id="youtube_embed_'+youtube_i+'"></div>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
@@ -149,26 +134,15 @@ function loadFeed(postList) {
             '</div>'+
         '</div>');
 
-        /*if (youtube_src != ""){
-            yt_players[youtube_i.toString()] = {
-                divId: 'youtube_embed_'+youtube_i, 
-                src: youtube_src
-            };
-            yt_players.numItems += 1;
-            youtube_i++;
-        }*/
 
         if (youtube_src != ""){
-            new YT.Player('youtube_embed_'+youtube_i, {
+            new YT.Player('youtube_embed_'+youtube_i, {     //Costruttore del player di YouTube.
                 height: "100%",
                 width: "100%",
                 videoId: youtube_src.split('?v=')[1],
                 playerVars: {
                     "playsinline": 1
-                }/*,
-                events: {
-                    "onReady": onPlayerReady
-                }*/
+                }
             });
         }
 
@@ -180,7 +154,7 @@ function loadFeed(postList) {
 
 
 
-function addPost() {
+function addPost() {        //Creazione di un nuovo post da parte dell'utente.
 
     let textContent = document.getElementById('testo_post').value;
     let fileArray;
@@ -225,15 +199,14 @@ function addPost() {
     }
 
 
-    let formData = new FormData();
+    let formData = new FormData();      //Costruzione di oggetto form multipart/form-data gestito da formidable lato server.
     formData.append('upload',mediaContent);
     formData.append('username',user.username);
     formData.append('textContent',textContent);
     formData.append('youtubeUrl',youtubeUrl);
     formData.append('mediaType',mediaType);
 
-    //console.log(formData.get('upload').name+' '+formData.get('username')+' '+formData.get('textContent')+' '+formData.get('mediaType'));
-
+    
     $.ajax({
         type: 'POST',
         data: formData,
@@ -245,11 +218,10 @@ function addPost() {
             'X-Requested-With': 'XMLHttpRequest'
         },
         dataType: 'json',
-        //async: false,
+        //async: false,     //solo debugging
         success: function(data){
             if (data.status == 'OK'){
                 document.location.reload();
-                //console.log(JSON.stringify(data));
             }
             else{
                 alert("Errore nella creazione del post.");
@@ -262,18 +234,15 @@ function addPost() {
 
 
 
-function addCfu(button) {
+function addCfu(button) {       //Upvote di un post. Passaggio di parametri tramite l'id del bottone.
     
-    //console.log("DEBUGGONE: SEI IN ADDCFU");
     let activeUser = JSON.parse(localStorage.getItem('user'));
     let upvoter = activeUser.username;
 
     let postId = button.id.split('---')[0];
     let authorUsername = button.id.split('---')[1];
 
-    //console.log(postId+' '+authorUsername);
-
-    if(upvoter == authorUsername) { alert("Non puoi darti CFU da solo (magari)."); return false; }
+    if(upvoter == authorUsername) { alert("Non puoi darti CFU da solo (magari)."); return false; }  //Se si sta visualizzando il proprio profilo.
     
     let obj = {
         postId: postId,
@@ -290,7 +259,7 @@ function addCfu(button) {
             'X-Requested-With': 'XMLHttpRequest'
         },
         dataType: 'json',
-        //async: false,
+        //async: false,     //solo debugging
         success: function(data){
             if (data.status == 'OK'){
                 button.style.pointerEvents = "none";

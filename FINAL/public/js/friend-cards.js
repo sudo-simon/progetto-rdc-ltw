@@ -4,12 +4,7 @@ $(document).ready(function() {
     var friendList=user.friendList;
     var nFriend=friendList.length;
     var i=0;
-
-    /*$.get("elements/friend-card.html", function(data) {       // PROVA
-        for(i=0;i<30;i++) {
-            $("#amici").prepend(data);
-        }
-    })*/
+    
     
     var friend;
     while (i<15 && i<nFriend) {
@@ -23,7 +18,7 @@ $(document).ready(function() {
               var res=JSON.parse(data);
               var propic=res.profilePic;
               var profile = "/profile?user="+res.username;  // url
-              var name = res.nome+" "+res.cognome;  // ATT: con nomi troppo lunghi ci sono problemi di formattazione
+              var name = res.nome+" "+res.cognome;  
               $("#amici").prepend('<!-- card -->'+
                   '<div class="card shadow">'+
                       '<img src="'+propic+'" class="card-img-top" alt="immagine_profilo">'+
