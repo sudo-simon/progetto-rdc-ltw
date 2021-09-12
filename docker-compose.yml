@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+
+
+    node1:
+        image: "node:latest"
+        user: "node"
+        depends_on: 
+            - rabbitmq
+            - couchdb
+        working_dir: /home/node/app
+        volumes:
+            - ./app:/home/node/app
+        environment:
+            - INSTANCE=node1
+            - NODE_ENV=development
+            - PORT=8080
+        command: "npm start"
+        
+    node2:
+        image: "node:latest"
+        user: "node"
+        depends_on: 
+            - rabbitmq
+            - couchdb
+        working_dir: /home/node/app
+        volumes:
+            - ./app:/home/node/app
+        environment:
+            - INSTANCE=node2
+            - NODE_ENV=development
+            - PORT=8080
+        command: "npm start"
+
+    node3:
+        image: "node:latest"
+        user: "node"
+        depends_on: 
+            - rabbitmq
+            - couchdb
+        working_dir: /home/node/app
+        volumes:
+            - ./app:/home/node/app
+            - ./app/wsServer:/home/node/app/wsServer
+        environment:
+            - INSTANCE=node3
+            - NODE_ENV=development
+            - PORT=9998
+        command: "node wsServer.js"
+
+    nginx:
+        image: 
+            "nginx"
+        volumes: 
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/cert.pem:/etc/nginx/certs/cert.pem
+            - ./nginx/key.pem:/etc/nginx/certs/key.pem
+        depends_on: 
+            - node1
+            - node2
+            - node3
+        ports:
+            - "8080:80"
+            - "8887:443"
+        expose: 
+            - "80"
+            - "443"
+        logging:
+            driver: none
+
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: 'rabbitmq_amqp'
+        depends_on:
+            - couchdb
+        ports:
+            - 5672:5672
+            - 15672:15672
+        logging:
+            driver: none
+
+    couchdb:
+        image: couchdb
+        container_name: 'couchdb_database'
+        ports: 
+            - 5984:5984
+            - 4369:4369
+            - 9100:9100  
+        environment:
+            - COUCHDB_USER=admin
+            - COUCHDB_PASSWORD=admin
+        logging:
+            driver: none
+
+

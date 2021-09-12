@@ -1,0 +1,624 @@
+{
+  "docs": [
+    {
+      "_id": "user:00fdcb78-fd06-44b2-9925-07f832ad1490",
+      "username": "dimatteo.1655150",
+      "nome": "Luca",
+      "cognome": "Di Matteo",
+      "email": "dimatteo.1655150@studenti.uniroma1.it",
+      "password": "$2b$10$e2NL/3CIaeO58rij9tGK1.wA1.js11xNgCkKVugHdg2Il.OWfg8n2",
+      "googleId": "",
+      "profilePic": "assets/icons/cb5d1c7f-8788-41bf-8819-2b79c539893fjojo.jpeg",
+      "friendList": [
+        "basile.1845115",
+        "palmieri.1764452",
+        "neri.123456789987654",
+        "bianchi.78455654785"
+      ],
+      "postList": [
+        {
+          "_id": "post:48db50ce-ba89-4ca6-a8d0-77ec914efae7",
+          "postAuthorId": "dimatteo.1655150",
+          "postAuthorName": "Luca Di Matteo",
+          "authorProfilePic": "assets/icons/cb5d1c7f-8788-41bf-8819-2b79c539893fjojo.jpeg",
+          "textContent": "",
+          "youtubeUrl": "https://www.youtube.com/watch?v=0xUioPsLRKA",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/31/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:b72c46b5-6229-4e74-9e14-d61682f3e19a",
+          "postAuthorId": "dimatteo.1655150",
+          "postAuthorName": "Luca Di Matteo",
+          "authorProfilePic": "assets/icons/cb5d1c7f-8788-41bf-8819-2b79c539893fjojo.jpeg",
+          "textContent": "Bellissima città",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/16297ce3-7947-41a0-ad5c-f69c648b66dddownload (3).jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/24/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:b87bb06a-f791-481c-a499-ba845579b6ed",
+          "postAuthorId": "dimatteo.1655150",
+          "postAuthorName": "Luca Di Matteo",
+          "authorProfilePic": "assets/icons/cb5d1c7f-8788-41bf-8819-2b79c539893fjojo.jpeg",
+          "textContent": "bono",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/4ad45a56-2a06-4a8c-b223-1a6780f3dbb7cibo4.jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/15/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:704d025e-ef91-4701-90a1-9442bb4b9eb6",
+          "postAuthorId": "dimatteo.1655150",
+          "postAuthorName": "Luca Di Matteo",
+          "authorProfilePic": "assets/icons/cb5d1c7f-8788-41bf-8819-2b79c539893fjojo.jpeg",
+          "textContent": "fondamentale",
+          "youtubeUrl": "https://www.youtube.com/watch?v=N3RK2dZpQXs",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/11/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:25113a63-f12c-4f7c-9467-76eef16706f8",
+          "postAuthorId": "dimatteo.1655150",
+          "postAuthorName": "Luca Di Matteo",
+          "authorProfilePic": "assets/icons/cb5d1c7f-8788-41bf-8819-2b79c539893fjojo.jpeg",
+          "textContent": "il mio primo post",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/10/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "Nigerundayo Smokey!",
+        "courses": [],
+        "cfu": 3,
+        "subscriptionDate": "5/10/2021"
+      }
+    },
+    {
+      "_id": "user:13172f7c-af6d-4693-aaa1-2799596c1036",
+      "username": "rossi.123321123321",
+      "nome": "Mario",
+      "cognome": "Rossi",
+      "email": "rossi.123321123321@studenti.uniroma1.it",
+      "password": "$2b$10$rwh8.69Sv1O.GB6KN7hmUeRm5BS0rowJDlny8AafPeAdJnKdf3/2e",
+      "googleId": "",
+      "profilePic": "assets/icons/eef1d5ce-f54f-4fe4-9a80-f2a0af9804d2profilo2.jpeg",
+      "friendList": [
+        "basile.1845115",
+        "dimatteo.1655150"
+      ],
+      "postList": [
+        {
+          "_id": "post:2790c126-a951-4153-88b6-3de45e1b5be6",
+          "postAuthorId": "rossi.123321123321",
+          "postAuthorName": "Mario Rossi",
+          "authorProfilePic": "assets/icons/eef1d5ce-f54f-4fe4-9a80-f2a0af9804d2profilo2.jpeg",
+          "textContent": "Io studio questo:",
+          "youtubeUrl": "https://www.youtube.com/watch?v=M9mxKmncRhM",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/31/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:fa19f4d1-2c4e-4395-9b0f-f0dbeedd62c9",
+          "postAuthorId": "rossi.123321123321",
+          "postAuthorName": "Mario Rossi",
+          "authorProfilePic": "assets/icons/eef1d5ce-f54f-4fe4-9a80-f2a0af9804d2profilo2.jpeg",
+          "textContent": "It's me",
+          "youtubeUrl": "https://www.youtube.com/watch?v=rLl9XBg7wSs",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/31/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "ciao, io sono Mario",
+        "courses": [],
+        "cfu": 0,
+        "subscriptionDate": "5/31/2021"
+      }
+    },
+    {
+      "_id": "user:297d39db-77c8-4ae5-93cc-b067898096cf",
+      "username": "palmieri.1234567896",
+      "nome": "Luca",
+      "cognome": "Palmieri",
+      "email": "palmieri.1234567896@studenti.uniroma1.it",
+      "password": "$2b$10$0mWWZCLH.srWS2uQzecooeYIIpP8j3AOIRrvRxtijf3sC/5LyPeH.",
+      "googleId": "",
+      "profilePic": "assets/icons/8861354b-04d9-4195-8d61-85fbbb9e236799571ca3-c982-43de-8899-a0e5dee5a28d.jpeg",
+      "friendList": [
+        "neri.123456789987654",
+        "bianchi.78455654785",
+        "basile.1845115",
+        "dimatteo.1655150"
+      ],
+      "postList": [
+        {
+          "_id": "post:879b91de-24b1-4c6b-8bcf-f36ebd307a47",
+          "postAuthorId": "palmieri.1234567896",
+          "postAuthorName": "Luca Palmieri",
+          "authorProfilePic": "assets/icons/8861354b-04d9-4195-8d61-85fbbb9e236799571ca3-c982-43de-8899-a0e5dee5a28d.jpeg",
+          "textContent": "a chi serve una mano per analisi1 ?",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/31/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:8d4b11c4-a78b-4fd7-bac8-4c94ec959750",
+          "postAuthorId": "palmieri.1234567896",
+          "postAuthorName": "Luca Palmieri",
+          "authorProfilePic": "assets/icons/8861354b-04d9-4195-8d61-85fbbb9e236799571ca3-c982-43de-8899-a0e5dee5a28d.jpeg",
+          "textContent": "",
+          "youtubeUrl": "https://www.youtube.com/watch?v=0A0CRv1oHK0",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/31/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:60e396fd-0cb9-4898-9cb9-6cc57e819d67",
+          "postAuthorId": "palmieri.1234567896",
+          "postAuthorName": "Luca Palmieri",
+          "authorProfilePic": "assets/icons/8861354b-04d9-4195-8d61-85fbbb9e236799571ca3-c982-43de-8899-a0e5dee5a28d.jpeg",
+          "textContent": "guardate:",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/f38513db-5c46-44c9-af07-bb7f05c36dd1images.jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/31/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "Business-man",
+        "courses": [],
+        "cfu": 0,
+        "subscriptionDate": "5/31/2021"
+      }
+    },
+    {
+      "_id": "user:39e92f19-93a0-4872-adfd-fee822b90d96",
+      "username": "bianchi.78455654785",
+      "nome": "Dario",
+      "cognome": "Bianchi",
+      "email": "bianchi.78455654785@studenti.uniroma1.it",
+      "password": "$2b$10$OaQgwCtdL4sIogIB9hqqjOZajBjFlOrbMbM1RFpkeFWZ9iXuDzcTm",
+      "googleId": "",
+      "profilePic": "assets/icons/df97ef15-06b3-4d3c-bc6a-c3e3475b8bdfprofilo1.jpeg",
+      "friendList": [
+        "basile.1845115",
+        "dimatteo.1655150",
+        "palmieri.1764452"
+      ],
+      "postList": [
+        {
+          "_id": "post:d79e2fa9-feba-4935-a85b-d63685ba9d86",
+          "postAuthorId": "bianchi.78455654785",
+          "postAuthorName": "Dario Bianchi",
+          "authorProfilePic": "assets/icons/df97ef15-06b3-4d3c-bc6a-c3e3475b8bdfprofilo1.jpeg",
+          "textContent": "",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/7210f9b3-799e-4d06-a77c-3113bf6c94a0cibo5.jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/13/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:21ec5316-98b0-47a4-a6b7-51576579c801",
+          "postAuthorId": "bianchi.78455654785",
+          "postAuthorName": "Dario Bianchi",
+          "authorProfilePic": "assets/icons/df97ef15-06b3-4d3c-bc6a-c3e3475b8bdfprofilo1.jpeg",
+          "textContent": "cerco ripetizioni di analisi 1",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/12/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:216304c6-2432-45c3-a56f-6c84fc71a14a",
+          "postAuthorId": "bianchi.78455654785",
+          "postAuthorName": "Dario Bianchi",
+          "authorProfilePic": "assets/icons/df97ef15-06b3-4d3c-bc6a-c3e3475b8bdfprofilo1.jpeg",
+          "textContent": "un video molto simpatico",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "user_uploads/d24bcc65-0958-4887-bf7f-90533e14705fsample-mp4-file.mp4",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/11/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "",
+        "courses": [],
+        "cfu": 2,
+        "subscriptionDate": "5/10/2021"
+      }
+    },
+    {
+      "_id": "user:45b85056-7778-4162-af29-3a8bd52032df",
+      "username": "neri.123456789987654",
+      "nome": "Eva",
+      "cognome": "Neri",
+      "email": "neri.123456789987654@studenti.uniroma1.it",
+      "password": "$2b$10$Rkt3md43JUcXCrRRsFIq7.OmE1G0075gyFbSwKXgzu7TM.S7RcUzq",
+      "googleId": "",
+      "profilePic": "assets/icons/557ee2b3-1ac0-48a6-891c-b4c70be71fe8profilo4.jpeg",
+      "friendList": [
+        "palmieri.1764452"
+      ],
+      "postList": [
+        {
+          "_id": "post:4fff167d-fb51-49f3-9480-b687d2a91370",
+          "postAuthorId": "neri.123456789987654",
+          "postAuthorName": "Eva Neri",
+          "authorProfilePic": "assets/icons/557ee2b3-1ac0-48a6-891c-b4c70be71fe8profilo4.jpeg",
+          "textContent": "BELLISSIMA",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/148c625d-16f9-48af-bd39-1f1520906560download (2).jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/30/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:38adc926-d404-4b79-a5a5-1a6e77a4defe",
+          "postAuthorId": "neri.123456789987654",
+          "postAuthorName": "Eva Neri",
+          "authorProfilePic": "assets/icons/557ee2b3-1ac0-48a6-891c-b4c70be71fe8profilo4.jpeg",
+          "textContent": "Studiare economia",
+          "youtubeUrl": "https://www.youtube.com/watch?v=VvTCvsgLPuQ",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/21/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:8c8c384c-4668-454c-8cea-0c9d788310ff",
+          "postAuthorId": "neri.123456789987654",
+          "postAuthorName": "Eva Neri",
+          "authorProfilePic": "assets/icons/557ee2b3-1ac0-48a6-891c-b4c70be71fe8profilo4.jpeg",
+          "textContent": "Questo è il mo primo post",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/20/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "Studio economia, ciao mondo",
+        "courses": [],
+        "cfu": 0,
+        "subscriptionDate": "5/20/2021"
+      }
+    },
+    {
+      "_id": "user:6e15a181-7139-4cb5-99de-4aedbf8ab09d",
+      "username": "basile.1845115",
+      "nome": "Dario",
+      "cognome": "Basile",
+      "email": "basile.1845115@studenti.uniroma1.it",
+      "password": "$2b$10$/1KSH90ZV.Jg6fU43p5QWuztV4W/NQz86NU2l2Qwxk1GOC3rSxtgu",
+      "googleId": "",
+      "profilePic": "assets/icons/eefe2a15-40ea-4e69-adad-64ae6b367abfprofilopic.jpeg",
+      "friendList": [
+        "palmieri.1764452",
+        "dimatteo.1655150",
+        "neri.123456789987654",
+        "bianchi.78455654785",
+        "palmieri.1234567896"
+      ],
+      "postList": [
+        {
+          "_id": "post:b2511efc-3646-4936-a213-ce66088067aa",
+          "postAuthorId": "basile.1845115",
+          "postAuthorName": "Dario Basile",
+          "authorProfilePic": "assets/icons/eefe2a15-40ea-4e69-adad-64ae6b367abfprofilopic.jpeg",
+          "textContent": "",
+          "youtubeUrl": "https://www.youtube.com/watch?v=fjQPLqm8cJM",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/20/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:cb4322fb-e357-4d52-adc8-2d7da5eeab54",
+          "postAuthorId": "basile.1845115",
+          "postAuthorName": "Dario Basile",
+          "authorProfilePic": "assets/icons/eefe2a15-40ea-4e69-adad-64ae6b367abfprofilopic.jpeg",
+          "textContent": "poteva essere peggio:",
+          "youtubeUrl": "https://www.youtube.com/watch?v=olKKWG3HwOg",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/10/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:b4aaf01a-0531-475e-8c85-33a6435c72a4",
+          "postAuthorId": "basile.1845115",
+          "postAuthorName": "Dario Basile",
+          "authorProfilePic": "assets/icons/eefe2a15-40ea-4e69-adad-64ae6b367abfprofilopic.jpeg",
+          "textContent": "ho tanta fame",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/16a48c04-994d-401a-8d9e-9d320a358cabcibo1.jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "4/26/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:22694927-a40f-4234-89b8-b2a822d382e6",
+          "postAuthorId": "basile.1845115",
+          "postAuthorName": "Dario Basile",
+          "authorProfilePic": "assets/icons/eefe2a15-40ea-4e69-adad-64ae6b367abfprofilopic.jpeg",
+          "textContent": "studio qui",
+          "youtubeUrl": "https://www.youtube.com/watch?v=6ztXOnK2w6U",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "4/10/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:e15ae539-935e-459d-a99d-eb4054f0dbdd",
+          "postAuthorId": "basile.1845115",
+          "postAuthorName": "Dario Basile",
+          "authorProfilePic": "assets/icons/eefe2a15-40ea-4e69-adad-64ae6b367abfprofilopic.jpeg",
+          "textContent": "primo post",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "4/2/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "Studio ingegneria informatica, ma nulla di serio",
+        "courses": [],
+        "cfu": 0,
+        "subscriptionDate": "4/2/2021"
+      }
+    },
+    {
+      "_id": "user:7c60d787-e64e-40c7-b197-a389eca118ac",
+      "username": "palmieri.1764452",
+      "nome": "Simone",
+      "cognome": "Palmieri",
+      "email": "palmieri.1764452@studenti.uniroma1.it",
+      "password": "$2b$10$aoDnHLocrdKequqyJDXkjOw6dsve87jXeG4.JCc6z739vL1AxWpyS",
+      "googleId": "",
+      "profilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+      "friendList": [
+        "basile.1845115",
+        "dimatteo.1655150",
+        "neri.123456789987654",
+        "palmieri.1234567896"
+      ],
+      "postList": [
+        {
+          "_id": "post:c4c53a85-2e76-4b29-843b-759572875e3c",
+          "postAuthorId": "palmieri.1764452",
+          "postAuthorName": "Simone Palmieri",
+          "authorProfilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+          "textContent": "molto interessante, ve lo consiglio",
+          "youtubeUrl": "https://www.youtube.com/watch?v=IrauF74kGv0",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/20/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:cde31f8a-f0a3-41aa-aa38-57fc53fc290c",
+          "postAuthorId": "palmieri.1764452",
+          "postAuthorName": "Simone Palmieri",
+          "authorProfilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+          "textContent": "",
+          "youtubeUrl": "https://www.youtube.com/watch?v=7U-RbOKanYs",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/15/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:c20c93ef-cf07-457b-88f7-16866ae153aa",
+          "postAuthorId": "palmieri.1764452",
+          "postAuthorName": "Simone Palmieri",
+          "authorProfilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+          "textContent": "",
+          "youtubeUrl": "https://www.youtube.com/watch?v=5NV6Rdv1a3I",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/10/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:e3f5a97f-0bb3-4e8a-bf38-31318f7752ac",
+          "postAuthorId": "palmieri.1764452",
+          "postAuthorName": "Simone Palmieri",
+          "authorProfilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+          "textContent": "",
+          "youtubeUrl": "",
+          "dbImage": "user_uploads/d94c20b6-df92-486b-a130-2291fbc0945bimages (1).jpeg",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "5/1/2021",
+          "commentList": [],
+          "cfu": 1,
+          "upvoters": [
+            "basile.1845115"
+          ]
+        },
+        {
+          "_id": "post:ed1e84a9-5524-472c-9810-c5d89f5b3e73",
+          "postAuthorId": "palmieri.1764452",
+          "postAuthorName": "Simone Palmieri",
+          "authorProfilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+          "textContent": "che bella la programmzione asincrona",
+          "youtubeUrl": "",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "4/25/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        },
+        {
+          "_id": "post:cbe2e97f-c200-4cbd-a668-dc3f7a437b7a",
+          "postAuthorId": "palmieri.1764452",
+          "postAuthorName": "Simone Palmieri",
+          "authorProfilePic": "assets/icons/d54c77bb-2375-4450-8dca-bf444501d97aplaceholder-profile-sq.jpg",
+          "textContent": "",
+          "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          "dbImage": "",
+          "dbVideo": "",
+          "dbAudio": "",
+          "driveImage": "",
+          "creationDate": "4/20/2021",
+          "commentList": [],
+          "cfu": 0,
+          "upvoters": []
+        }
+      ],
+      "chatList": [],
+      "infos": {
+        "description": "",
+        "courses": [],
+        "cfu": 4,
+        "subscriptionDate": "4/20/2021"
+      }
+    }
+  ]
+}
