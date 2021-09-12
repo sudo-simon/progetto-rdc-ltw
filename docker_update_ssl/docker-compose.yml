@@ -15,9 +15,9 @@ services:
         environment:
             - INSTANCE=node1
             - NODE_ENV=development
-            - PORT=3000
+            - PORT=8080
         command: "npm start"
-
+        
     node2:
         image: "node:latest"
         user: "node"
@@ -30,9 +30,9 @@ services:
         environment:
             - INSTANCE=node2
             - NODE_ENV=development
-            - PORT=3000
+            - PORT=8080
         command: "npm start"
-    
+
     node3:
         image: "node:latest"
         user: "node"
@@ -41,12 +41,13 @@ services:
             - couchdb
         working_dir: /home/node/app
         volumes:
-            - ./app/wsServer:/home/node/app
+            - ./app:/home/node/app
+            - ./app/wsServer:/home/node/app/wsServer
         environment:
             - INSTANCE=node3
             - NODE_ENV=development
             - PORT=9998
-        command: "npm start"
+        command: "node wsServer.js"
 
     nginx:
         image: 
@@ -65,6 +66,8 @@ services:
         expose: 
             - "80"
             - "443"
+        logging:
+            driver: none
 
 
     rabbitmq:
