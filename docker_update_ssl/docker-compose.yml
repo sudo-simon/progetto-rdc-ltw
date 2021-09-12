@@ -15,7 +15,7 @@ services:
         environment:
             - INSTANCE=node1
             - NODE_ENV=development
-            - PORT=8080
+            - PORT=3000
         command: "npm start"
         
     node2:
@@ -30,8 +30,9 @@ services:
         environment:
             - INSTANCE=node2
             - NODE_ENV=development
-            - PORT=8080
+            - PORT=3000
         command: "npm start"
+
 
     node3:
         image: "node:latest"
@@ -49,6 +50,21 @@ services:
             - PORT=9998
         command: "node wsServer.js"
 
+    node4:
+        image: "node:latest"
+        user: "node"
+        depends_on: 
+            - rabbitmq
+            - couchdb
+        working_dir: /home/node/app
+        volumes:
+            - ./app:/home/node/app
+        environment:
+            - INSTANCE=node4
+            - NODE_ENV=development
+            - PORT=3001
+        command: "node ./api/apiServer.js"
+
     nginx:
         image: 
             "nginx"
@@ -60,6 +76,7 @@ services:
             - node1
             - node2
             - node3
+            - node4
         ports:
             - "8080:80"
             - "8887:443"
@@ -67,8 +84,7 @@ services:
             - "80"
             - "443"
         logging:
-            driver: none
-
+            driver: none    
 
     rabbitmq:
         image: rabbitmq:3-management-alpine
