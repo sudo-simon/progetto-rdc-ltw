@@ -1,0 +1,8 @@
+{
+    "name": "Sapiens",
+    "version": "1.0.0",
+    "description": "Api documentation for Sapiens social network",
+    "title": "Sapiens apidoc",
+    "url" : "http://localhost:8080",
+    "sampleUrl" : "http://localhost:8080"
+  }

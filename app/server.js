@@ -9,9 +9,11 @@ var database = new DB("sapiens-db");
 
 const fs = require('fs');
 const http = require('http');
+const https = require('https');
 const express = require('express');
 var amqp = require('amqplib/callback_api');
 const formidable = require('formidable');
+const {google} = require('googleapis');
 
 const cors = require('cors');
 
@@ -22,12 +24,14 @@ const phpExpress = require('php-express')({
 const path = require('path');
 
 const app = express();
-const server = http.Server(app);
+const server = https.Server(app); //HTTPS
 
-const host = 'http://localhost';
+const host = 'https://localhost';  //HTTPS
 const port = process.env.PORT || 8080;
 
 const CHAT = require('./CHAT');
+const { version } = require('os');
+const { file } = require('googleapis/build/src/apis/file');
 var chat_m = new CHAT();
 
 app.set('view engine','ejs');                 //PERMETTE DI SERVIRE FILE EJS
@@ -307,6 +311,65 @@ app.get("/gestione/search",function(req,res){
 });
 
 
+
+
+//---------------------- ROUTES GOOGLE----------------------------
+
+
+app.get("/googletest", function(req, res){
+  res.render('./GOOGLETEST/GOOGLETEST.ejs');
+});
+
+app.post("/googleupload", function(req,res){
+  let fileId = req.query.fileId;
+  let token = req.query.token;
+  let apiKey = req.query.apiKey;
+  let destPath = path.join(__dirname,'public/google_testing')+'/'+uuid.v4();
+  let dest = fs.createWriteStream(destPath);
+  let resData = {status: '', filePath: destPath.split('/public')[1] };
+
+  let options = {
+    hostname: "https://www.googleapis.com",
+    path: "/drive/v3/files/"+fileId+"?key="+apiKey+"&alt=media",
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer "+token,
+      "Accept": "application/json"  //SERVE PER IL DOWNLOAD??
+    }
+  };
+  let request = https.request(options, response => {
+    console.log("Status code drive download request: "+response.statusCode)
+    response.on('data', file => {
+      response.pipe(dest);
+      resData.status = 'OK';
+    });
+  });
+
+  request.on('error', err => {
+    console.log("Errore drive download request: "+err.message);
+    resData.status = 'ERR';
+  });
+
+  request.end();
+  
+  /*const drive = google.drive({version: "v3"});
+
+  drive.files.get({
+    fileId: fileId,
+    alt: 'media'
+  })
+    .on('end',function(){
+      console.log("Update da drive: SUCCESS!");
+      resData.status = 'OK';
+    })
+    .on('error',function(err){
+      console.log("Update da drive: ERRORE!",err);
+      resData.status = 'ERR';
+    })
+    .pipe(dest);*/
+
+  res.send(JSON.stringify(resData));
+});
 
 //---------------------- FINE ROUTES----------------------------
 
