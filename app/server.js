@@ -17,8 +17,8 @@ const formidable = require('formidable');
 const {google} = require('googleapis');
 const {JWT} = require('google-auth-library');
 const {OAuth2Client} = require('google-auth-library');
-const clientSecret = require('./client_secret.json');
-const serviceAccount = require('./sapiens-service-account.json');
+//! const clientSecret = require('./client_secret.json');
+//! const serviceAccount = require('./sapiens-service-account.json');
 
 const cors = require('cors');
 
@@ -332,7 +332,6 @@ app.post("/googleupload", function(req,res){
   let apiKey = req.query.apiKey;
   //console.log(fileId,token,apiKey);
   var destPath = path.join(__dirname,'public/google_testing')+'/'+uuid.v4()+'.jpg';
-  //? let dest = fs.createWriteStream(destPath);
   var resData = {status: 'NULL', filePath: destPath.split('public/')[1] };
   var writeStream = fs.createWriteStream(destPath);
 
