@@ -5,7 +5,7 @@ var clientId = "990666211388-cb76b22m9gnvn7e8b99mpkc2ptp8vp37.apps.googleusercon
 
 var appId = "990666211388";
 
-var scope = ["https://www.googleapis.com/auth/drive.file"];
+var scope = ["https://www.googleapis.com/auth/drive.readonly"];
 
 var pickerApiLoaded = false;
 var oauthToken;
@@ -77,7 +77,7 @@ function driveUpload(fileId) {
     $.ajax({
         type: 'POST',
         //data: formData,
-        contentType: false,
+        //contentType: false,
         //cache: false,
         //processData: false,
         url: 'https://localhost:8887/googleupload?fileId='+fileId+'&token='+oauthToken+'&apiKey='+developerKey,      //SERVER POST
@@ -94,7 +94,7 @@ function driveUpload(fileId) {
                 return true;
             }
             else{
-                alert("Errore nell'upload da Google Drive.");
+                alert("Errore nell'upload da Google Drive. Debug: "+data.status+" "+data.filePath);
                 return false;
             }                
         }

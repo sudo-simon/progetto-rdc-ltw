@@ -13,7 +13,12 @@ const https = require('https');
 const express = require('express');
 var amqp = require('amqplib/callback_api');
 const formidable = require('formidable');
+
 const {google} = require('googleapis');
+const {JWT} = require('google-auth-library');
+const {OAuth2Client} = require('google-auth-library');
+const clientSecret = require('./client_secret.json');
+const serviceAccount = require('./sapiens-service-account.json');
 
 const cors = require('cors');
 
@@ -24,14 +29,15 @@ const phpExpress = require('php-express')({
 const path = require('path');
 
 const app = express();
-const server = https.Server(app); //HTTPS
+const server = http.Server(app); //! HTTPS
 
-const host = 'https://localhost';  //HTTPS
+const host = 'http://localhost';  //! HTTPS
 const port = process.env.PORT || 8080;
 
 const CHAT = require('./CHAT');
 const { version } = require('os');
 const { file } = require('googleapis/build/src/apis/file');
+const { response } = require('express');
 var chat_m = new CHAT();
 
 app.set('view engine','ejs');                 //PERMETTE DI SERVIRE FILE EJS
@@ -177,7 +183,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
     let textContent = fields.textContent;
     let yt_url = fields.youtubeUrl;
     let mediaType = fields.mediaType;
-    if (mediaType != ""){     //SE PRESENTE UN FILE NEL FORM, VIENE SCARICATO NEL SERVER CON UN ID UNIVOCO.
+    if (mediaType != ""){     //? SE PRESENTE UN FILE NEL FORM, VIENE SCARICATO NEL SERVER CON UN ID UNIVOCO.
       var oldPath = files.upload.path;
       var newPath = path.join(__dirname,'public/user_uploads')+'/'+uuid.v4()+files.upload.name;
       var dbPath = newPath.split('public/')[1];
@@ -324,12 +330,79 @@ app.post("/googleupload", function(req,res){
   let fileId = req.query.fileId;
   let token = req.query.token;
   let apiKey = req.query.apiKey;
-  let destPath = path.join(__dirname,'public/google_testing')+'/'+uuid.v4();
-  let dest = fs.createWriteStream(destPath);
-  let resData = {status: '', filePath: destPath.split('/public')[1] };
+  //console.log(fileId,token,apiKey);
+  var destPath = path.join(__dirname,'public/google_testing')+'/'+uuid.v4()+'.jpg';
+  //? let dest = fs.createWriteStream(destPath);
+  var resData = {status: 'NULL', filePath: destPath.split('public/')[1] };
+  var writeStream = fs.createWriteStream(destPath);
 
-  let options = {
-    hostname: "https://www.googleapis.com",
+
+
+  //! REST call
+
+  let httpsOptions = {
+    hostname: "www.googleapis.com",   //! RICHIEDE IL WWW
+    path: "/drive/v3/files/"+fileId+"?key="+apiKey+"&alt=media",
+    headers: {
+      "Authorization": "Bearer "+token,
+      //"Accept": "application/json"  //SERVE PER IL DOWNLOAD??
+    }
+  };
+
+  //?let request = https.get("https://www.googleapis.com/drive/v3/files/"+fileId+"?access_token="+token+"&alt=media&key="+apiKey+"&source=downloadUrl", function(response){
+  let request = https.get(httpsOptions, function(response) {
+    console.log("DEBUG: sei nella https.request");
+    if (response.statusCode != 200){
+      console.log("ERRORE: STATUS CODE = "+response.statusCode);
+      console.log("ERRORE: STATUS MESSAGE = ",response.statusMessage);
+      resData.status = 'ERR';
+      res.send(JSON.stringify(resData));
+    }
+    else{
+      response.on('data', (chunk) => {
+        
+        //?let pipeStream = response.pipe(writeStream);
+        writeStream.write(chunk);
+
+        //?pipeStream.on('finish', function(){
+        writeStream.on('finish', function(){
+          writeStream.close();
+
+          
+
+          //writeStream.on('close',function(){
+          //  console.log("SUCCESSO! File salvato in "+destPath);
+          //});
+        
+        }); 
+
+        
+
+      });
+
+
+      response.on('end', () => {
+        try{
+          console.log("SUCCESSO! File salvato in "+destPath);
+          resData.status = 'OK';
+          res.send(JSON.stringify(resData));
+        } catch (e) {
+          console.error(e.message);
+          resData.status = 'ERR';
+          res.send(JSON.stringify(resData));
+        }
+      });
+
+      
+
+    }
+  });
+
+
+  //! REST call v2
+
+  /* let options = {
+    hostname: "googleapis.com",
     path: "/drive/v3/files/"+fileId+"?key="+apiKey+"&alt=media",
     method: "GET",
     headers: {
@@ -337,10 +410,13 @@ app.post("/googleupload", function(req,res){
       "Accept": "application/json"  //SERVE PER IL DOWNLOAD??
     }
   };
-  let request = https.request(options, response => {
-    console.log("Status code drive download request: "+response.statusCode)
-    response.on('data', file => {
-      response.pipe(dest);
+
+  let request = http.request(options, function(response) {
+    console.log("Status code drive download request: "+response.statusCode);
+    response.on('data', function(file) {
+      let chunk = response.read();
+      //? response.pipe(dest);
+      fs.writeFileSync(destPath,file);
       resData.status = 'OK';
     });
   });
@@ -350,9 +426,19 @@ app.post("/googleupload", function(req,res){
     resData.status = 'ERR';
   });
 
-  request.end();
+  request.end(); */
+
+  //! Google JS API
+
+  /* const auth = new JWT(
+    serviceAccount.client_email,
+    null,
+    serviceAccount.private_key,
+    ["https://www.googleapis.com/auth/drive.file"]
+  );
+  await auth.authorize(); */
   
-  /*const drive = google.drive({version: "v3"});
+  /*const drive = google.drive({version: "v3", auth});
 
   drive.files.get({
     fileId: fileId,
@@ -368,7 +454,7 @@ app.post("/googleupload", function(req,res){
     })
     .pipe(dest);*/
 
-  res.send(JSON.stringify(resData));
+  
 });
 
 //---------------------- FINE ROUTES----------------------------
