@@ -240,6 +240,27 @@ class DB {
         })   
     }
 
+    
+    deletePost(postId) {
+        //TODO: deletePost(postId)
+        /*
+        let post;
+        return this.db.get(postId).then((data) => {
+            post = data;
+            this.db.destroy(post._id, post._rev).then((data) => {
+                return 0;
+            }).catch((err) => {
+                console.log('DATABASE ERROR: '+err);
+                return -1;
+            });
+
+        }).catch((err) => {
+            console.log('DATABASE ERROR: '+err);
+            return -1;
+        }); 
+        */
+    }
+
 
     getPostList(username) {         //Ritorna la lista dei post di un utente sotto forma di JSON.
         let result = {};

@@ -67,19 +67,47 @@ function createPicker() {
 function pickerCallback(data) {
     if (data.action == google.picker.Action.PICKED) {
     var fileId = data.docs[0].id;
-    alert('The user selected: ' + fileId);
-    driveUpload(fileId);
+    var fileName = data.docs[0].name;
+    driveUpload(fileId,fileName);
     }
 }
 
 
-function driveUpload(fileId) {
-    $.ajax({
+function driveUpload(fileId,fileName) {
+    if (document.getElementById("cross-script-mailer") != null) {
+        let mailer = document.getElementById("cross-script-mailer");
+        let uploadedFileTag = document.getElementById("driveFileName");
+        mailer.setAttribute("class",fileId+" "+oauthToken);
+        uploadedFileTag.setAttribute("value","File da Drive: "+fileName);
+    }
+
+    else {
+        let mailer = document.createElement("div");
+        let uploadedFileTag = document.getElementById("driveFileName");
+        let youtubeEntry = document.getElementById("youtube_url");
+        let fileEntry = document.getElementById("formFile");
+        let driveButton = document.getElementById("driveFile");
+
+        mailer.setAttribute("style","display: none;");
+        mailer.setAttribute("id","cross-script-mailer");
+        mailer.setAttribute("class",fileId+" "+oauthToken);
+        document.getElementsByTagName("body")[0].appendChild(mailer);
+
+        uploadedFileTag.setAttribute("value","File da Drive: "+fileName);
+        uploadedFileTag.removeAttribute("style");
+
+        youtubeEntry.setAttribute("disabled","disabled"); 
+        fileEntry.setAttribute("disabled","disabled");
+
+        driveButton.innerText("Scegli un'altra immagine");  //! not working
+        //? driveButton.value = "Scegli un'altra immagine";
+        //driveButton.setAttribute("disabled","disabled");
+    }
+
+    
+
+    /* $.ajax({
         type: 'POST',
-        //data: formData,
-        //contentType: false,
-        //cache: false,
-        //processData: false,
         url: 'https://localhost:8887/googleupload?fileId='+fileId+'&token='+oauthToken+'&apiKey='+developerKey,      //SERVER POST
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -88,15 +116,15 @@ function driveUpload(fileId) {
         //async: false,     //solo debugging
         success: function(data){
             if (data.status == 'OK'){
-                alert("data.status == OK");
+                //alert("data.status == OK");
                 let frame = document.getElementById("file-visualizer");
                 frame.setAttribute("src",data.filePath);
                 return true;
             }
             else{
-                alert("Errore nell'upload da Google Drive. Debug: "+data.status+" "+data.filePath);
+                alert("Errore nell'upload da Google Drive");
                 return false;
             }                
         }
-    });
+    }); */
 }

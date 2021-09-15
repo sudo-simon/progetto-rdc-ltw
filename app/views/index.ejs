@@ -26,8 +26,9 @@
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <input type="text" class="form-control" id="youtube_url" placeholder="YouTube URL">
                                     <input class="form-control ricerca-file" id="formFile" name="formFile" type="file" accept=".jpg, .jpeg, .png, .mp3, .mp4">
-                                    <!--button type="button" class="btn btn-outline-secondary rounded-0">Drive</button-->
-                                    
+                                    <input class="form-control" id="driveFileName" type="text" value="" style="display: none;" disabled readonly>
+                                    <button type="button" class="btn btn-outline-secondary rounded-0" id="driveFile" onclick="showPickerDialog()">Upload da Drive</button>  
+                                    <!-- TODO:mostrare su due righe -->
                                 </div>
                             </form>
                             <br>
@@ -52,6 +53,9 @@
         <script type="text/javascript" src="js/status-auth.js"></script>
         <script type="text/javascript" src="js/navbar.js"></script>
         <script type="text/javascript" src="js/styleswitcher.js"></script>
+        <!-- Script Google -->
+        <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+        <script type="text/javascript" src="js/google-drive.js"></script>
         <!-- <script type="text/javascript" src="js/posts.js"></script> -->
         <script type="text/javascript" src="js/home-feed.js"></script>
         <script type="text/javascript" src="js/smallChat.js"></script>

@@ -50,6 +50,8 @@ app.use(express.static(path.join(__dirname,'public')));  //USA I CSS E GLI SCRIP
 app.use(express.json());
 app.use(cors());
 
+const googleApiKey = "AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8";
+
 
 
 //----------------------FINE INIT----------------------------
@@ -77,7 +79,7 @@ app.get('/signup', function (req, res) {          //ISCRIZIONE
   console.log(req.ip+': signup');
 });
 
-app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE
+app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
   console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');
   let username = req.body.username;
   let email = req.body.email;
@@ -103,7 +105,7 @@ app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABAS
   });
 });
 
-app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE
+app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
   console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE');
   let username = req.body.username;
   let email = req.body.email;
@@ -183,32 +185,113 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
     let textContent = fields.textContent;
     let yt_url = fields.youtubeUrl;
     let mediaType = fields.mediaType;
+
     if (mediaType != ""){     //? SE PRESENTE UN FILE NEL FORM, VIENE SCARICATO NEL SERVER CON UN ID UNIVOCO.
-      var oldPath = files.upload.path;
-      var newPath = path.join(__dirname,'public/user_uploads')+'/'+uuid.v4()+files.upload.name;
-      var dbPath = newPath.split('public/')[1];
-      var rawData = fs.readFileSync(oldPath);
+
+      if (mediaType == "drive") {
+        var newPath = path.join(__dirname,'public/user_uploads')+'/drive_'+uuid.v4()+'.jpg';
+        var dbPath = newPath.split('public/')[1];
+        let driveWriteStream = fs.createWriteStream(newPath);
+        driveWriteStream.setMaxListeners(0);
+        let driveFileId = req.query.driveId;
+        let driveFileToken = req.query.driveToken;
+
+        let httpsOptions = {
+          hostname: "www.googleapis.com",   //! RICHIEDE IL WWW
+          path: "/drive/v3/files/"+driveFileId+"?key="+googleApiKey+"&alt=media",
+          headers: {
+            "Authorization": "Bearer "+driveFileToken
+            //"Accept": "application/json"
+          }
+        };
+
+        https.get(httpsOptions, function(httpsResponse) {   //! CHIAMATA REST A GOOGLE DRIVE API
+          if (httpsResponse.statusCode != 200){
+            console.log("ERRORE: STATUS CODE = "+httpsResponse.statusCode);
+            console.log("ERRORE: STATUS MESSAGE = ",httpsResponse.statusMessage);
+            res.send(JSON.stringify({ status: 'ERR' }));
+          }
+          else{
+            httpsResponse.on('data', (chunk) => {
+              driveWriteStream.write(chunk);
+
+              driveWriteStream.on('finish', function(){
+                driveWriteStream.close();
+              }); 
+            });
+      
+            httpsResponse.on('end', () => {
+              if (httpsResponse.statusCode != 200) {
+                res.send(JSON.stringify({ status: 'ERR' }));
+                return -1;
+              }
+      
+              else {
+                try{
+                  console.log("DRIVE SUCCESS: File salvato in "+dbPath);
+                } catch (e) {
+                  console.error(e.message);
+                  res.send(JSON.stringify({ status: 'ERR' }));
+                  return -1;
+                }
+              }
+            });
+          }
+        });
+      }
+
+      else {
+        var oldPath = files.upload.path;
+        var newPath = path.join(__dirname,'public/user_uploads')+'/'+uuid.v4()+files.upload.name;
+        var dbPath = newPath.split('public/')[1];
+        var rawData = fs.readFileSync(oldPath);
+      }
+      
     }
     
     let dbImage = '', dbVideo = '', dbAudio = '', driveImage = '';
 
-    if (mediaType == "image"){ dbImage = dbPath; }
-    else if (mediaType == "audio"){ dbAudio = dbPath; }
-    else if (mediaType == "video"){ dbVideo = dbPath; }
-    
-    if (mediaType == "" && yt_url ==  ""){    //NO FILE, NO YOUTUBE
-      database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
-        res.send(JSON.stringify({ status: 'OK' }));
-        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. NO MEDIA ATTACHED.');
-      });
+    switch(mediaType){
+      case "drive":
+        driveImage = dbPath;
+        break;
+      case "image":
+        dbImage = dbPath;
+        break;
+      case "audio":
+        dbAudio = dbPath;
+        break;
+      case "video":
+        dbVideo = dbPath;
+        break;
+      default:
+        break;
     }
-    else if (mediaType == "" && yt_url !=  ""){   //NO FILE, SI YOUTUBE
+    
+    if (mediaType == "" && yt_url ==  ""){    //? NO FILE, NO YOUTUBE
+      if (textContent == ""){
+        res.send(JSON.stringify({ status: 'EMPTY' }));
+      }
+      else {
+        database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
+          res.send(JSON.stringify({ status: 'OK' }));
+          console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. NO MEDIA ATTACHED.');
+        });
+      }
+    }
+    else if (mediaType == "" && yt_url !=  ""){   //? NO FILE, SI YOUTUBE
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. YOUTUBE VIDEO INCLUDED: '+yt_url);
       });
     }
-    else{         //SI FILE
+    else if (mediaType == "drive"){   //? SI FILE, DA DRIVE
+      database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
+        res.send(JSON.stringify({ status: 'OK' }));
+        console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+      });
+    }
+    else{         //? SI FILE, NON DA DRIVE
       fs.writeFileSync(newPath,rawData);
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
@@ -319,142 +402,9 @@ app.get("/gestione/search",function(req,res){
 
 
 
-//---------------------- ROUTES GOOGLE----------------------------
+//---------------------- ROUTES GOOGLE----------------------------  //TODO: sezione utile??
 
 
-app.get("/googletest", function(req, res){
-  res.render('./GOOGLETEST/GOOGLETEST.ejs');
-});
-
-app.post("/googleupload", function(req,res){
-  let fileId = req.query.fileId;
-  let token = req.query.token;
-  let apiKey = req.query.apiKey;
-  //console.log(fileId,token,apiKey);
-  var destPath = path.join(__dirname,'public/google_testing')+'/'+uuid.v4()+'.jpg';
-  var resData = {status: 'NULL', filePath: destPath.split('public/')[1] };
-  var writeStream = fs.createWriteStream(destPath);
-
-
-
-  //! REST call
-
-  let httpsOptions = {
-    hostname: "www.googleapis.com",   //! RICHIEDE IL WWW
-    path: "/drive/v3/files/"+fileId+"?key="+apiKey+"&alt=media",
-    headers: {
-      "Authorization": "Bearer "+token,
-      //"Accept": "application/json"  //SERVE PER IL DOWNLOAD??
-    }
-  };
-
-  //?let request = https.get("https://www.googleapis.com/drive/v3/files/"+fileId+"?access_token="+token+"&alt=media&key="+apiKey+"&source=downloadUrl", function(response){
-  let request = https.get(httpsOptions, function(response) {
-    console.log("DEBUG: sei nella https.request");
-    if (response.statusCode != 200){
-      console.log("ERRORE: STATUS CODE = "+response.statusCode);
-      console.log("ERRORE: STATUS MESSAGE = ",response.statusMessage);
-      resData.status = 'ERR';
-      res.send(JSON.stringify(resData));
-    }
-    else{
-      response.on('data', (chunk) => {
-        
-        //?let pipeStream = response.pipe(writeStream);
-        writeStream.write(chunk);
-
-        //?pipeStream.on('finish', function(){
-        writeStream.on('finish', function(){
-          writeStream.close();
-
-          
-
-          //writeStream.on('close',function(){
-          //  console.log("SUCCESSO! File salvato in "+destPath);
-          //});
-        
-        }); 
-
-        
-
-      });
-
-
-      response.on('end', () => {
-        try{
-          console.log("SUCCESSO! File salvato in "+destPath);
-          resData.status = 'OK';
-          res.send(JSON.stringify(resData));
-        } catch (e) {
-          console.error(e.message);
-          resData.status = 'ERR';
-          res.send(JSON.stringify(resData));
-        }
-      });
-
-      
-
-    }
-  });
-
-
-  //! REST call v2
-
-  /* let options = {
-    hostname: "googleapis.com",
-    path: "/drive/v3/files/"+fileId+"?key="+apiKey+"&alt=media",
-    method: "GET",
-    headers: {
-      "Authorization": "Bearer "+token,
-      "Accept": "application/json"  //SERVE PER IL DOWNLOAD??
-    }
-  };
-
-  let request = http.request(options, function(response) {
-    console.log("Status code drive download request: "+response.statusCode);
-    response.on('data', function(file) {
-      let chunk = response.read();
-      //? response.pipe(dest);
-      fs.writeFileSync(destPath,file);
-      resData.status = 'OK';
-    });
-  });
-
-  request.on('error', err => {
-    console.log("Errore drive download request: "+err.message);
-    resData.status = 'ERR';
-  });
-
-  request.end(); */
-
-  //! Google JS API
-
-  /* const auth = new JWT(
-    serviceAccount.client_email,
-    null,
-    serviceAccount.private_key,
-    ["https://www.googleapis.com/auth/drive.file"]
-  );
-  await auth.authorize(); */
-  
-  /*const drive = google.drive({version: "v3", auth});
-
-  drive.files.get({
-    fileId: fileId,
-    alt: 'media'
-  })
-    .on('end',function(){
-      console.log("Update da drive: SUCCESS!");
-      resData.status = 'OK';
-    })
-    .on('error',function(err){
-      console.log("Update da drive: ERRORE!",err);
-      resData.status = 'ERR';
-    })
-    .pipe(dest);*/
-
-  
-});
 
 //---------------------- FINE ROUTES----------------------------
 

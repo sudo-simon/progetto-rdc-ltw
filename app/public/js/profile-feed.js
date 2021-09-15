@@ -71,6 +71,7 @@ function loadFeed(postList) {
         let img_src = postList[i.toString()].dbImage;
         let video_src = postList[i.toString()].dbVideo;
         let audio_src = postList[i.toString()].dbAudio;
+        let drive_src = postList[i.toString()].driveImage;
         let youtube_src = postList[i.toString()].youtubeUrl;    
         let upvoters = postList[i.toString()].upvoters;
 
@@ -80,10 +81,12 @@ function loadFeed(postList) {
         let video_visibility = 'visually-hidden'; 
         let audio_visibility = 'visually-hidden';
         let youtube_visibility = 'visually-hidden';
+        let drive_visibility = 'visually-hidden';
         if(img_src != "") { img_visibility = ""; }
         else if(video_src != "") { video_visibility = ""; }
         else if(audio_src != "") { audio_visibility = ""; }
         else if(youtube_src != "") { youtube_visibility = ""; }
+        else if(drive_src != "") { drive_visibility = ""; }
 
         let active = '';
         let disabled = '';
@@ -112,6 +115,7 @@ function loadFeed(postList) {
                         '</div>'+
                         '<div class="post-media">'+
                             '<img src="'+img_src+'" class="'+img_visibility+'" alt="">'+
+                            '<img src="'+drive_src+'" class="'+drive_visibility+'" alt="">'+
                             '<video class="'+video_visibility+'" controls>'+
                                 '<source src="'+video_src+'" type="video/mp4">'+
                             '</video>'+
@@ -153,8 +157,145 @@ function loadFeed(postList) {
 }
 
 
+function addPost() {           //Creazione di un nuovo post da parte dell'utente.
 
-function addPost() {        //Creazione di un nuovo post da parte dell'utente.
+    let textContent = document.getElementById('testo_post').value;
+    let fileArray;
+    let youtubeUrl = document.getElementById('youtube_url').value;
+    let mailer = document.getElementById("cross-script-mailer");
+    let driveFileId = "", driveFileToken = "";
+    let mediaContent, mediaType = "";
+    let user = JSON.parse(localStorage.getItem('user'));
+
+    if (mailer != null) {
+        driveFileId = mailer.getAttribute("class").split(" ")[0];
+        driveFileToken = mailer.getAttribute("class").split(" ")[1];
+        mediaType = "drive";  
+
+        let formData = new FormData();          //? Costruzione di oggetto form multipart/form-data gestito da formidable lato server.
+        formData.append('upload',"");
+        formData.append('username',user.username);
+        formData.append('textContent',textContent);
+        formData.append('youtubeUrl',"");
+        formData.append('mediaType',mediaType);
+
+        
+        $.ajax({
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            url: 'https://localhost:8887/createpost?driveId='+driveFileId+"&driveToken="+driveFileToken,      //SERVER POST
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            dataType: 'json',
+            //async: false,    //solo debugging
+            success: function(data){
+                switch(data.status){
+                    case "OK":
+                        document.location.reload();
+                        break;
+                    case "ERR":
+                        alert("Errore nella creazione del post.");
+                        return false;
+                        break;
+                    case "EMPTY":
+                        alert("Errore: il post è vuoto.");
+                        return false;
+                        break;
+                    default:
+                        break;
+                };    
+            }                                               
+        });
+
+    }
+
+    else {
+        //! CASO SENZA MAILER
+        if (youtubeUrl != ""){ 
+            if (youtubeUrl.includes('?v=')){
+                fileArray = [];
+            }
+            else{
+                alert("L'URL di YouTube fornito non è nel formato corretto\n(youtube.com/watch?v=...)");
+                return false;
+            } 
+        }
+        else{ fileArray = document.getElementById('formFile').files; }
+    
+        
+        if(fileArray.length != 0) { mediaContent = fileArray[0]; }
+        else{ mediaContent = ""; }
+        
+    
+        if(mediaContent != ""){
+    
+            switch(mediaContent.type){
+                case 'image/jpeg':
+                    mediaType = "image";
+                    break;
+                case 'image/png':
+                    mediaType = "image";
+                    break;
+                case 'audio/mpeg':
+                    mediaType = "audio";
+                    break;
+                case 'video/mp4':
+                    mediaType = "video";
+                    break;
+                default:
+                    break;
+            }
+        }
+    
+    
+        let formData = new FormData();          //? Costruzione di oggetto form multipart/form-data gestito da formidable lato server.
+        formData.append('upload',mediaContent);
+        formData.append('username',user.username);
+        formData.append('textContent',textContent);
+        formData.append('youtubeUrl',youtubeUrl);
+        formData.append('mediaType',mediaType);
+    
+        
+        $.ajax({
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            url: 'https://localhost:8887/createpost',      //SERVER POST
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            dataType: 'json',
+            //async: false,    //solo debugging
+            success: function(data){
+                switch(data.status){
+                    case "OK":
+                        document.location.reload();
+                        break;
+                    case "ERR":
+                        alert("Errore nella creazione del post.");
+                        return false;
+                        break;
+                    case "EMPTY":
+                        alert("Errore: il post è vuoto.");
+                        return false;
+                        break;
+                    default:
+                        break;
+                };                
+            }                                               
+        });  
+    }
+
+}
+
+
+/*function addPost() {        //Creazione di un nuovo post da parte dell'utente.
 
     let textContent = document.getElementById('testo_post').value;
     let fileArray;
@@ -230,7 +371,7 @@ function addPost() {        //Creazione di un nuovo post da parte dell'utente.
         }                                               
     });  
 
-}
+} */
 
 
 
@@ -260,7 +401,7 @@ function addCfu(button) {       //Upvote di un post. Passaggio di parametri tram
         },
         dataType: 'json',
         //async: false,     //solo debugging
-        success: function(data){
+        success: function(data){            //TODO: real time +1 sui cfu
             if (data.status == 'OK'){
                 button.style.pointerEvents = "none";
                 return true;
