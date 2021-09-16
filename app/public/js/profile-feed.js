@@ -49,8 +49,6 @@ function init_feed() {
         }                                               //for(i) postList.i.author = ... / postList[i].author =
     });
 
-    ///////////////////////////ALGORITMO DI RENDERIZZAZIONE DEI POST NEL PROFILO
-
 }
 
 
@@ -401,8 +399,14 @@ function addCfu(button) {       //Upvote di un post. Passaggio di parametri tram
         },
         dataType: 'json',
         //async: false,     //solo debugging
-        success: function(data){            //TODO: real time +1 sui cfu
+        success: function(data){
             if (data.status == 'OK'){
+                let cfuCount = button.nextSibling;
+                if (cfuCount != null) {
+                    let cfuN = parseInt(cfuCount.innerHTML.split(" ")[0]);
+                    cfuN += 1;
+                    cfuCount.innerHTML = cfuN+" CFU";
+                }
                 button.style.pointerEvents = "none";
                 return true;
             }

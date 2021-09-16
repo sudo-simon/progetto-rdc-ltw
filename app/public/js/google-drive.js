@@ -97,34 +97,10 @@ function driveUpload(fileId,fileName) {
         uploadedFileTag.removeAttribute("style");
 
         youtubeEntry.setAttribute("disabled","disabled"); 
+        youtubeEntry.setAttribute("style","display: none;");
         fileEntry.setAttribute("disabled","disabled");
+        fileEntry.setAttribute("style","display: none;");
 
-        driveButton.innerText("Scegli un'altra immagine");  //! not working
-        //? driveButton.value = "Scegli un'altra immagine";
-        //driveButton.setAttribute("disabled","disabled");
     }
-
     
-
-    /* $.ajax({
-        type: 'POST',
-        url: 'https://localhost:8887/googleupload?fileId='+fileId+'&token='+oauthToken+'&apiKey='+developerKey,      //SERVER POST
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        dataType: 'json',
-        //async: false,     //solo debugging
-        success: function(data){
-            if (data.status == 'OK'){
-                //alert("data.status == OK");
-                let frame = document.getElementById("file-visualizer");
-                frame.setAttribute("src",data.filePath);
-                return true;
-            }
-            else{
-                alert("Errore nell'upload da Google Drive");
-                return false;
-            }                
-        }
-    }); */
 }

@@ -13,7 +13,7 @@ class DB {
 
     //----------------------------------------------- USER METHODS -------------------------------------
 
-    addUser(username,nome,cognome,email,password,googleId) {
+    addUser(username,nome,cognome,email,password,googleId) {        //TODO: google signin tweaks
 
         return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
             const database=this;
@@ -54,7 +54,7 @@ class DB {
         });
     }
 
-    verifyUser(email,password, callback){          
+    verifyUser(email,password, callback){          //TODO: google signin tweaks
         return this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
             if(data.docs.length != 0){
                 let user = data.docs[0];
@@ -241,25 +241,24 @@ class DB {
     }
 
     
-    deletePost(postId) {
-        //TODO: deletePost(postId)
-        /*
-        let post;
-        return this.db.get(postId).then((data) => {
-            post = data;
-            this.db.destroy(post._id, post._rev).then((data) => {
+    deletePost(postId,ownerUsername) {
+        
+        return this.getUser(ownerUsername).then((data) => {
+            let owner = data;
+            let index = owner.postList.findIndex(elem => elem._id == postId);
+            owner.postList.splice(index,1);
+            return this.db.insert(owner).then((data) => {
                 return 0;
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
                 return -1;
             });
-
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
             return -1;
-        }); 
-        */
-    }
+        });
+        
+    }   
 
 
     getPostList(username) {         //Ritorna la lista dei post di un utente sotto forma di JSON.

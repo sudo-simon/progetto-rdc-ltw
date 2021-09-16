@@ -34,8 +34,6 @@ function init_feed() {
         }                                                   
     });
 
-    ///////////////////////////ALGORITMO DI RENDERIZZAZIONE DEI POST NELLA HOME
-
 
 }
 
@@ -164,6 +162,7 @@ function addPost() {           //Creazione di un nuovo post da parte dell'utente
     let user = JSON.parse(localStorage.getItem('user'));
 
     if (mailer != null) {       //! CASO CON IL MAILER
+
         driveFileId = mailer.getAttribute("class").split(" ")[0];
         driveFileToken = mailer.getAttribute("class").split(" ")[1];
         mediaType = "drive";  
@@ -301,7 +300,7 @@ function addCfu(button) {       //Upvote di un post. Passaggio di parametri tram
     let authorUsername = button.id.split('---')[1];
 
 
-    if(upvoter == authorUsername) { alert("Non puoi darti CFU da solo (magari)."); return false; }  //Se si sta visualizzando il proprio profilo.
+    if(upvoter == authorUsername) { alert("Non puoi darti CFU da solo (magari)."); return false; }  //Se si sta upvotando un proprio post.
     
     let obj = {
         postId: postId,
@@ -318,8 +317,14 @@ function addCfu(button) {       //Upvote di un post. Passaggio di parametri tram
             'X-Requested-With': 'XMLHttpRequest'
         },
         dataType: 'json',
-        success: function(data){            //TODO: real time +1 sui cfu
+        success: function(data){
             if (data.status == 'OK'){
+                let cfuCount = button.nextSibling;
+                if (cfuCount != null) {
+                    let cfuN = parseInt(cfuCount.innerHTML.split(" ")[0]);
+                    cfuN += 1;
+                    cfuCount.innerHTML = cfuN+" CFU";
+                }
                 button.style.pointerEvents = "none";
                 return true;
             }
