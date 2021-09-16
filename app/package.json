@@ -36,6 +36,7 @@
     "google-auth-library": "^7.9.1",
     "googleapis": "^39.2.0",
     "http": "0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
     "nano": "^9.0.3",
     "open": "^8.1.0",
     "passport-google-oauth20": "^2.0.0",

@@ -15,7 +15,8 @@ var amqp = require('amqplib/callback_api');
 const formidable = require('formidable');
 
 const {google} = require('googleapis');
-const {JWT} = require('google-auth-library');
+//! const {JWT} = require('google-auth-library');
+const jwt = require('jsonwebtoken');  //TODO: let decoded = jwt.decode(idToken,{complete:true}); ---> header = decoded.header, payload = decoded.payload ;
 const {OAuth2Client} = require('google-auth-library');
 //! const clientSecret = require('./client_secret.json');
 //! const serviceAccount = require('./sapiens-service-account.json');
@@ -35,9 +36,6 @@ const host = 'http://localhost';  //! HTTPS
 const port = process.env.PORT || 8080;
 
 const CHAT = require('./CHAT');
-const { version } = require('os');
-const { file } = require('googleapis/build/src/apis/file');
-const { response } = require('express');
 var chat_m = new CHAT();
 
 app.set('view engine','ejs');                 //PERMETTE DI SERVIRE FILE EJS
@@ -80,7 +78,7 @@ app.get('/signup', function (req, res) {          //ISCRIZIONE
 });
 
 app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
-  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');
+  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');                            //TODO: caso in cui esiste già la mail nel DB -> associazione vecchio account
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
