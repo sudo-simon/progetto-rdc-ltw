@@ -26,4 +26,23 @@ google.accounts.id.renderButton(
 
 function handleCredentialResponse(response) {
     console.log("Encoded JWT ID token: " + response.credential);
+    
+    //TODO: AJAX a nuova route [/verifygoogleuser]
+
+    /*
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(obj),
+        contentType: 'application/json',
+        url: 'https://localhost:8887/loadhomefeed',      //SERVER POST
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        dataType: 'json',
+        //async: false, //solo debugging
+        success: function(data){
+            loadFeed(data.postList);                               
+        }                                                   
+    });
+    */
 }

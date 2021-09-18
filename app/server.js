@@ -49,6 +49,8 @@ app.use(express.json());
 app.use(cors());
 
 const googleApiKey = "AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8";
+const newsApiKey = "af8f932cd024431f8a0bf0c2b999aa76";
+const newsCatcherApiKey = "H_KBY5UcKGkRQixWZxLEjzrVbqrDq-DPXcjlEBgvx0U";
 
 
 
@@ -155,10 +157,82 @@ app.post('/loadprofilefeed', function (req, res){     //AJAX RESPONSE PER CARICA
 
 app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAMENTO FEED HOME
   let username = req.body.username;
-  database.getHomeFeed(username).then((returned) => {   
-    res.send(JSON.stringify({postList: returned}));
-    console.log(username+' homepage feed load: OK');
+
+  let httpsNewsOptions = {
+    hostname: "newsapi.org",
+    path: "/v2/everything?domains=ansa.it&q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&pageSize=15",
+    headers: {
+      "X-Api-Key": newsApiKey
+    }
+  };
+
+  let httpsNewsOptions_v2 = {
+    hostname: "api.newscatcherapi.com",
+    path: "/v2/search?q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&sources=ansa.it&page_size=15",
+    headers: {
+      "x-api-key": newsCatcherApiKey
+    }
+  }
+
+  let news = { num: 0, articoli: [] };
+
+  https.get(httpsNewsOptions_v2, function(httpsResponse) {           //? CHIAMATA REST A NEWSAPI 
+    console.log("Newscatcher API REST call effettuata...");
+    let data = "";
+
+    if (httpsResponse.statusCode == 200) {
+
+      httpsResponse.on('data', (chunk) => {
+        //console.log(JSON.parse(chunk));
+        data += chunk;        
+      });
+
+      httpsResponse.on('end', function() {
+        try {
+          //* news.num = (JSON.parse(chunk)).totalResults;
+          news.num = (JSON.parse(data)).page_size;
+          
+          if (news.num != 0) {
+  
+            news.articoli = (JSON.parse(data)).articles;
+            database.getHomeFeed(username).then((returned) => {
+              let postArray = returned.concat(news.articoli);
+              res.send(JSON.stringify({postList: postArray, numArticoli: news.num}));
+              console.log(username+' homepage feed load: OK (NEWS INCLUDED)');
+  
+            });
+          }
+  
+          else {
+            database.getHomeFeed(username).then((returned) => {
+              res.send(JSON.stringify({postList: returned, numArticoli: 0}));
+              console.log(username+' homepage feed load: OK');
+  
+            });
+          }
+          
+          console.log("Newscatcher API SUCCESS!");
+          //? console.log(news.articoli);
+        } catch (e) {
+          console.error("Newscatcher API ERROR: "+e);
+          console.log(news);
+          return -1;
+        }
+      });
+
+    }
+
+    else {
+      console.log("Newscatcher API ERROR: STATUS CODE = "+httpsResponse.statusCode);
+      console.log("Newscatcher API ERROR: STATUS MESSAGE = "+httpsResponse.statusMessage);
+      database.getHomeFeed(username).then((returned) => {
+        res.send(JSON.stringify({postList: returned, numArticoli: 0}));
+        console.log(username+' homepage feed load: OK');
+      });
+    }
+
   });
+
 });
 
 app.get('/friends', function (req, res) {             //LISTA AMICI
@@ -194,7 +268,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
         let driveFileId = req.query.driveId;
         let driveFileToken = req.query.driveToken;
 
-        let httpsOptions = {
+        let httpsDriveOptions = {
           hostname: "www.googleapis.com",   //! RICHIEDE IL WWW
           path: "/drive/v3/files/"+driveFileId+"?key="+googleApiKey+"&alt=media",
           headers: {
@@ -203,10 +277,10 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
           }
         };
 
-        https.get(httpsOptions, function(httpsResponse) {   //! CHIAMATA REST A GOOGLE DRIVE API
+        https.get(httpsDriveOptions, function(httpsResponse) {   //! CHIAMATA REST A GOOGLE DRIVE API
           if (httpsResponse.statusCode != 200){
-            console.log("ERRORE: STATUS CODE = "+httpsResponse.statusCode);
-            console.log("ERRORE: STATUS MESSAGE = ",httpsResponse.statusMessage);
+            console.log("DRIVE ERROR: STATUS CODE = "+httpsResponse.statusCode);
+            console.log("DRIVE ERROR: STATUS MESSAGE = ",httpsResponse.statusMessage);
             res.send(JSON.stringify({ status: 'ERR' }));
           }
           else{
@@ -217,6 +291,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
                 driveWriteStream.close();
               }); 
             });
+
       
             httpsResponse.on('end', () => {
               if (httpsResponse.statusCode != 200) {
@@ -400,8 +475,12 @@ app.get("/gestione/search",function(req,res){
 
 
 
-//---------------------- ROUTES GOOGLE----------------------------  //TODO: sezione utile??
+//---------------------- ROUTES GOOGLE----------------------------  
 
+
+app.get("/verifygoogleuser", function(req,res) {        //TODO: route del google signin
+  return 0;
+});
 
 
 //---------------------- FINE ROUTES----------------------------

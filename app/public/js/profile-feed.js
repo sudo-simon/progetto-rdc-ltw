@@ -58,20 +58,23 @@ function loadFeed(postList) {
     
 
     for (let i=0; i<postList.numItems; i++){
-        let postId = postList[i.toString()]._id;
-        let author = postList[i.toString()].postAuthorId;
-        let name = postList[i.toString()].postAuthorName;
+
+        let post = postList[i.toString()];
+
+        let postId = post._id;
+        let author = post.postAuthorId;
+        let name = post.postAuthorName;
         let profile = '/profile?user='+author;
-        let propic = postList[i.toString()].authorProfilePic;        
-        let rating = postList[i.toString()].cfu;
-        let time = postList[i.toString()].creationDate;
-        let text = postList[i.toString()].textContent;
-        let img_src = postList[i.toString()].dbImage;
-        let video_src = postList[i.toString()].dbVideo;
-        let audio_src = postList[i.toString()].dbAudio;
-        let drive_src = postList[i.toString()].driveImage;
-        let youtube_src = postList[i.toString()].youtubeUrl;    
-        let upvoters = postList[i.toString()].upvoters;
+        let propic = post.authorProfilePic;        
+        let rating = post.cfu;
+        let time = post.creationDate;
+        let text = post.textContent;
+        let img_src = post.dbImage;
+        let video_src = post.dbVideo;
+        let audio_src = post.dbAudio;
+        let drive_src = post.driveImage;
+        let youtube_src = post.youtubeUrl;    
+        let upvoters = post.upvoters;
 
         //Parametri per la corretta visualizzazione di ogni post generato.
         

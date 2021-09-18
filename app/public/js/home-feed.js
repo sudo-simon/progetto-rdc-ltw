@@ -30,7 +30,7 @@ function init_feed() {
         dataType: 'json',
         //async: false, //solo debugging
         success: function(data){
-            loadFeed(data.postList);                               
+            loadFeed(data.postList,data.numArticoli);                               
         }                                                   
     });
 
@@ -38,115 +38,198 @@ function init_feed() {
 }
 
 
-function loadFeed(unsortedPostList) {      
+function loadFeed(unsortedPostList,numArticoli) {
+    
+    var postEffettivi = unsortedPostList;
+    if (numArticoli != 0) {
+        var articoli = [];
+        for (let i=0; i<numArticoli; i++) {
+            articoli.unshift(postEffettivi.pop());      //? In news[] ora ho tutti gli oggetti news da NEWS API separati dai post
+        }
+    }
 
     var youtube_i = 0;
 
-    var postList=unsortedPostList.sort((a,b)=>{
-        var d1=new Date(a.creationDate);
-        var d2=new Date(b.creationDate);
+    var postList=postEffettivi.sort((a,b)=>{            //? Sorting dei post in base alla data di pubblicazione
+        let d1=new Date(a.creationDate);
+        let d2=new Date(b.creationDate);
         if (d1<d2) return 1;  //ordine decrescente
         else if (d1>d2) return -1;
         else return 0;
     });
+
+    var sortedArticoli=articoli.sort((a,b)=>{            //? Sorting delle news in base alla data di pubblicazione
+        let d1=new Date(a.published_date);              
+        let d2=new Date(b.published_date);
+        if (d1<d2) return 1;  //ordine decrescente
+        else if (d1>d2) return -1;
+        else return 0;
+    });
+
+
+    if (numArticoli != 0) {
+        let feed_i = 1;
+        while (typeof postList[feed_i] !== 'undefined'){
+            if (feed_i%4 == 0 && articoli.length != 0){
+                postList.splice(feed_i, 0, sortedArticoli.shift());     //? Vengono inseriti gli articoli nel feed
+            }
+            feed_i++;
+        }
+    }
+        
     
     let currentUser = JSON.parse(localStorage.getItem('user')).username;
 
     for (let i=0; i<postList.length; i++){
-        let postId = postList[i]._id;
-        let author = postList[i].postAuthorId;
-        let name = postList[i].postAuthorName;
-        let profile = '/profile?user='+author;
-        let propic = postList[i].authorProfilePic;   
-        let rating = postList[i].cfu;
-        let time = postList[i].creationDate;
-        let text = postList[i].textContent;
-        let img_src = postList[i].dbImage;
-        let video_src = postList[i].dbVideo;
-        let audio_src = postList[i].dbAudio;
-        let drive_src = postList[i].driveImage;
-        let youtube_src = postList[i].youtubeUrl; 
-        let upvoters = postList[i].upvoters;
-        
-        //Parametri per la corretta visualizzazione di ogni post generato.
 
-        let img_visibility = 'visually-hidden'; 
-        let video_visibility = 'visually-hidden'; 
-        let audio_visibility = 'visually-hidden';
-        let youtube_visibility = 'visually-hidden';
-        let drive_visibility = 'visually-hidden';
-        if(img_src != "") { img_visibility = ""; }
-        else if(video_src != "") { video_visibility = ""; }
-        else if(audio_src != "") { audio_visibility = ""; }
-        else if(youtube_src != "") { youtube_visibility = ""; }
-        else if(drive_src != "") { drive_visibility = ""; }
+        let post = postList[i];
 
-        let active = '';
-        let disabled = '';
-        if(upvoters.includes(currentUser)){
-            active = "active";
-            disabled = "disabled";
-        }
-        
+        if (post.hasOwnProperty("excerpt")) {   //? Caso in cui sia un articolo e non un post generato da un utente
+
+            let website = post.clean_url;
+            let title = post.title;
+            let text = post.summary + "...";
+            //* if (text == null && post.content != null) { text = post.content; }
+            let articleUrl = post.link;
+            let logoAnsa = "/assets/icons/ansa_logo.jpg";
+
+            let articleImage = post.media;
+            let img_visibility = "visually-hidden";
+            if (articleImage != null && articleImage != "") { img_visibility = ""; }
+
+            let time = post.published_date;
 
 
-        feed.innerHTML += ('<!-- post -->'+             //Aggiunta dell'oggetto Post nel DOM.
-        '<div class="singolo-post p-3 rounded-3 shadow">'+
-            '<div class="row">'+
-                '<div class="post-pic col-1">'+
-                    '<a href="'+profile+'">'+
-                        '<img src="'+propic+'" class="img-thumbnail rounded-2" alt="immagine_profilo">'+
-                    '</a>'+
-                '</div>'+
-                '<div class="post-body col">'+
-                    '<div class="post-info d-flex flex-row">'+
-                        '<div class="post-name"><a href="'+profile+'">'+name+'</a></div>'+
-                        '<div class="post-time">'+time+'</div>'+
+            feed.innerHTML += ('<!-- post -->'+             //Aggiunta dell'oggetto Post nel DOM.
+            '<div class="singolo-post p-3 rounded-3 shadow">'+
+                '<div class="row">'+
+                    '<div class="post-pic col-1">'+
+                        // '<a href="'+articleUrl+'">'+
+                            '<img src="'+logoAnsa+'" class="img-thumbnail rounded-2" alt="immagine_ansa">'+
+                        // '</a>'+
                     '</div>'+
-                    '<div class="post-content">'+
-                        '<div class="post-text">'+
-                            text+
+                    '<div class="post-body col">'+
+                        '<div class="post-info d-flex flex-row">'+
+                            '<div class="post-name"><a href="'+articleUrl+'" target="_blank" rel="noreferrer noopener">'+title+'</a></div>'+
+                            '<div class="post-time">'+time+'</div>'+
                         '</div>'+
-                        '<div class="post-media">'+
-                            '<img src="'+img_src+'" class="'+img_visibility+'" alt="">'+
-                            '<img src="'+drive_src+'" class="'+drive_visibility+'" alt="">'+
-                            '<video class="'+video_visibility+'" controls>'+
-                                '<source src="'+video_src+'" type="video/mp4">'+
-                            '</video>'+
-                            '<audio class="'+audio_visibility+'" controls>'+
-                                '<source src="'+audio_src+'" type="audio/mp3">'+
-                            '</audio>'+
-                            
-                            '<div class="'+youtube_visibility+' youtube" id="youtube_embed_'+youtube_i+'"></div>'+
-                            
+                        '<div class="post-content">'+
+                            '<div class="post-text">'+
+                                text+
+                            '</div>'+
+                            '<div class="post-media">'+
+                                '<img src="'+articleImage+'" class="'+img_visibility+'" alt="">'+                                
+                            '</div>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
-            '</div>'+
-            '<hr>'+
-            '<div class="post-buttons d-flex flex-row-reverse gap-2">'+
-                '<button id="'+postId+'---'+author+'" onclick="addCfu(this)" type="button" class="btn btn-outline-secondary rounded-0 '+active+' '+disabled+'" data-bs-toggle="button" autocomplete="off">+1 CFU</button>'+
-                '<div class="user-rating rounded-0">'+
-                    rating+' CFU'+
+                '<hr>'+
+                '<div class="post-buttons d-flex flex-row-reverse gap-2">'+
+                    '<a href="'+articleUrl+'" type="button" class="btn btn-outline-secondary rounded-0" autocomplete="off" target="_blank" rel="noreferrer noopener">Leggi l\'articolo</a>'+
+                    
+                    '<!--button type="button" class="btn btn-outline-secondary rounded-0">Salva</button-->'+
                 '</div>'+
+            '</div>');
 
-                '<!--button type="button" class="btn btn-outline-secondary rounded-0">Salva</button-->'+
-            '</div>'+
-        '</div>');
-
-        if (youtube_src != ""){
-            new YT.Player('youtube_embed_'+youtube_i, {     //Costruttore del player di YouTube.
-                height: "100%",
-                width: "100%",
-                videoId: youtube_src.split('?v=')[1],
-                playerVars: {
-                    "playsinline": 1
-                }
-            });
         }
-        
-        youtube_i++;
-        
+
+        else {                                        //? Caso in cui sia un post generato da un utente
+
+            let postId = post._id;
+            let author = post.postAuthorId;
+            let name = post.postAuthorName;
+            let profile = '/profile?user='+author;
+            let propic = post.authorProfilePic;   
+            let rating = post.cfu;
+            let time = post.creationDate;
+            let text = post.textContent;
+            let img_src = post.dbImage;
+            let video_src = post.dbVideo;
+            let audio_src = post.dbAudio;
+            let drive_src = post.driveImage;
+            let youtube_src = post.youtubeUrl; 
+            let upvoters = post.upvoters;
+            
+            //Parametri per la corretta visualizzazione di ogni post generato.
+
+            let img_visibility = 'visually-hidden'; 
+            let video_visibility = 'visually-hidden'; 
+            let audio_visibility = 'visually-hidden';
+            let youtube_visibility = 'visually-hidden';
+            let drive_visibility = 'visually-hidden';
+            if(img_src != "") { img_visibility = ""; }
+            else if(video_src != "") { video_visibility = ""; }
+            else if(audio_src != "") { audio_visibility = ""; }
+            else if(youtube_src != "") { youtube_visibility = ""; }
+            else if(drive_src != "") { drive_visibility = ""; }
+
+            let active = '';
+            let disabled = '';
+            if(upvoters.includes(currentUser)){
+                active = "active";
+                disabled = "disabled";
+            }
+            
+
+
+            feed.innerHTML += ('<!-- post -->'+             //Aggiunta dell'oggetto Post nel DOM.
+            '<div class="singolo-post p-3 rounded-3 shadow">'+
+                '<div class="row">'+
+                    '<div class="post-pic col-1">'+
+                        '<a href="'+profile+'">'+
+                            '<img src="'+propic+'" class="img-thumbnail rounded-2" alt="immagine_profilo">'+
+                        '</a>'+
+                    '</div>'+
+                    '<div class="post-body col">'+
+                        '<div class="post-info d-flex flex-row">'+
+                            '<div class="post-name"><a href="'+profile+'">'+name+'</a></div>'+
+                            '<div class="post-time">'+time+'</div>'+
+                        '</div>'+
+                        '<div class="post-content">'+
+                            '<div class="post-text">'+
+                                text+
+                            '</div>'+
+                            '<div class="post-media">'+
+                                '<img src="'+img_src+'" class="'+img_visibility+'" alt="">'+
+                                '<img src="'+drive_src+'" class="'+drive_visibility+'" alt="">'+
+                                '<video class="'+video_visibility+'" controls>'+
+                                    '<source src="'+video_src+'" type="video/mp4">'+
+                                '</video>'+
+                                '<audio class="'+audio_visibility+'" controls>'+
+                                    '<source src="'+audio_src+'" type="audio/mp3">'+
+                                '</audio>'+
+                                
+                                '<div class="'+youtube_visibility+' youtube" id="youtube_embed_'+youtube_i+'"></div>'+
+                                
+                            '</div>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
+                '<hr>'+
+                '<div class="post-buttons d-flex flex-row-reverse gap-2">'+
+                    '<button id="'+postId+'---'+author+'" onclick="addCfu(this)" type="button" class="btn btn-outline-secondary rounded-0 '+active+' '+disabled+'" data-bs-toggle="button" autocomplete="off">+1 CFU</button>'+
+                    '<div class="user-rating rounded-0">'+
+                        rating+' CFU'+
+                    '</div>'+
+
+                    '<!--button type="button" class="btn btn-outline-secondary rounded-0">Salva</button-->'+
+                '</div>'+
+            '</div>');
+
+            if (youtube_src != ""){
+                new YT.Player('youtube_embed_'+youtube_i, {     //Costruttore del player di YouTube.
+                    height: "100%",
+                    width: "100%",
+                    videoId: youtube_src.split('?v=')[1],
+                    playerVars: {
+                        "playsinline": 1
+                    }
+                });
+            }
+            
+            youtube_i++;
+
+        } 
     }
 }
 

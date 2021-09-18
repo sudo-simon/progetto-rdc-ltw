@@ -1,0 +1,12 @@
+GET https://newsapi.org/v2/everything?domains=ansa.it&q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&pageSize=15
+X-Api-Key: af8f932cd024431f8a0bf0c2b999aa76
+
+###
+
+GET https://api.newscatcherapi.com/v2/latest_headlines?countries=IT&topic=science&topic=tech&sources=ansa.it&page_size=15
+x-api-key: H_KBY5UcKGkRQixWZxLEjzrVbqrDq-DPXcjlEBgvx0U
+    
+###
+
+GET https://api.newscatcherapi.com/v2/search?q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&sources=ansa.it&page_size=15
+x-api-key: H_KBY5UcKGkRQixWZxLEjzrVbqrDq-DPXcjlEBgvx0U
