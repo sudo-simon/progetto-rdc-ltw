@@ -5,7 +5,7 @@
 
 
 ## Descrizione:
-    Sapiens è un social network pensato da e per gli studenti della Sapienza, dove stringere amicizie, rimanere in contatto e condividere interessi e passioni con i propri colleghi.
+Sapiens è un social network pensato da e per gli studenti della Sapienza, dove stringere amicizie, rimanere in contatto e condividere interessi e passioni con i propri colleghi.
 
 
 ## Tecnologie utilizzate:
