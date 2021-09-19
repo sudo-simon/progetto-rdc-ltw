@@ -58,20 +58,12 @@ function loadFeed(unsortedPostList,numArticoli) {
         else return 0;
     });
 
-    var sortedArticoli=articoli.sort((a,b)=>{            //? Sorting delle news in base alla data di pubblicazione
-        let d1=new Date(a.published_date);              
-        let d2=new Date(b.published_date);
-        if (d1<d2) return 1;  //ordine decrescente
-        else if (d1>d2) return -1;
-        else return 0;
-    });
-
 
     if (numArticoli != 0) {
         let feed_i = 1;
         while (typeof postList[feed_i] !== 'undefined'){
             if (feed_i%4 == 0 && articoli.length != 0){
-                postList.splice(feed_i, 0, sortedArticoli.shift());     //? Vengono inseriti gli articoli nel feed
+                postList.splice(feed_i, 0, articoli.shift());     //? Vengono inseriti gli articoli nel feed
             }
             feed_i++;
         }
@@ -86,12 +78,11 @@ function loadFeed(unsortedPostList,numArticoli) {
 
         if (post.hasOwnProperty("excerpt")) {   //? Caso in cui sia un articolo e non un post generato da un utente
 
-            let website = post.clean_url;
+            //* let website = post.clean_url;
             let title = post.title;
             let text = post.summary + "...";
             //* if (text == null && post.content != null) { text = post.content; }
             let articleUrl = post.link;
-            let logoAnsa = "/assets/icons/ansa_logo.jpg";
 
             let articleImage = post.media;
             let img_visibility = "visually-hidden";
@@ -105,7 +96,7 @@ function loadFeed(unsortedPostList,numArticoli) {
                 '<div class="row">'+
                     '<div class="post-pic col-1">'+
                         // '<a href="'+articleUrl+'">'+
-                            '<img src="'+logoAnsa+'" class="img-thumbnail rounded-2" alt="immagine_ansa">'+
+                            '<img src="/assets/icons/ansa_logo.jpg" class="img-thumbnail rounded-2" alt="immagine_ansa">'+
                         // '</a>'+
                     '</div>'+
                     '<div class="post-body col">'+

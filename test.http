@@ -8,5 +8,9 @@ x-api-key: H_KBY5UcKGkRQixWZxLEjzrVbqrDq-DPXcjlEBgvx0U
     
 ###
 
-GET https://api.newscatcherapi.com/v2/search?q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&sources=ansa.it&page_size=15
+GET https://api.newscatcherapi.com/v2/search?q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&sources=ansa.it&page_size=15&sort_by=date
 x-api-key: H_KBY5UcKGkRQixWZxLEjzrVbqrDq-DPXcjlEBgvx0U
+
+###
+
+GET https://accounts.google.com/gsi/select?scope=email%20profile&client_id=990666211388-cb76b22m9gnvn7e8b99mpkc2ptp8vp37.apps.googleusercontent.com&ux_mode=popup&ui_mode=card&as=WGA0763YUjJqmIs%2BKePclw&channel_id=4c272cc5d598f1a259eb5b248ff644031872b6d0d1ca9545a3b7bb7157508d2e&origin=https%3A%2F%2Flocalhost%3A8887

@@ -97,7 +97,7 @@ function loadFeed(postList) {
         }
 
 
-        feed.innerHTML += ('<!-- post -->'+
+        feed.innerHTML += ('<!-- post -->'+                     //TODO: aggiungere tasto "Cancella post" [ db.deletePost(postId,ownerUsername) ]
         '<div class="singolo-post p-3 rounded-3 shadow">'+
             '<div class="row">'+
                 '<div class="post-pic col-1">'+

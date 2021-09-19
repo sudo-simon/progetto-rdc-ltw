@@ -16,8 +16,10 @@ const formidable = require('formidable');
 
 const {google} = require('googleapis');
 //! const {JWT} = require('google-auth-library');
-const jwt = require('jsonwebtoken');  //TODO: let decoded = jwt.decode(idToken,{complete:true}); ---> header = decoded.header, payload = decoded.payload ;
+
+
 const {OAuth2Client} = require('google-auth-library');
+const googleClientId = "990666211388-cb76b22m9gnvn7e8b99mpkc2ptp8vp37.apps.googleusercontent.com";
 //! const clientSecret = require('./client_secret.json');
 //! const serviceAccount = require('./sapiens-service-account.json');
 
@@ -158,6 +160,7 @@ app.post('/loadprofilefeed', function (req, res){     //AJAX RESPONSE PER CARICA
 app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAMENTO FEED HOME
   let username = req.body.username;
 
+  /*  //? Chiamata REST a News API 
   let httpsNewsOptions = {
     hostname: "newsapi.org",
     path: "/v2/everything?domains=ansa.it&q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&pageSize=15",
@@ -165,10 +168,12 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
       "X-Api-Key": newsApiKey
     }
   };
+  */
 
+  //? Chiamata REST a Newscatcher API
   let httpsNewsOptions_v2 = {
     hostname: "api.newscatcherapi.com",
-    path: "/v2/search?q=sapienza%20OR%20università%20OR%20(università%20AND%20ricerca)&sources=ansa.it&page_size=15",
+    path: "/v2/search?q=sapienza%20OR%20università%20OR%20(ricerca%20AND%20(università%20OR%20scientifica%20OR%20scienza%20OR%20informatica))&sources=ansa.it&page_size=15&sort_by=date",
     headers: {
       "x-api-key": newsCatcherApiKey
     }
@@ -478,8 +483,63 @@ app.get("/gestione/search",function(req,res){
 //---------------------- ROUTES GOOGLE----------------------------  
 
 
-app.get("/verifygoogleuser", function(req,res) {        //TODO: route del google signin
-  return 0;
+app.get("/verifygoogleuser/:token", function(req,res) {
+
+  let token = req.params.token;
+  let userData = {
+    googleId: "",
+    email: "",
+    nome: "",
+    cognome: "",
+    propicUrl: ""
+  };
+
+  if (token == null || token == ""){ console.log("Google JWT ID token non ricevuto"); res.send(JSON.stringify({status: "ERR"})); return -1; }
+  console.log("Ricevuto JWT ID token (Google)");
+
+  const gClient = new OAuth2Client(googleClientId);
+
+  async function verify() {
+    const ticket = await gClient.verifyIdToken({
+      idToken: token,
+      audience: googleClientId
+    });
+    const payload = ticket.getPayload();
+    const userId = payload["sub"];
+    const email = payload["email"];
+    //const fullName = payload["name"];
+    const nome = payload["given_name"];
+    const cognome = payload["family_name"];
+    const propicURL = payload["picture"];
+    return [userId,email,nome,cognome,propicURL];
+  }
+
+  verify().then((returnArray) => {
+
+    if (returnArray[0] == "") {
+      console.error("ERRORE NEL VERIFICARE GOOGLE JWT");
+      res.send(JSON.stringify({status: "ERR"}));
+      return -1;
+    }
+
+    else {
+      userData.googleId = returnArray[0];
+      userData.email = returnArray[1];
+      userData.nome = returnArray[2];
+      userData.cognome = returnArray[3];
+      userData.propicUrl = returnArray[4];
+
+      console.log("GOOGLE JWT VERIFICATO CON SUCCESSO!");
+      res.send(JSON.stringify({status: "OK", userData: userData}));
+      return 0;
+    }
+
+  }).catch((err) => {
+    console.error("ERRORE NEL VERIFICARE GOOGLE JWT");
+    res.send(JSON.stringify({status: "ERR"}));
+    return -1;
+  });
+
 });
 
 
