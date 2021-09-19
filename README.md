@@ -17,7 +17,7 @@ Sapiens è un social network pensato da e per gli studenti della Sapienza, dove 
 
 ## API REST utilizzate:
 - Google (SignIn e Drive) [OAuth 2.0]
-- News
+- Newscatcher API
 
 ## Membri del gruppo:
 - **Simone Palmieri** (palmieri.1764452@studenti.uniroma1.it)
