@@ -1,14 +1,16 @@
 //TODO: cancellare var inutilizzate
 
-var developerKey = "AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8";
-
 var clientId = "990666211388-cb76b22m9gnvn7e8b99mpkc2ptp8vp37.apps.googleusercontent.com"
+
+var scope = "profile email";
+
+var developerKey = "AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8";
 
 var appId = "990666211388";
 
-var scope = ["profile","email"];
 
 
+/*
 window.onload = function () {
 google.accounts.id.initialize({
     client_id: clientId,
@@ -20,16 +22,82 @@ google.accounts.id.renderButton(
 );
 ////google.accounts.id.prompt(); // also display the One Tap dialog
 }
+*/
 
 
-function handleCredentialResponse(response) {
-    //? console.log("Encoded JWT ID token: " + response.credential);
-    
+
+let googleOauthClient;
+
+function googleClientInit() {
+    gapi.load("auth2", function() {
+        gapi.auth2.init({
+            client_id: clientId,
+            scope: scope,
+            ux_mode: "popup"
+        }).then((clientObject) => {
+            googleOauthClient = clientObject;
+            //! renderButton();
+            attachSignin(document.getElementById("googleSigninButton"));
+        }).catch((err) => {
+            console.error;
+            return -1;
+        });
+    });
+}
+
+/*
+function renderButton() {
+
+    gapi.signin2.render("googleSigninButton",
+    {
+        'scope': 'profile email',
+        'width': 240,
+        'height': 40,
+        'longtitle': true,
+        'theme': "dark",
+        'onsuccess': onGoogleSignin,
+        'onfailure': () => {alert("Errore nel Google Sign In");}
+    });
+}
+*/
+
+function attachSignin(buttonElement) {
+    googleOauthClient.attachClickHandler(buttonElement, {},
+        function(googleUser) {
+            let idToken = googleUser.getAuthResponse().id_token;
+            if (idToken != "" && (typeof idToken !== "undefined")) {
+                handleCredentialResponse(idToken);
+            }
+        }, function(error) {
+          alert(JSON.stringify(error, undefined, 2));
+        });
+}
+
+/*
+function onGoogleSignin(googleUser) {
+    let idToken = googleUser.getAuthResponse().id_token;
+    if (idToken != "" && (typeof idToken !== "undefined")) {
+        handleCredentialResponse(idToken);
+    }
+}
+*/
+
+function googleSignOut() {          //TODO: implementare su tutte le pagine con il tasto "esci"
+    let googleOauthClient = gapi.auth2.getAuthInstance();
+    googleOauthClient.signOut().then(function () {
+        console.log('User signed out.');
+    });
+}
+
+
+
+
+function handleCredentialResponse(idToken) {    
 
     $.ajax({
         type: 'GET',
         contentType: 'application/json',
-        url: 'https://localhost:8887/verifygoogleuser/'+response.credential,      //SERVER GET CON PARAMETRO
+        url: 'https://localhost:8887/verifygoogleuser/'+idToken,      //SERVER GET CON PARAMETRO
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         },
@@ -40,8 +108,8 @@ function handleCredentialResponse(response) {
             switch (data.status){
                 case "OK":
                     console.log("JWT ID token verificato con successo dal server!");
-                    let googleUserData = data.userData;             //TODO: aggiungere scopes email e profile al sign in
-                    console.log(googleUserData.googleId,googleUserData.email,googleUserData.nome);
+                    let googleUserData = data.userData;             
+                    console.log(googleUserData);
                     return 0;
                 case "ERR":
                     alert("Errore nell'accesso a Google");

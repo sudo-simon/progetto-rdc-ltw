@@ -65,7 +65,13 @@
                 </div>
                 <!-- Submit -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end my-submit">
-                    <div id="googleSigninButton"></div>     <!-- TODO:posizionare bene nella pagina -->
+                           
+                    <a class="btn btn-outline-dark" role="button" style="text-transform:none" id="googleSigninButton">
+                        <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                        Accedi con Google
+                    </a>
+                    
+                  
                     <button type="submit" class="btn btn-primary">Invio</button>
                 </div>
             </form>
@@ -125,8 +131,13 @@
         <script type="text/javascript" src="js/styleswitcher.js"></script>
         <!-- Script Google -->
         <script src="https://accounts.google.com/gsi/client" async defer></script>  <!-- ? Sign In With Google -->
-        <script src="https://apis.google.com/js/platform.js" async defer></script>  <!-- ? Google Sign In -->
+        <script src="https://apis.google.com/js/platform.js" onload="googleClientInit()" async defer></script>  <!-- ? Google Sign In -->
         <script type="text/javascript" src="js/google-signin.js"></script>
     </body>
+
+    
+
+
+
 
 </html>
