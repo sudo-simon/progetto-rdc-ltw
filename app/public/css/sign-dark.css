@@ -1,0 +1,28 @@
+body {
+    background-image: url("../assets/background/dark-bg.png");
+}
+
+.container {
+    color: honeydew !important;
+    background-color: #1A1A1D !important;
+}
+
+.form-label {
+    color: honeydew !important;
+}
+
+.modal-content {
+    background-color: #2d2d2f !important;
+    color: honeydew !important;
+}
+
+@media only screen and (max-width: 576px) {
+    body {
+        background-color: #1A1A1D !important;
+    }
+}
+
+#googleSigninButton {
+    background-color: white;
+    color: black;
+}

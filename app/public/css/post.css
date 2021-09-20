@@ -1,0 +1,98 @@
+.disabled {
+    pointer-events: none;
+}
+
+.singolo-post {
+    background-color: white;
+    color: black;
+    margin-bottom: 1.5rem;
+}
+
+.post-pic {
+    width: 100px !important;
+}
+
+.user-rating {
+    color: gray;
+    text-align: center;
+    padding: 0.5rem;
+}
+
+.post-info {
+    margin-bottom: 0.5rem;
+}
+
+.post-name {
+    font-size: large;
+    font-weight: bold;
+}
+
+    .post-name a {
+        text-decoration-line: none;
+        color: black;
+    }
+
+.post-time {
+    font-size: small;
+    align-self: center;
+    color: gray;
+    margin-left: 0.5rem;
+}
+
+/*.post-media {
+    background-color: lightgrey;
+}*/
+
+.post-media img,video,audio {
+    max-height: 25vh;
+    max-width: 100%;
+    width: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.5rem;
+}
+
+.youtube {
+    max-height: 20rem;
+    max-width: 100%;
+    width: 100%;
+    height: 15rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.5rem;
+}
+
+.form-select {
+    width: 20%;
+    border-color: gray;
+    font-weight: bold;
+    color: gray;
+}
+
+/* RESPONSIVENESS */
+@media only screen and (max-width: 1400px) {    /* xl */
+}
+
+@media only screen and (max-width: 1200px) {    /* lg */
+}
+
+@media only screen and (max-width: 992px) {     /* md */
+}
+
+@media only screen and (max-width: 768px) {     /* sm */
+    .form-select {
+        width: 28%;
+    }
+}
+
+@media only screen and (max-width: 576px) {     /* xs */
+    .post-info {
+        flex-direction: column !important;
+    }
+
+    .post-time {
+        align-self: flex-start;
+    }
+}
