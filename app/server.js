@@ -527,7 +527,7 @@ app.get("/verifygoogleuser/:token", function(req,res) {
       userData.email = returnArray[1];
       userData.nome = returnArray[2];
       userData.cognome = returnArray[3];
-      userData.propicUrl = returnArray[4];
+      userData.propicUrl = returnArray[4];        //TODO: corretto utilizzo di questi dati lato server
 
       console.log("GOOGLE JWT VERIFICATO CON SUCCESSO!");
       res.send(JSON.stringify({status: "OK", userData: userData}));

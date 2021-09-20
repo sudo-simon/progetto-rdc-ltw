@@ -21,3 +21,8 @@ body {
         background-color: #1A1A1D !important;
     }
 }
+
+#googleSigninButton {
+    background-color: white;
+    color: black;
+}

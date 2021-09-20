@@ -82,13 +82,6 @@ function onGoogleSignin(googleUser) {
 }
 */
 
-function googleSignOut() {          //TODO: implementare su tutte le pagine con il tasto "esci"
-    let googleOauthClient = gapi.auth2.getAuthInstance();
-    googleOauthClient.signOut().then(function () {
-        console.log('User signed out.');
-    });
-}
-
 
 
 

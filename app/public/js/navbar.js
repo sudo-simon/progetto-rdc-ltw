@@ -28,12 +28,26 @@ $.get("elements/navbar.html", function(data) {
 
     // LOGOUT
     const logoutForm = document.querySelector('#logoutRegistr');
-    logoutForm.addEventListener('submit', (e) => {
+    logoutForm.addEventListener('submit', (e) => {          //TODO: check se utente google e nel caso --> googleSignOut
         e.preventDefault();
 
-        auth.signOut().then(() => {
-            window.location = '/login';
+        gapi.load("auth2", function() {
+
+            let googleOauthClient = gapi.auth2.getAuthInstance();
+
+            if (googleOauthClient != null) {
+                googleOauthClient.signOut().then(function () {
+                    window.location = '/login';
+                });
+            }
+    
+            else {
+                auth.signOut().then(() => {
+                    window.location = '/login';
+                });
+            }
         });
+
     });
 
 })
