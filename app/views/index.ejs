@@ -26,13 +26,14 @@
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <input type="text" class="form-control" id="youtube_url" placeholder="YouTube URL">
                                     <input class="form-control ricerca-file" id="formFile" name="formFile" type="file" accept=".jpg, .jpeg, .png, .mp3, .mp4">
+                                </div>
+                                <br>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <input class="form-control" id="driveFileName" type="text" value="" style="display: none;" disabled readonly>
-                                    <button type="button" class="btn btn-outline-secondary rounded-0" id="driveFile" onclick="showPickerDialog()">Upload da Drive</button>  
-                                    <!-- TODO:mostrare su due righe -->
+                                    <button type="button" class="btn btn-outline-secondary rounded-0" id="driveFile" onclick="showPickerDialog()">Upload da Drive</button>
+                                    <button onclick="addPost()" class="btn btn-outline-secondary rounded-0">Pubblica</button>
                                 </div>
                             </form>
-                            <br>
-                            <button onclick="addPost()" class="btn btn-outline-secondary rounded-0">Pubblica</button>
                         </div>
                         <!-- qui appariranno i POST mediante lo script jQuery in "posts.js" -->
                     </div>
