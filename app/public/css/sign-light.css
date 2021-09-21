@@ -16,3 +16,13 @@ body {
         background-color: white !important;
     }
 }
+
+
+#googleSigninButton {
+    background-color: white;
+    color: black;
+}
+#googleSigninButton:hover {
+    background-color: #0275d8;
+    color: white;
+}

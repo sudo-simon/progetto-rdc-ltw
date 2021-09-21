@@ -12,12 +12,22 @@ Sapiens è un social network pensato da e per gli studenti della Sapienza, dove 
 - Node.js
 - CouchDB
 - Firebase
+- Websocket
 - Nginx
 - Docker
 
+
 ## API REST utilizzate:
-- Google (SignIn e Drive) [OAuth 2.0]
-- Newscatcher API
+- Google ([Sign In](https://developers.google.com/identity/sign-in/web/sign-in), [Drive](https://developers.google.com/drive/api) e [Picker](https://developers.google.com/picker)) [[OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)]
+- [Newscatcher API](https://newscatcherapi.com/)
+
+
+## API REST fornite da Sapiens: ([DOCS](app/api/documentation))
+
+
+
+## **Setup:**
+
 
 ## Membri del gruppo:
 - **Simone Palmieri** (palmieri.1764452@studenti.uniroma1.it)

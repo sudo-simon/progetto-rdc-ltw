@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 
 class User {
-    constructor(username,nome,cognome,email,password,googleId) {
+    constructor(username,nome,cognome,email,password,googleId,profilePic) {
         this._id = 'user:'+uuid.v4();
 
         this.username = username;   
@@ -10,7 +10,10 @@ class User {
         this.email = email;
         this.password = password;   //PREVIO HASHING LATO SERVER
         this.googleId = googleId;   //"" nel caso di registrazione via mail, !="" nel caso di google signin (da implementare)
-        this.profilePic = "assets/icons/placeholder-profile-sq.jpg";
+        if (profilePic == "") {
+            this.profilePic = "assets/icons/placeholder-profile-sq.jpg"; }
+        else {
+            this.profilePic = profilePic; }
         this.friendList = [];
         this.postList = [];
         this.chatList = [];

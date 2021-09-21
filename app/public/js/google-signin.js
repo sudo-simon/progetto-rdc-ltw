@@ -1,12 +1,6 @@
-//TODO: cancellare var inutilizzate
-
 var clientId = "990666211388-cb76b22m9gnvn7e8b99mpkc2ptp8vp37.apps.googleusercontent.com"
 
 var scope = "profile email";
-
-var developerKey = "AIzaSyDuVssTtCbyHqFfFtiiNv9fWwmUFKXfWC8";
-
-var appId = "990666211388";
 
 
 
@@ -33,7 +27,8 @@ function googleClientInit() {
         gapi.auth2.init({
             client_id: clientId,
             scope: scope,
-            ux_mode: "popup"
+            ux_mode: "popup",
+            //cookie_policy: "none"
         }).then((clientObject) => {
             googleOauthClient = clientObject;
             //! renderButton();
@@ -99,11 +94,28 @@ function handleCredentialResponse(idToken) {
         success: function(data){
 
             switch (data.status){
-                case "OK":
-                    console.log("JWT ID token verificato con successo dal server!");
-                    let googleUserData = data.userData;             
-                    console.log(googleUserData);
+                case "OK-CREATED":
+                    //console.log("JWT ID token verificato con successo dal server!");
+                    let new_googleUserData = data.userData;             
+                    localStorage.setItem('user',JSON.stringify(new_googleUserData));
+                    window.location = "/";
                     return 0;
+                case "OK-VERIFIED":
+                    //console.log("JWT ID token verificato con successo dal server!");
+                    let verified_googleUserData = data.userData;             
+                    localStorage.setItem('user',JSON.stringify(verified_googleUserData));
+                    window.location = "/";
+                    return 0;
+                case "OK-ASSOCIATED":
+                    //console.log("JWT ID token verificato con successo dal server!");
+                    let associated_googleUserData = data.userData;             
+                    localStorage.setItem('user',JSON.stringify(associated_googleUserData));
+                    window.location = "/";
+                    return 0;
+                case "NOT_SAPIENS":
+                    alert("Per accedere a Sapiens devi utilizzare un account @studenti.uniroma1.it");
+                    googleOauthClient.disconnect();                    
+                    return 1;
                 case "ERR":
                     alert("Errore nell'accesso a Google");
                     return -1;

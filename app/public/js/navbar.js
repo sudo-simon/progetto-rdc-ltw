@@ -28,15 +28,16 @@ $.get("elements/navbar.html", function(data) {
 
     // LOGOUT
     const logoutForm = document.querySelector('#logoutRegistr');
-    logoutForm.addEventListener('submit', (e) => {          //TODO: check se utente google e nel caso --> googleSignOut
+    logoutForm.addEventListener('submit', (e) => {          
         e.preventDefault();
 
         gapi.load("auth2", function() {
 
             let googleOauthClient = gapi.auth2.getAuthInstance();
 
-            if (googleOauthClient != null) {
+            if (googleOauthClient != null) {                    
                 googleOauthClient.signOut().then(function () {
+                    localStorage.clear();
                     window.location = '/login';
                 });
             }

@@ -81,15 +81,17 @@ app.get('/signup', function (req, res) {          //ISCRIZIONE
   console.log(req.ip+': signup');
 });
 
-app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
-  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');                            //TODO: caso in cui esiste già la mail nel DB -> associazione vecchio account
+app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE   
+  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');                            
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
   let nome = req.body.nome;
   let cognome = req.body.cognome;
+  let googleId = req.body.googleId;
+  let profilePic = req.body.profilePic;
   let newUser;
-  database.addUser(username,nome,cognome,email,password,'').then((returned) => {
+  database.addUser(username,nome,cognome,email,password,googleId,profilePic).then((returned) => {
     newUser = returned;
     if(newUser != -1 && newUser != false){
       newUser.password = "";
@@ -107,13 +109,14 @@ app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABAS
   });
 });
 
-app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
+app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE   
   console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE');
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
+  let googleId = req.body.googleId;
   let user;
-  database.verifyUser(email,password).then((returned) => {
+  database.verifyUser(email,password,googleId).then((returned) => {
     user = returned;
 
     if (user == false || user==-1){
@@ -517,7 +520,7 @@ app.get("/verifygoogleuser/:token", function(req,res) {
   verify().then((returnArray) => {
 
     if (returnArray[0] == "") {
-      console.error("ERRORE NEL VERIFICARE GOOGLE JWT");
+      console.log("ERRORE NEL VERIFICARE GOOGLE JWT");
       res.send(JSON.stringify({status: "ERR"}));
       return -1;
     }
@@ -527,15 +530,56 @@ app.get("/verifygoogleuser/:token", function(req,res) {
       userData.email = returnArray[1];
       userData.nome = returnArray[2];
       userData.cognome = returnArray[3];
-      userData.propicUrl = returnArray[4];        //TODO: corretto utilizzo di questi dati lato server
+      userData.propicUrl = returnArray[4];        
 
       console.log("GOOGLE JWT VERIFICATO CON SUCCESSO!");
-      res.send(JSON.stringify({status: "OK", userData: userData}));
-      return 0;
+
+      if (userData.email.split("@")[1] != "studenti.uniroma1.it") {    //? Non è un account @studenti.uniroma1.it
+        console.log("Account Google non valido: "+userData.email);
+        res.send(JSON.stringify({status: "NOT_SAPIENS"}));
+        return 0;
+      }
+
+      else {                                                                  //? Account @studenti.uniroma1.it
+        console.log("Account uniroma1.it valido: "+userData.email);
+
+        checkGoogleUser(userData.googleId,userData.email,userData.nome,userData.cognome,userData.propicUrl).then((result) => {
+
+          switch (result[0]) {
+
+            case "created":
+              res.send(JSON.stringify({status: "OK-CREATED", userData: result[1]}));
+              return 0;
+
+            case "verified":
+              res.send(JSON.stringify({status: "OK-VERIFIED", userData: result[1]}));
+              return 0;
+
+            case "associated":
+              res.send(JSON.stringify({status: "OK-ASSOCIATED", userData: result[1]}));
+              return 0;
+
+            case -1:
+              console.log("ERRORE NEL DATABASE (getUser)");
+              res.send(JSON.stringify({status: "ERR"}));
+              return -1;
+
+            default:
+              res.send(JSON.stringify({status: "ERR"}));
+              return 0;
+          }
+
+        }).catch((err) => {
+          console.log("ERRORE IN CHECKGOOGLEUSER(): "+err);
+          res.send(JSON.stringify({status: "ERR"}));
+        });
+
+      }
+      
     }
 
   }).catch((err) => {
-    console.error("ERRORE NEL VERIFICARE GOOGLE JWT");
+    console.log("ERRORE NEL VERIFICARE GOOGLE JWT: "+err);
     res.send(JSON.stringify({status: "ERR"}));
     return -1;
   });
@@ -543,7 +587,115 @@ app.get("/verifygoogleuser/:token", function(req,res) {
 });
 
 
-//---------------------- FINE ROUTES----------------------------
+//---------------------- FUNZIONI DI SUPPORTO GOOGLE ----------------------------
+
+function checkGoogleUser(googleId,email,nome,cognome,propicUrl) {     //? Controlla l'account google dell'utente rispetto al nostro DB
+
+  return new Promise(function(resolve,reject) {
+
+    database.getUser(email.split("@")[0]).then((returned) => {
+      let user = returned;
+      switch (user) {
+        case false:                                                     //? Utente non presente nel DB: creazione
+          createGoogleUser(googleId,email,nome,cognome,propicUrl).then((returned) => {
+            resolve(["created",returned]);
+          }).catch((err) => {
+            console.log("DATABASE ERROR: "+err);
+            reject([-1]);
+          });   
+          break;   
+    
+        case -1:                                                             //? Errore
+          resolve([-1]);                                                   
+  
+        default:     
+  
+          if(user.googleId == googleId) {                                    //? Utente presente nel DB: verifica   
+            verifyGoogleUser(email,googleId).then((returned) => {
+              resolve(["verified",returned]);
+            }).catch((err) => {
+              console.log("DATABASE ERROR: "+err);
+              reject([-1]);
+            });
+            break;
+          }
+  
+          else {                                                              //? Utente presente nel DB ma senza googleID: associazione
+            associateGoogleUser(email,googleId).then((returned) => {
+              resolve(["associated",returned]);
+            }).catch((err) => {
+              console.log("DATABASE ERROR: "+err);
+              reject([-1]);
+            });
+            break;
+          }
+  
+      }
+    }).catch((err) => {
+      console.log("DATABASE ERROR: "+err);
+      reject([-1]);
+    });
+
+  });
+
+}
+
+function createGoogleUser(googleId,email,nome,cognome,propicUrl) {
+
+  return database.addUser(username,nome,cognome,email,"",googleId,propicUrl).then((returned) => {
+    console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE (GOOGLE)');
+                              
+    let username = email.split("@")[0];
+    let newUser = returned;;
+
+    if(newUser != -1 && newUser != false){
+      console.log('CREAZIONE UTENTE EFFETTUATA (GOOGLE). USERNAME = '+username);
+      return newUser;
+    }
+    else if(newUser == false){
+      console.log('UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
+      return -1;
+    }
+    else{
+      console.log('ERRORE CREAZIONE UTENTE NEL DATABASE');
+      return -1;
+    }
+  });
+
+}
+
+function verifyGoogleUser(email,googleId) {
+
+  return database.verifyUser(email,"",googleId).then((returned) => {
+    console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE (GOOGLE)');
+    let username = email.split("@")[0];
+    let user = returned;    
+
+    if (user == false || user==-1){
+      console.log('UTENTE NON PRESENTE NEL DATABASE/PASSWORD ERRATA = '+username);
+      return -1;
+    }
+    else{
+      console.log('UTENTE VERIFICATO (GOOGLE) = '+username);     
+      return user;
+    }
+  });  
+
+}
+
+function associateGoogleUser(email,googleId) {
+
+  return database.associateExistingToGoogle(email.split("@")[0],googleId).then((returned) => {
+    return returned;
+  }).catch((err) => {
+    console.log("DATABASE ERROR: "+err);
+    return -1;
+  });
+
+}
+
+
+//---------------------- FINE ROUTES ----------------------------
 
 
 
