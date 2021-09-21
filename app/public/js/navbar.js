@@ -33,9 +33,12 @@ $.get("elements/navbar.html", function(data) {
 
         gapi.load("auth2", function() {
 
+            
             let googleOauthClient = gapi.auth2.getAuthInstance();
 
-            if (googleOauthClient != null) {                    
+
+
+            if (googleOauthClient.isSignedIn.get()) {                    
                 googleOauthClient.signOut().then(function () {
                     localStorage.clear();
                     window.location = '/login';

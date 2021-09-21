@@ -140,25 +140,31 @@ class DB {
     }
 
     associateExistingToGoogle(username,googleIdToAdd) {
-        let user;
-        return this.getUser(username).then((returned) => {
-            user = returned;
-            if (user.googleId == "") { 
-                user.googleId = googleIdToAdd;
-                this.db.insert(user).then((data) => {
-                    return this.db.get(data.id);
-                }).catch((err) => {
-                    console.log('DATABASE ERROR: '+err);
-                    return -1;
-                });
-            }
-            else {
-                console.log("ERRORE: l'utente "+user.username+" ha già un googleId associato! ("+user.googleId+")");
-                return -1;
-            }
-        }).catch((err) => {
-            console.log("DATABASE ERROR: "+err);
-            return -1;
+
+        const tmp = this;
+        
+        return new Promise(function(resolve,reject) {
+        
+            tmp.getUser(username).then((returned) => {
+                let user = returned;
+                if (user.googleId == "") { 
+                    user.googleId = googleIdToAdd;
+                    tmp.db.insert(user).then((data) => {
+                        resolve(tmp.db.get(data.id));
+                    }).catch((err) => {
+                        console.log('DATABASE ERROR: '+err);
+                        reject(-1);
+                    });
+                }
+                else {
+                    console.log("ERRORE: l'utente "+user.username+" ha già un googleId associato! ("+user.googleId+")");
+                    resolve(-1);
+                }
+            }).catch((err) => {
+                console.log("DATABASE ERROR: "+err);
+                reject(-1);
+            });
+
         });
     }
 

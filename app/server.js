@@ -8,6 +8,7 @@ var database = new DB("sapiens-db");
 
 
 const fs = require('fs');
+const fetch = require('node-fetch');
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -642,54 +643,85 @@ function checkGoogleUser(googleId,email,nome,cognome,propicUrl) {     //? Contro
 
 function createGoogleUser(googleId,email,nome,cognome,propicUrl) {
 
-  return database.addUser(username,nome,cognome,email,"",googleId,propicUrl).then((returned) => {
-    console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE (GOOGLE)');
-                              
-    let username = email.split("@")[0];
-    let newUser = returned;;
+  return new Promise(function(resolve,reject) {
 
-    if(newUser != -1 && newUser != false){
-      console.log('CREAZIONE UTENTE EFFETTUATA (GOOGLE). USERNAME = '+username);
-      return newUser;
+    async function downloadGooglePic() {
+      let newPath = path.join(__dirname,'public/assets/icons')+'/google_propic_'+uuid.v4()+'.jpg';
+      let newProPic = newPath.split('public/')[1];
+      const response = await fetch(propicUrl);
+      const buffer = await response.buffer();
+      fs.writeFile(newPath, buffer, () => 
+        console.log("Download della proPic Google effettuato: "+newProPic));
+        return newProPic;
     }
-    else if(newUser == false){
-      console.log('UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
-      return -1;
-    }
-    else{
-      console.log('ERRORE CREAZIONE UTENTE NEL DATABASE');
-      return -1;
-    }
+
+    downloadGooglePic().then((result) => {
+
+
+      database.addUser(email.split("@")[0],(nome.charAt(0).toUpperCase()+nome.slice(1)),(cognome.charAt(0).toUpperCase()+cognome.slice(1)),email,"",googleId,result).then((returned) => {
+        console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE (GOOGLE)');
+                    
+        let username = email.split("@")[0];
+        let newUser = returned;;
+  
+        if(newUser != -1 && newUser != false){
+          console.log('CREAZIONE UTENTE EFFETTUATA (GOOGLE). USERNAME = '+username);
+          resolve(newUser);
+        }
+        else if(newUser == false){
+          console.log('UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
+          resolve(-1);
+        }
+        else{
+          console.log('ERRORE CREAZIONE UTENTE NEL DATABASE');
+          reject(-1);
+        }
+      });
+
+
+    }).catch((err) => {
+      console.log("ERRORE IN DOWNLOADGOOGLEPIC()");
+      reject(-1);
+    });
+
   });
 
 }
 
 function verifyGoogleUser(email,googleId) {
 
-  return database.verifyUser(email,"",googleId).then((returned) => {
-    console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE (GOOGLE)');
-    let username = email.split("@")[0];
-    let user = returned;    
+  return new Promise(function(resolve,reject) {
 
-    if (user == false || user==-1){
-      console.log('UTENTE NON PRESENTE NEL DATABASE/PASSWORD ERRATA = '+username);
-      return -1;
-    }
-    else{
-      console.log('UTENTE VERIFICATO (GOOGLE) = '+username);     
-      return user;
-    }
+    database.verifyUser(email,"",googleId).then((returned) => {
+      console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE (GOOGLE)');
+      let username = email.split("@")[0];
+      let user = returned;    
+
+      if (user == false || user==-1){
+        console.log('UTENTE NON PRESENTE NEL DATABASE/PASSWORD ERRATA = '+username);
+        reject(-1);
+      }
+      else{
+        console.log('UTENTE VERIFICATO (GOOGLE) = '+username);     
+        resolve(user);
+      }
+    }); 
+
   });  
 
 }
 
 function associateGoogleUser(email,googleId) {
 
-  return database.associateExistingToGoogle(email.split("@")[0],googleId).then((returned) => {
-    return returned;
-  }).catch((err) => {
-    console.log("DATABASE ERROR: "+err);
-    return -1;
+  return new Promise(function(resolve,reject) { 
+
+    database.associateExistingToGoogle(email.split("@")[0],googleId).then((returned) => {
+      resolve(returned);
+    }).catch((err) => {
+      console.log("DATABASE ERROR: "+err);
+      reject(-1);
+    });
+
   });
 
 }
