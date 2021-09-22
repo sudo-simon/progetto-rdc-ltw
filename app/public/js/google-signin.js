@@ -94,33 +94,40 @@ function handleCredentialResponse(idToken) {
         success: function(data){
 
             switch (data.status){
+
                 case "OK-CREATED":
                     //console.log("JWT ID token verificato con successo dal server!");
-                    let new_googleUserData = data.userData;             
+                    let new_googleUserData = data.userData;                            
                     localStorage.setItem('user',JSON.stringify(new_googleUserData));
                     window.location = "/";
                     return 0;
+
                 case "OK-VERIFIED":
                     //console.log("JWT ID token verificato con successo dal server!");
-                    let verified_googleUserData = data.userData;             
+                    let verified_googleUserData = data.userData;
                     localStorage.setItem('user',JSON.stringify(verified_googleUserData));
                     window.location = "/";
                     return 0;
+
                 case "OK-ASSOCIATED":
                     //console.log("JWT ID token verificato con successo dal server!");
-                    let associated_googleUserData = data.userData;             
+                    let associated_googleUserData = data.userData;
                     localStorage.setItem('user',JSON.stringify(associated_googleUserData));
                     window.location = "/";
                     return 0;
+
                 case "NOT_SAPIENS":
                     alert("Per accedere a Sapiens devi utilizzare un account @studenti.uniroma1.it");
                     googleOauthClient.disconnect();                    
                     return 1;
+
                 case "ERR":
                     alert("Errore nell'accesso a Google");
                     return -1;
+
                 default:
                     return -1;
+                    
             }                            
         }                                                   
     });

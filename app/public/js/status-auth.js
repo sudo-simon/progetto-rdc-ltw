@@ -8,28 +8,31 @@ function gapiInit() {
 
         gapi.auth2.init({
             client_id: clientId
+        }).then((client) => {
+
+            googleOauthClient = gapi.auth2.getAuthInstance();
+        
+
+            if (googleOauthClient.isSignedIn.get() == false) { 
+
+                // AUTH STATUS CHANGES LISTENER
+                auth.onAuthStateChanged(user => {
+                    if(user) {
+                        console.log('user logged in: ',user);
+                    } 
+
+                    else {
+                        console.log('user logged out');
+                        localStorage.clear();          //LOCALSTORAGE REMOVE
+                        window.location = '/login';
+                    }
+                });
+
+            }
+
+        }).catch((err) => {
+            return -1;
         });
-
-        googleOauthClient = gapi.auth2.getAuthInstance();
-        
-
-        if (googleOauthClient == null) { 
-
-            // AUTH STATUS CHANGES LISTENER
-            auth.onAuthStateChanged(user => {
-                if(user) {
-                    console.log('user logged in: ',user);
-                } 
-
-                else {
-                    console.log('user logged out');
-                    localStorage.clear();          //LOCALSTORAGE REMOVE
-                    window.location = '/login';
-                }
-            });
-
-        }
-        
 
     });
     
