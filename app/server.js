@@ -394,6 +394,26 @@ app.post('/upvotepost', function (req, res){    //AJAX RESPONSE PER UPVOTE A UN 
   });
 });
 
+app.delete('/deletepost', function(req,res) {
+  let postId = req.body.postId;
+  let deleter = req.body.deleter;
+
+  database.deletePost(postId,deleter).then((returned) => {
+    if (returned == 0) {
+      console.log("Post eliminato con successo\n  id: "+postId+"\n  owner: "+deleter);
+      res.send(JSON.stringify({status: "OK"}));
+    }
+    else {
+      console.log("Errore nella cancellazione dle post!\n  id: "+postId+"\n  owner: "+deleter);
+      res.send(JSON.stringify({status: "ERR"}));
+    }
+  }).catch((err) => {
+    console.log("Errore nella cancellazione dle post!\n  id: "+postId+"\n  owner: "+deleter);
+    res.send(JSON.stringify({status: "ERR"}));
+  });
+
+});
+
 app.post('/updateprofile', function (req, res){   //AJAX RESPONSE PER MODIFICHE AL PROFILO
   let form = new formidable({multiples: true});
   form.parse(req, function(err,fields,files){

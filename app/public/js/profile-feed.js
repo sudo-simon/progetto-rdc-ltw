@@ -54,7 +54,7 @@ function init_feed() {
 
 function loadFeed(postList) {
     let youtube_i = 0;
-    let currentUser = JSON.parse(localStorage.getItem('user'));
+    let currentUser = JSON.parse(localStorage.getItem('user')).username;
     
 
     for (let i=0; i<postList.numItems; i++){
@@ -91,14 +91,14 @@ function loadFeed(postList) {
 
         let active = '';
         let disabled = '';
-        if(upvoters.includes(currentUser.username)){
+        if(upvoters.includes(currentUser)){
             active = "active";
             disabled = "disabled";
         }
 
 
-        feed.innerHTML += ('<!-- post -->'+                     //TODO: aggiungere tasto "Cancella post" [ db.deletePost(postId,ownerUsername) ]
-        '<div class="singolo-post p-3 rounded-3 shadow">'+
+        feed.innerHTML += ('<!-- post -->'+                     //TODO: aggiungere tasto "Cancella post" [ solo nel caso (currentUser == author) ]
+        '<div class="singolo-post p-3 rounded-3 shadow">'+      //TODO: il button deve avere id: "(postId)+---+(author)" (come il button dell'upvote)
             '<div class="row">'+
                 '<div class="post-pic col-1">'+
                     '<a href="'+profile+'">'+
@@ -296,84 +296,6 @@ function addPost() {           //Creazione di un nuovo post da parte dell'utente
 }
 
 
-/*function addPost() {        //Creazione di un nuovo post da parte dell'utente.
-
-    let textContent = document.getElementById('testo_post').value;
-    let fileArray;
-    let youtubeUrl = document.getElementById('youtube_url').value;
-    if (youtubeUrl != ""){
-        if (youtubeUrl.includes('?v=')){
-            fileArray = [];
-        }
-        else{
-            alert("L'URL di YouTube fornito non è nel formato corretto\n(youtube.com/watch?v=...)");
-            return false;
-        }
-    }
-    else{ fileArray = document.getElementById('formFile').files; }
-
-    let mediaContent;
-    if(fileArray.length != 0) { mediaContent = fileArray[0]; }
-    else{ mediaContent = ""; }
-
-    let user = JSON.parse(localStorage.getItem('user'));
-    
-    let mediaType = "";
-
-    if(mediaContent != ""){
-
-        switch(mediaContent.type){
-            case 'image/jpeg':
-                mediaType = "image";
-                break;
-            case 'image/png':
-                mediaType = "image";
-                break;
-            case 'audio/mpeg':
-                mediaType = "audio";
-                break;
-            case 'video/mp4':
-                mediaType = "video";
-                break;
-            default:
-                break;
-        }
-    }
-
-
-    let formData = new FormData();      //Costruzione di oggetto form multipart/form-data gestito da formidable lato server.
-    formData.append('upload',mediaContent);
-    formData.append('username',user.username);
-    formData.append('textContent',textContent);
-    formData.append('youtubeUrl',youtubeUrl);
-    formData.append('mediaType',mediaType);
-
-    
-    $.ajax({
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        cache: false,
-        processData: false,
-        url: 'https://localhost:8887/createpost',      //SERVER POST
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        dataType: 'json',
-        //async: false,     //solo debugging
-        success: function(data){
-            if (data.status == 'OK'){
-                document.location.reload();
-            }
-            else{
-                alert("Errore nella creazione del post.");
-                return false;
-            }                
-        }                                               
-    });  
-
-} */
-
 
 
 function addCfu(button) {       //Upvote di un post. Passaggio di parametri tramite l'id del bottone.
@@ -415,6 +337,47 @@ function addCfu(button) {       //Upvote di un post. Passaggio di parametri tram
             }
             else{
                 alert("Errore nell'upvote del post.");
+                return false;
+            }                
+        }                                             
+    });
+
+}
+
+
+function deletePost(button) {
+
+    let activeUser = JSON.parse(localStorage.getItem('user'));
+    let deleter = activeUser.username;
+
+    let postId = button.id.split('---')[0];
+    let authorUsername = button.id.split('---')[1];
+
+    if (authorUsername != deleter) { alert("Errore: non puoi eliminare un post che non ti appartiene!"); return -1; }
+
+    let obj = {
+        postId: postId,
+        deleter: deleter
+    }
+
+    $.ajax({
+        type: 'DELETE',
+        data: JSON.stringify(obj),
+        contentType: 'application/json',
+        url: 'https://localhost:8887/deletepost',      //SERVER POST
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        dataType: 'json',
+        //async: false,     //solo debugging
+        success: function(data){
+
+            if (data.status == 'OK'){
+                location.reload();
+                return true;
+            }
+            else{
+                alert("Errore nella cancellazione del post.");
                 return false;
             }                
         }                                             

@@ -294,19 +294,23 @@ class DB {
     
     deletePost(postId,ownerUsername) {
         
-        return this.getUser(ownerUsername).then((data) => {
-            let owner = data;
-            let index = owner.postList.findIndex(elem => elem._id == postId);
-            owner.postList.splice(index,1);
-            return this.db.insert(owner).then((data) => {
-                return 0;
+        return new Promise(function(resolve,reject) { 
+        
+            this.getUser(ownerUsername).then((data) => {
+                let owner = data;
+                let index = owner.postList.findIndex(elem => elem._id == postId);
+                owner.postList.splice(index,1);
+                this.db.insert(owner).then((data) => {      //? return needed?
+                    resolve(0);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
-                return -1;
+                reject(-1);
             });
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+
         });
         
     }   
