@@ -96,9 +96,12 @@ function loadFeed(postList) {
             disabled = "disabled";
         }
 
+        let display = "display: none;"
+        if (currentUser == author) { display = ""; }
 
-        feed.innerHTML += ('<!-- post -->'+                     //TODO: aggiungere tasto "Cancella post" [ solo nel caso (currentUser == author) ]
-        '<div class="singolo-post p-3 rounded-3 shadow">'+      //TODO: il button deve avere id: "(postId)+---+(author)" (come il button dell'upvote)
+
+        feed.innerHTML += ('<!-- post -->'+                    
+        '<div class="singolo-post p-3 rounded-3 shadow">'+      
             '<div class="row">'+
                 '<div class="post-pic col-1">'+
                     '<a href="'+profile+'">'+
@@ -135,7 +138,8 @@ function loadFeed(postList) {
             '<div class="user-rating rounded-0">'+
                 rating+' CFU'+
             '</div>'+
-            '<!--button type="button" class="btn btn-outline-secondary rounded-0">Salva</button-->'+
+            
+            '<button id="'+postId+'---'+author+'" type="button" onclick="deletePost(this)" class="btn btn-outline-secondary rounded-0" style="'+display+'">Cancella Post</button>'+
             '</div>'+
         '</div>');
 
@@ -276,7 +280,7 @@ function addPost() {           //Creazione di un nuovo post da parte dell'utente
             success: function(data){
                 switch(data.status){
                     case "OK":
-                        document.location.reload();
+                        document.location.replace("https://localhost:8887/profile");
                         break;
                     case "ERR":
                         alert("Errore nella creazione del post.");
