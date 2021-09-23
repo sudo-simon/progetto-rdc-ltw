@@ -26,15 +26,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "name",
-            "description": "<p>Firstname of the User.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "surname",
-            "description": "<p>Surname of the User.</p>"
+            "field": "username",
+            "description": "<p>Username of the User.</p>"
           },
           {
             "group": "Success 200",
@@ -69,7 +62,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"name\": \"Dario\",\n  \"surname\": \"Basile\",\n  \"post\":12,\n  \"cfu\":24,\n  \"last\":\"07/07/2021\",\n  \"average\":2\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"username\": \"basile.1845115\",\n  \"post\":12,\n  \"cfu\":24,\n  \"last\":\"07/07/2021\",\n  \"average\":2\n}",
           "type": "json"
         }
       ]
@@ -135,22 +128,15 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "name",
-            "description": "<p>Firstname of the User.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "surname",
-            "description": "<p>Surname of the User.</p>"
+            "field": "Username",
+            "description": "<p>Username of the User.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"name\": \"Dario\",\n  \"surname\": \"Basile\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"username\":\"basile.1845115\"\n}",
           "type": "json"
         }
       ]
@@ -216,22 +202,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "name",
-            "description": "<p>Firstname of the User.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "surname",
-            "description": "<p>Surname of the User.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Email the user used during registration.</p>"
+            "field": "username",
+            "description": "<p>Username of the User.</p>"
           },
           {
             "group": "Success 200",
@@ -252,7 +224,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"name\": \"Dario\",\n  \"surname\": \"Basile\",\n  \"email\":\"basile.1845116@studenti.uniroma1.it\",\n  \"description\":\"this is my profile description\",\n  \"date\":\"1/1/2021\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"username\": \"basile.1845115\",\n  \"description\":\"this is my profile description\",\n  \"date\":\"1/1/2021\"\n}",
           "type": "json"
         }
       ]
@@ -318,15 +290,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "name",
-            "description": "<p>Firstname of the User.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "surname",
-            "description": "<p>Surname of the User.</p>"
+            "field": "username",
+            "description": "<p>Username of the User.</p>"
           },
           {
             "group": "Success 200",
@@ -347,7 +312,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"name\": \"Dario\",\n  \"surname\": \"Basile\",\n  \"chat\":2,\n  \"following\":5\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"username\":\"basile.1845115\"\n  \"chat\":2,\n  \"following\":5\n}",
           "type": "json"
         }
       ]
