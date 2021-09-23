@@ -350,5 +350,60 @@ define({ "api": [
         "url": "http://localhost:8080/api/user/social/:username"
       }
     ]
+  },
+  {
+    "type": "get",
+    "url": "/api/user/number",
+    "title": "UserNumber",
+    "name": "UserNumber",
+    "group": "User",
+    "description": "<p>Returns the number of users</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "number",
+            "description": "<p>Number of users</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"number\" : 10\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "CantReachTheServer",
+            "description": "<p>Unable to reach the server.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"error\": \"CantReachTheServer\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./apiServer.js",
+    "groupTitle": "User",
+    "sampleRequest": [
+      {
+        "url": "http://localhost:8080/api/user/number"
+      }
+    ]
   }
 ] });

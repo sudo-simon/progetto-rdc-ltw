@@ -6,6 +6,7 @@
     "url" : "http://localhost:3001",
     "sampleUrl" : "http://localhost:8080",
     "order": [
+      "UserNumber",
       "User",
       "Info",
       "Activities",
