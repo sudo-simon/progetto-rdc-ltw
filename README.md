@@ -11,7 +11,7 @@ Sapiens è un social network pensato da e per gli studenti della Sapienza, dove 
 
 ## Tecnologie utilizzate
 
-- Google ([Sign In](https://developers.google.com/identity/sign-in/web/sign-in), [Drive](https://developers.google.com/drive/api) e [Picker](https://developers.google.com/picker)) [[OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)]
+- Google API ([Sign In](https://developers.google.com/identity/sign-in/web/sign-in), [Drive](https://developers.google.com/drive/api) e [Picker](https://developers.google.com/picker)) [[OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)]
 - [Newscatcher API](https://newscatcherapi.com/)
 - CouchDB
 - Firebase
@@ -26,13 +26,23 @@ Per inizializzare l'ambiente Docker e il database, dalla root del progetto esegu
 1. `~$ sudo docker-compose up`
 2. `~$ ./initDB.sh`
    
-Poi visitare:
+## Link alle risorse
 
-3. **[Sapiens](https://localhost:8887)** (localhost:8887)
+- **[Homepage Sapiens](https://localhost:8887)** (localhost:8887)
+ 
+- **[Docs Sapiens API](http://localhost:8080/apidoc)** (localhost:8080/apidoc)
+ 
+- **[ChouchDB Database](http://localhost:5984/_utils)** (localhost:5984/_utils)
 
-## API REST fornite da Sapiens \[[DOCS](app/api/documentation) (localhost:XXXX)]
+## API REST fornite da Sapiens
 
-- api/funzione: 
+1. User:
+
+2. User - Info:
+
+3. User - Activities:
+
+4. User - Social:
 
 
 

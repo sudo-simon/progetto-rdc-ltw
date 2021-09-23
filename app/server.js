@@ -98,14 +98,17 @@ app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABAS
       newUser.password = "";
       res.send(JSON.stringify(newUser));
       console.log(req.ip+': CREAZIONE UTENTE EFFETTUATA. USERNAME = '+username);
+      return 0;
     }
     else if(newUser == false){
       res.send('ERR');
       console.log(req.ip+': UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
+      return 0;
     }
     else{
       res.send('ERR');
       console.log(req.ip+': ERRORE CREAZIONE UTENTE NEL DATABASE');
+      return 0;
     }
   });
 });
@@ -142,14 +145,17 @@ app.get('/profile', function (req, res) {   //PROFILO, CHECK SULL'UTENTE CHE FA 
       user = returned;
       res.status(200).render('./profile/index.ejs');
       console.log(req.ip+': profile = '+username);
+      return 0;
     });
   }
   else{
     if (req.query.formFile != undefined || req.query.testo_post != undefined){
       res.render('./index.ejs');
+      return 0;
     }
     res.status(200).render('./profile/index.ejs');
     console.log(req.ip+': profile');
+    return 0;
   }
 });
 
@@ -208,7 +214,7 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
               let postArray = returned.concat(news.articoli);
               res.send(JSON.stringify({postList: postArray, numArticoli: news.num}));
               console.log(username+' homepage feed load: OK (NEWS INCLUDED)');
-  
+              return 0;
             });
           }
   
@@ -216,7 +222,7 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
             database.getHomeFeed(username).then((returned) => {
               res.send(JSON.stringify({postList: returned, numArticoli: 0}));
               console.log(username+' homepage feed load: OK');
-  
+              return 0;
             });
           }
           
@@ -237,6 +243,7 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
       database.getHomeFeed(username).then((returned) => {
         res.send(JSON.stringify({postList: returned, numArticoli: 0}));
         console.log(username+' homepage feed load: OK');
+        return 0;
       });
     }
 
@@ -291,6 +298,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
             console.log("DRIVE ERROR: STATUS CODE = "+httpsResponse.statusCode);
             console.log("DRIVE ERROR: STATUS MESSAGE = ",httpsResponse.statusMessage);
             res.send(JSON.stringify({ status: 'ERR' }));
+            return 0;
           }
           else{
             httpsResponse.on('data', (chunk) => {
@@ -353,11 +361,13 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
     if (mediaType == "" && yt_url ==  ""){    //? NO FILE, NO YOUTUBE
       if (textContent == ""){
         res.send(JSON.stringify({ status: 'EMPTY' }));
+        return 0;
       }
       else {
         database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
           res.send(JSON.stringify({ status: 'OK' }));
           console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. NO MEDIA ATTACHED.');
+          return 0;
         });
       }
     }
@@ -365,12 +375,14 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. YOUTUBE VIDEO INCLUDED: '+yt_url);
+        return 0;
       });
     }
     else if (mediaType == "drive"){   //? SI FILE, DA DRIVE
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+        return 0;
       });
     }
     else{         //? SI FILE, NON DA DRIVE
@@ -378,6 +390,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+        return 0;
       });
     }
   })
