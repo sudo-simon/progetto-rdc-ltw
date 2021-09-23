@@ -22,6 +22,7 @@ Sapiens è un social network pensato da e per gli studenti della Sapienza, dove 
 - CouchDB
 - Firebase
 - Websocket
+- RabbitMQ
 - Nginx
 - Docker
 
@@ -42,7 +43,7 @@ Per inizializzare l'ambiente Docker e il database, dalla root del progetto esegu
 
 ## API REST fornite da Sapiens
 
-L'API fornita da Sapiens fornisce dati statistici sull'utenza del social.
+Le API fornite da Sapiens forniscono dati statistici sull'utenza del social, e sono documentate all'interno di [apidoc](/app/api/public/apidoc).
 
 ## Membri del gruppo
 
