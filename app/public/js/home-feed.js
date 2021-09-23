@@ -227,9 +227,12 @@ function loadFeed(unsortedPostList,numArticoli) {
 
 
 function loadEmptyFeed() {
-    //TODO: caricare messaggio "inizia ad aggiungere contatti..." sotto al form
+    // Carica messaggio "inizia ad aggiungere contatti..." sotto al form
 
-    feed.innerHTML += ('Prova empty feed');
+    feed.innerHTML += ('<div class="mt-5">'+
+                            '<p class="text-center fs-5 fw-bold"> Sembra che il tuo feed sia vuoto :/'+
+                            '<br> Dovresti proprio seguire qualcuno!</p>'+
+                        '</div>');
 }
 
 
