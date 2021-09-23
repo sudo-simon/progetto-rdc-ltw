@@ -9,9 +9,15 @@
 Sapiens è un social network pensato da e per gli studenti della Sapienza, dove stringere amicizie, rimanere in contatto e condividere interessi e passioni con i propri colleghi.
 
 
+![Diagramma](/diagramma.png)
+
+
 ## Tecnologie utilizzate
 
-- Google API ([Sign In](https://developers.google.com/identity/sign-in/web/sign-in), [Drive](https://developers.google.com/drive/api) e [Picker](https://developers.google.com/picker)) [[OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)]
+- Google API [[OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)]
+  - [Sign In](https://developers.google.com/identity/sign-in/web/sign-in)
+  - [Drive](https://developers.google.com/drive/api)
+  - [Picker](https://developers.google.com/picker) 
 - [Newscatcher API](https://newscatcherapi.com/)
 - CouchDB
 - Firebase
@@ -36,15 +42,7 @@ Per inizializzare l'ambiente Docker e il database, dalla root del progetto esegu
 
 ## API REST fornite da Sapiens
 
-1. User:
-
-2. User - Info:
-
-3. User - Activities:
-
-4. User - Social:
-
-
+L'API fornita da Sapiens fornisce dati statistici sull'utenza del social.
 
 ## Membri del gruppo
 
