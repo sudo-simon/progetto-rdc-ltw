@@ -1,20 +1,23 @@
 const express = require('express');
-const { request } = require('http');
+const path = require('path');
+
 const app = express();
+app.use(express.static(path.join(__dirname+'/public')));
 
 const DB = require('../DB');
 var database = new DB("sapiens-db");
 
 const port = process.env.PORT || 3001;
-const host= "http://localhost"
+const host= "http://localhost";
 
 /**
  * @api {get} /api/user/:username User
  * @apiName GetUser
- * @apiDescription Check if is present an User by his username (surname + student id)
  * @apiGroup User
+ * 
+ * @apiDescription Check if is present an User by his username (surname + student id)
  *
- * @apiParam {String} User Unique username of the student (surname + student id).
+ * @apiParam {String} username Unique username of the student (surname + student id).
  *
  * @apiSuccess {String} name Firstname of the User.
  * @apiSuccess {String} surname  Surname of the User.
@@ -26,7 +29,8 @@ const host= "http://localhost"
  *       "surname": "Basile"
  *     }
  *
- * @apiError UsernameFound The username User of the student was not found.
+ * @apiError UsernameNotFound The username User of the student was not found.
+ * @apiError CantReachTheServer Unable to reach the server.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -35,13 +39,6 @@ const host= "http://localhost"
  *     }
  *
  * 
- * @apiError CantReachTheServer The database you are searching in was not found.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "CantReachTheServer"
- *     }
  * 
  * 
  */
@@ -49,18 +46,21 @@ const host= "http://localhost"
 app.get('/api/user/:username', function (req, res){    
     var {username}=req.params; 
     console.log("user request: "+username);
-    return database.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
+        database.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
         if(data.docs.length != 0){
             var response={
                 name:data.docs[0].nome,
                 surname:data.docs[0].cognome
             }
+            console.log("Risposta richiesta api inviata");
             res.status(200).json(response);
         }
         else{ 
+            console.log("Risposta richiesta api non inviata correttamenta: UsernameNotFound");
             res.status(404).send({error:"UsernameNotFound"}).end();
         }
     }).catch((err) => {
+        console.log("Risposta richiesta api non inviata correttamenta: CantReachTheServer");
         res.status(404).send({error:"CantReachTheServer"}).end();
         return -1;
     });
@@ -69,11 +69,12 @@ app.get('/api/user/:username', function (req, res){
 
 /**
  * @api {get} /api/user/info/:username Info
- * @apiName GetUser/info
- * @apiDescription Request description of the user using his username (surname + student id)
+ * @apiName Info
  * @apiGroup User
+ * 
+ * @apiDescription Request description of the user using his username (surname + student id)
  *
- * @apiParam {String} User Unique username of the student (surname + student id).
+ * @apiParam {String} username Unique username of the student (surname + student id).
  *
  * @apiSuccess {String} name Firstname of the User.
  * @apiSuccess {String} surname Surname of the User.
@@ -91,7 +92,8 @@ app.get('/api/user/:username', function (req, res){
  *       "date":"1/1/2021"
  *     }
  *
- * @apiError UsernameFound The username User of the student was not found.
+ * @apiError UsernameNotFound The username User of the student was not found.
+ * @apiError CantReachTheServer Unable to reach the server.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -100,13 +102,6 @@ app.get('/api/user/:username', function (req, res){
  *     }
  *
  * 
- * @apiError CantReachTheServer The database you are searching in was not found.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "CantReachTheServer"
- *     }
  * 
  * 
  */
@@ -136,11 +131,12 @@ app.get('/api/user/:username', function (req, res){
 
 /**
  * @api {get} /api/user/activities/:username Activities
- * @apiName GetUser/activities
- * @apiDescription Request a summary of activities of the user using his username (surname + student id)
+ * @apiName Activities
  * @apiGroup User
+ * 
+ * @apiDescription Request a summary of activities of the user using his username (surname + student id)
  *
- * @apiParam {String} User Unique username of the student (surname + student id).
+ * @apiParam {String} username Unique username of the student (surname + student id).
  *
  * @apiSuccess {String} name Firstname of the User.
  * @apiSuccess {String} surname Surname of the User.
@@ -160,7 +156,8 @@ app.get('/api/user/:username', function (req, res){
  *       "average":2
  *     }
  *
- * @apiError UsernameFound The username User of the student was not found.
+ * @apiError UsernameNotFound The username User of the student was not found.
+ * @apiError CantReachTheServer Unable to reach the server.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -169,13 +166,6 @@ app.get('/api/user/:username', function (req, res){
  *     }
  *
  * 
- * @apiError CantReachTheServer The database you are searching in was not found.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "CantReachTheServer"
- *     }
  * 
  * 
  */
@@ -190,6 +180,7 @@ app.get('/api/user/:username', function (req, res){
                 surname:data.docs[0].cognome,
                 post:data.docs[0].postList.length,
                 cfu:data.docs[0].infos.cfu,
+                last:data.docs[0].postList[0].creationDate,
                 average:(data.docs[0].infos.cfu/data.docs[0].postList.length)
             }
             res.status(200).json(response);
@@ -206,11 +197,12 @@ app.get('/api/user/:username', function (req, res){
 
 /**
  * @api {get} /api/user/social/:username Social
- * @apiName GetUser/social
- * @apiDescription Request a summary of social interaction of the user using his username (surname + student id)
+ * @apiName Social
  * @apiGroup User
+ * 
+ * @apiDescription Request a summary of social interaction of the user using his username (surname + student id)
  *
- * @apiParam {String} User Unique username of the student (surname + student id).
+ * @apiParam {String} username Unique username of the student (surname + student id).
  *
  * @apiSuccess {String} name Firstname of the User.
  * @apiSuccess {String} surname Surname of the User.
@@ -226,7 +218,8 @@ app.get('/api/user/:username', function (req, res){
  *       "following":5
  *     }
  *
- * @apiError UsernameFound The username User of the student was not found.
+ * @apiError UsernameNotFound The username User of the student was not found.
+ * @apiError CantReachTheServer Unable to reach the server.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -234,14 +227,6 @@ app.get('/api/user/:username', function (req, res){
  *       "error": "UsernameNotFound"
  *     }
  *
- * 
- * @apiError CantReachTheServer The database you are searching in was not found.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "CantReachTheServer"
- *     }
  * 
  * 
  */
@@ -267,6 +252,10 @@ app.get('/api/user/:username', function (req, res){
         return -1;
     });
 });
+
+app.get("/api/apidoc",function(req,res){
+    res.sendFile(path.join(__dirname+"/public/apidoc/index.html"));
+})
 
 app.listen(port,() => {
     console.log('Sapiens api server listening at '+host+':'+port);

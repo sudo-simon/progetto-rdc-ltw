@@ -65,8 +65,10 @@ $(document).ready(function() {
                 let obj = {
                     username: username,
                     email: email,
-                    password: psw
+                    password: psw,
+                    googleId: ""
                 }
+                
                 $.ajax({
                     type: 'POST',
                     data: JSON.stringify(obj),
@@ -108,6 +110,7 @@ $(document).ready(function() {
     });
 });
 
+
 // SIGN AUTH STATUS CHANGES LISTENER
 auth.onAuthStateChanged(user => {
     if(user) {
@@ -117,3 +120,6 @@ auth.onAuthStateChanged(user => {
         localStorage.clear();              //LOCALSTORAGE REMOVE
     }
 });
+
+
+

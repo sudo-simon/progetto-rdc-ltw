@@ -8,6 +8,7 @@ var database = new DB("sapiens-db");
 
 
 const fs = require('fs');
+const fetch = require('node-fetch');
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -81,39 +82,45 @@ app.get('/signup', function (req, res) {          //ISCRIZIONE
   console.log(req.ip+': signup');
 });
 
-app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
-  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');                            //TODO: caso in cui esiste già la mail nel DB -> associazione vecchio account
+app.put('/createuser', function (req, res){       //CREAZIONE UTENTE NEL DATABASE   
+  console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE');                            
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
   let nome = req.body.nome;
   let cognome = req.body.cognome;
+  let googleId = req.body.googleId;
+  let profilePic = req.body.profilePic;
   let newUser;
-  database.addUser(username,nome,cognome,email,password,'').then((returned) => {
+  database.addUser(username,nome,cognome,email,password,googleId,profilePic).then((returned) => {
     newUser = returned;
     if(newUser != -1 && newUser != false){
       newUser.password = "";
       res.send(JSON.stringify(newUser));
       console.log(req.ip+': CREAZIONE UTENTE EFFETTUATA. USERNAME = '+username);
+      return 0;
     }
     else if(newUser == false){
       res.send('ERR');
       console.log(req.ip+': UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
+      return 0;
     }
     else{
       res.send('ERR');
       console.log(req.ip+': ERRORE CREAZIONE UTENTE NEL DATABASE');
+      return 0;
     }
   });
 });
 
-app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE   //TODO: implementare google signin (xxx@studenti.uniroma1.it)
+app.post('/verifyuser', function (req, res){        //VERIFICA PRESENZA UTENTE NEL DATABASE   
   console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE');
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
+  let googleId = req.body.googleId;
   let user;
-  database.verifyUser(email,password).then((returned) => {
+  database.verifyUser(email,password,googleId).then((returned) => {
     user = returned;
 
     if (user == false || user==-1){
@@ -138,14 +145,17 @@ app.get('/profile', function (req, res) {   //PROFILO, CHECK SULL'UTENTE CHE FA 
       user = returned;
       res.status(200).render('./profile/index.ejs');
       console.log(req.ip+': profile = '+username);
+      return 0;
     });
   }
   else{
     if (req.query.formFile != undefined || req.query.testo_post != undefined){
       res.render('./index.ejs');
+      return 0;
     }
     res.status(200).render('./profile/index.ejs');
     console.log(req.ip+': profile');
+    return 0;
   }
 });
 
@@ -204,7 +214,7 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
               let postArray = returned.concat(news.articoli);
               res.send(JSON.stringify({postList: postArray, numArticoli: news.num}));
               console.log(username+' homepage feed load: OK (NEWS INCLUDED)');
-  
+              return 0;
             });
           }
   
@@ -212,7 +222,7 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
             database.getHomeFeed(username).then((returned) => {
               res.send(JSON.stringify({postList: returned, numArticoli: 0}));
               console.log(username+' homepage feed load: OK');
-  
+              return 0;
             });
           }
           
@@ -233,6 +243,7 @@ app.post('/loadhomefeed', function (req, res){       //AJAX RESPONSE PER CARICAM
       database.getHomeFeed(username).then((returned) => {
         res.send(JSON.stringify({postList: returned, numArticoli: 0}));
         console.log(username+' homepage feed load: OK');
+        return 0;
       });
     }
 
@@ -287,6 +298,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
             console.log("DRIVE ERROR: STATUS CODE = "+httpsResponse.statusCode);
             console.log("DRIVE ERROR: STATUS MESSAGE = ",httpsResponse.statusMessage);
             res.send(JSON.stringify({ status: 'ERR' }));
+            return 0;
           }
           else{
             httpsResponse.on('data', (chunk) => {
@@ -349,11 +361,13 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
     if (mediaType == "" && yt_url ==  ""){    //? NO FILE, NO YOUTUBE
       if (textContent == ""){
         res.send(JSON.stringify({ status: 'EMPTY' }));
+        return 0;
       }
       else {
         database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
           res.send(JSON.stringify({ status: 'OK' }));
           console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. NO MEDIA ATTACHED.');
+          return 0;
         });
       }
     }
@@ -361,12 +375,14 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. YOUTUBE VIDEO INCLUDED: '+yt_url);
+        return 0;
       });
     }
     else if (mediaType == "drive"){   //? SI FILE, DA DRIVE
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+        return 0;
       });
     }
     else{         //? SI FILE, NON DA DRIVE
@@ -374,6 +390,7 @@ app.post('/createpost', function (req, res){            //AJAX RESPONSE PER CREA
       database.addPost(username,textContent,yt_url,dbImage,dbVideo,dbAudio,driveImage).then((returned) =>{
         res.send(JSON.stringify({ status: 'OK' }));
         console.log(username+': CREAZIONE NUOVO POST EFFETTUATA. MEDIA INCLUDED: '+dbPath);
+        return 0;
       });
     }
   })
@@ -388,6 +405,26 @@ app.post('/upvotepost', function (req, res){    //AJAX RESPONSE PER UPVOTE A UN 
     console.log(voterUsername+' upvoted '+ownerUsername+'\'s post.');
     res.send(JSON.stringify({ status: 'OK'}));
   });
+});
+
+app.delete('/deletepost', function(req,res) {
+  let postId = req.body.postId;
+  let deleter = req.body.deleter;
+
+  database.deletePost(postId,deleter).then((returned) => {
+    if (returned == 0) {
+      console.log("Post eliminato con successo\n  id: "+postId+"\n  owner: "+deleter);
+      res.send(JSON.stringify({status: "OK"}));
+    }
+    else {
+      console.log("Errore nella cancellazione dle post!\n  id: "+postId+"\n  owner: "+deleter);
+      res.send(JSON.stringify({status: "ERR"}));
+    }
+  }).catch((err) => {
+    console.log("Errore nella cancellazione dle post!\n  id: "+postId+"\n  owner: "+deleter);
+    res.send(JSON.stringify({status: "ERR"}));
+  });
+
 });
 
 app.post('/updateprofile', function (req, res){   //AJAX RESPONSE PER MODIFICHE AL PROFILO
@@ -517,7 +554,7 @@ app.get("/verifygoogleuser/:token", function(req,res) {
   verify().then((returnArray) => {
 
     if (returnArray[0] == "") {
-      console.error("ERRORE NEL VERIFICARE GOOGLE JWT");
+      console.log("ERRORE NEL VERIFICARE GOOGLE JWT");
       res.send(JSON.stringify({status: "ERR"}));
       return -1;
     }
@@ -527,15 +564,56 @@ app.get("/verifygoogleuser/:token", function(req,res) {
       userData.email = returnArray[1];
       userData.nome = returnArray[2];
       userData.cognome = returnArray[3];
-      userData.propicUrl = returnArray[4];        //TODO: corretto utilizzo di questi dati lato server
+      userData.propicUrl = returnArray[4];        
 
       console.log("GOOGLE JWT VERIFICATO CON SUCCESSO!");
-      res.send(JSON.stringify({status: "OK", userData: userData}));
-      return 0;
+
+      if (userData.email.split("@")[1] != "studenti.uniroma1.it") {    //? Non è un account @studenti.uniroma1.it
+        console.log("Account Google non valido: "+userData.email);
+        res.send(JSON.stringify({status: "NOT_SAPIENS"}));
+        return 0;
+      }
+
+      else {                                                                  //? Account @studenti.uniroma1.it
+        console.log("Account uniroma1.it valido: "+userData.email);
+
+        checkGoogleUser(userData.googleId,userData.email,userData.nome,userData.cognome,userData.propicUrl).then((result) => {
+
+          switch (result[0]) {
+
+            case "created":
+              res.send(JSON.stringify({status: "OK-CREATED", userData: result[1]}));
+              return 0;
+
+            case "verified":
+              res.send(JSON.stringify({status: "OK-VERIFIED", userData: result[1]}));
+              return 0;
+
+            case "associated":
+              res.send(JSON.stringify({status: "OK-ASSOCIATED", userData: result[1]}));
+              return 0;
+
+            case -1:
+              console.log("ERRORE NEL DATABASE (getUser)");
+              res.send(JSON.stringify({status: "ERR"}));
+              return -1;
+
+            default:
+              res.send(JSON.stringify({status: "ERR"}));
+              return 0;
+          }
+
+        }).catch((err) => {
+          console.log("ERRORE IN CHECKGOOGLEUSER(): "+err);
+          res.send(JSON.stringify({status: "ERR"}));
+        });
+
+      }
+      
     }
 
   }).catch((err) => {
-    console.error("ERRORE NEL VERIFICARE GOOGLE JWT");
+    console.log("ERRORE NEL VERIFICARE GOOGLE JWT: "+err);
     res.send(JSON.stringify({status: "ERR"}));
     return -1;
   });
@@ -543,7 +621,146 @@ app.get("/verifygoogleuser/:token", function(req,res) {
 });
 
 
-//---------------------- FINE ROUTES----------------------------
+//---------------------- FUNZIONI DI SUPPORTO GOOGLE ----------------------------
+
+function checkGoogleUser(googleId,email,nome,cognome,propicUrl) {     //? Controlla l'account google dell'utente rispetto al nostro DB
+
+  return new Promise(function(resolve,reject) {
+
+    database.getUser(email.split("@")[0]).then((returned) => {
+      let user = returned;
+      switch (user) {
+        case false:                                                     //? Utente non presente nel DB: creazione
+          createGoogleUser(googleId,email,nome,cognome,propicUrl).then((returned) => {
+            resolve(["created",returned]);
+          }).catch((err) => {
+            console.log("DATABASE ERROR: "+err);
+            reject([-1]);
+          });   
+          break;   
+    
+        case -1:                                                             //? Errore
+          resolve([-1]);                                                   
+  
+        default:     
+  
+          if(user.googleId == googleId) {                                    //? Utente presente nel DB: verifica   
+            verifyGoogleUser(email,googleId).then((returned) => {
+              resolve(["verified",returned]);
+            }).catch((err) => {
+              console.log("DATABASE ERROR: "+err);
+              reject([-1]);
+            });
+            break;
+          }
+  
+          else {                                                              //? Utente presente nel DB ma senza googleID: associazione
+            associateGoogleUser(email,googleId).then((returned) => {
+              resolve(["associated",returned]);
+            }).catch((err) => {
+              console.log("DATABASE ERROR: "+err);
+              reject([-1]);
+            });
+            break;
+          }
+  
+      }
+    }).catch((err) => {
+      console.log("DATABASE ERROR: "+err);
+      reject([-1]);
+    });
+
+  });
+
+}
+
+function createGoogleUser(googleId,email,nome,cognome,propicUrl) {
+
+  return new Promise(function(resolve,reject) {
+
+    async function downloadGooglePic() {
+      let newPath = path.join(__dirname,'public/assets/icons')+'/google_propic_'+uuid.v4()+'.jpg';
+      let newProPic = newPath.split('public/')[1];
+      const response = await fetch(propicUrl);
+      const buffer = await response.buffer();
+      fs.writeFile(newPath, buffer, () => 
+        console.log("Download della proPic Google effettuato: "+newProPic));
+        return newProPic;
+    }
+
+    downloadGooglePic().then((result) => {
+
+
+      database.addUser(email.split("@")[0],(nome.charAt(0).toUpperCase()+nome.slice(1)),(cognome.charAt(0).toUpperCase()+cognome.slice(1)),email,"",googleId,result).then((returned) => {
+        console.log('RICEVUTA RICHIESTA DI CREAZIONE UTENTE (GOOGLE)');
+                    
+        let username = email.split("@")[0];
+        let newUser = returned;;
+  
+        if(newUser != -1 && newUser != false){
+          console.log('CREAZIONE UTENTE EFFETTUATA (GOOGLE). USERNAME = '+username);
+          resolve(newUser);
+        }
+        else if(newUser == false){
+          console.log('UTENTE GIA PRESENTE NEL DATABASE. USERNAME = '+username);
+          resolve(-1);
+        }
+        else{
+          console.log('ERRORE CREAZIONE UTENTE NEL DATABASE');
+          reject(-1);
+        }
+      });
+
+
+    }).catch((err) => {
+      console.log("ERRORE IN DOWNLOADGOOGLEPIC()");
+      reject(-1);
+    });
+
+  });
+
+}
+
+function verifyGoogleUser(email,googleId) {
+
+  return new Promise(function(resolve,reject) {
+
+    database.verifyUser(email,"",googleId).then((returned) => {
+      console.log('RICEVUTA RICHIESTA DI VERIFICA UTENTE (GOOGLE)');
+      let username = email.split("@")[0];
+      let user = returned;    
+
+      if (user == false || user==-1){
+        console.log('UTENTE NON PRESENTE NEL DATABASE/PASSWORD ERRATA = '+username);
+        reject(-1);
+      }
+      else{
+        console.log('UTENTE VERIFICATO (GOOGLE) = '+username);     
+        resolve(user);
+      }
+    }); 
+
+  });  
+
+}
+
+function associateGoogleUser(email,googleId) {
+
+  return new Promise(function(resolve,reject) { 
+
+    database.associateExistingToGoogle(email.split("@")[0],googleId).then((returned) => {
+      resolve(returned);
+    }).catch((err) => {
+      console.log("DATABASE ERROR: "+err);
+      reject(-1);
+    });
+
+  });
+
+}
+
+
+//---------------------- FINE ROUTES ----------------------------
 
 
 

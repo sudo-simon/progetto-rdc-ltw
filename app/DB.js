@@ -13,7 +13,7 @@ class DB {
 
     //----------------------------------------------- USER METHODS -------------------------------------
 
-    addUser(username,nome,cognome,email,password,googleId) {        //TODO: google signin tweaks
+    addUser(username,nome,cognome,email,password,googleId,profilePic) {
 
         return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
             const database=this;
@@ -21,18 +21,30 @@ class DB {
                 return false;
             }
             else{
-                return bcrypt.hash(password, saltRounds).then(function(hash) {
-
-                    let newUser = new sapiens.User(username,nome,cognome,email,hash,googleId);
-            
-                    return database.db.insert(newUser).then((data) => {    
+                if (password == "" && googleId != "") {
+                    let newUser = new sapiens.User(username,nome,cognome,email,password,googleId,profilePic);
+                    return database.db.insert(newUser).then((data) => {
                         return database.db.get(data.id);
                     }).catch((err) => {
                         console.log('DATABASE ERROR: '+err);
                         return -1;
-                        });
+                    });
+                }
+
+                else {
+                    return bcrypt.hash(password, saltRounds).then(function(hash) {
+
+                        let newUser = new sapiens.User(username,nome,cognome,email,hash,googleId,profilePic);
                 
-                });
+                        return database.db.insert(newUser).then((data) => {    
+                            return database.db.get(data.id);
+                        }).catch((err) => {
+                            console.log('DATABASE ERROR: '+err);
+                            return -1;
+                        });
+                    
+                    });
+                }
             }
         }).catch((err) => {
             console.log('DATABASE ERROR: '+err);
@@ -54,21 +66,31 @@ class DB {
         });
     }
 
-    verifyUser(email,password, callback){          //TODO: google signin tweaks
+    verifyUser(email,password, googleId){          
         return this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
             if(data.docs.length != 0){
+                
                 let user = data.docs[0];
-                return bcrypt.compare(password, user.password).then(function(result) {
-                    if (result==true) {
-                        return user;
-                    }
-                    else {
-                        return false
-                    }
-                    // result == true	   //myPlaintextPassword è la password corretta
-                    // result == false     //myPlaintextPassword non è la password corretta
-                });
+
+                if (password == "" && googleId != "") {
+                    if (user.googleId == googleId) { return user; }
+                    else { return false; }
+                }
+
+                else {
+                    return bcrypt.compare(password, user.password).then(function(result) {
+                        if (result==true) {
+                            return user;
+                        }
+                        else {
+                            return false
+                        }
+                        // result == true	   //myPlaintextPassword è la password corretta
+                        // result == false     //myPlaintextPassword non è la password corretta
+                    });
+                }
             }
+
             else{ return false; }
 
         }).catch((err) => {
@@ -114,6 +136,35 @@ class DB {
                 console.log('DATABASE ERROR: '+err);
                 return -1;
             })
+        });
+    }
+
+    associateExistingToGoogle(username,googleIdToAdd) {
+
+        const tmp = this;
+        
+        return new Promise(function(resolve,reject) {
+        
+            tmp.getUser(username).then((returned) => {
+                let user = returned;
+                if (user.googleId == "") { 
+                    user.googleId = googleIdToAdd;
+                    tmp.db.insert(user).then((data) => {
+                        resolve(tmp.db.get(data.id));
+                    }).catch((err) => {
+                        console.log('DATABASE ERROR: '+err);
+                        reject(-1);
+                    });
+                }
+                else {
+                    console.log("ERRORE: l'utente "+user.username+" ha già un googleId associato! ("+user.googleId+")");
+                    resolve(-1);
+                }
+            }).catch((err) => {
+                console.log("DATABASE ERROR: "+err);
+                reject(-1);
+            });
+
         });
     }
 
@@ -243,19 +294,23 @@ class DB {
     
     deletePost(postId,ownerUsername) {
         
-        return this.getUser(ownerUsername).then((data) => {
-            let owner = data;
-            let index = owner.postList.findIndex(elem => elem._id == postId);
-            owner.postList.splice(index,1);
-            return this.db.insert(owner).then((data) => {
-                return 0;
+        return new Promise(function(resolve,reject) { 
+        
+            this.getUser(ownerUsername).then((data) => {
+                let owner = data;
+                let index = owner.postList.findIndex(elem => elem._id == postId);
+                owner.postList.splice(index,1);
+                this.db.insert(owner).then((data) => {      //? return needed?
+                    resolve(0);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
-                return -1;
+                reject(-1);
             });
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+
         });
         
     }   

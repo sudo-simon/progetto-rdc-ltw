@@ -30,10 +30,9 @@ function init_feed() {
         dataType: 'json',
         //async: false, //solo debugging
         success: function(data){
-            loadFeed(data.postList,data.numArticoli);                               
+            loadFeed(data.postList,data.numArticoli);                         
         }                                                   
     });
-
 
 }
 
@@ -47,6 +46,8 @@ function loadFeed(unsortedPostList,numArticoli) {
             articoli.unshift(postEffettivi.pop());      //? In news[] ora ho tutti gli oggetti news da NEWS API separati dai post
         }
     }
+
+    if (postEffettivi.length == 0) { loadEmptyFeed(); return 0; }
 
     var youtube_i = 0;
 
@@ -163,9 +164,9 @@ function loadFeed(unsortedPostList,numArticoli) {
             
 
 
-            feed.innerHTML += ('<!-- post -->'+             //Aggiunta dell'oggetto Post nel DOM.
-            '<div class="singolo-post p-3 rounded-3 shadow">'+
-                '<div class="row">'+
+            feed.innerHTML += ('<!-- post -->'+                                             //Aggiunta dell'oggetto Post nel DOM.
+            '<div class="singolo-post p-3 rounded-3 shadow">'+              //TODO: aggiungere tasto "Cancella post" [ solo nel caso (currentUser == author) ]
+                '<div class="row">'+                                        //TODO: il button deve avere id: "(postId)+---+(author)" (come il button dell'upvote)
                     '<div class="post-pic col-1">'+
                         '<a href="'+profile+'">'+
                             '<img src="'+propic+'" class="img-thumbnail rounded-2" alt="immagine_profilo">'+
@@ -222,6 +223,16 @@ function loadFeed(unsortedPostList,numArticoli) {
 
         } 
     }
+}
+
+
+function loadEmptyFeed() {
+    // Carica messaggio "inizia ad aggiungere contatti..." sotto al form
+
+    feed.innerHTML += ('<div class="mt-5">'+
+                            '<p class="text-center fs-5 fw-bold"> Sembra che il tuo feed sia vuoto :/'+
+                            '<br> Dovresti proprio seguire qualcuno!</p>'+
+                        '</div>');
 }
 
 
@@ -404,6 +415,47 @@ function addCfu(button) {       //Upvote di un post. Passaggio di parametri tram
             }
             else{
                 alert("Errore nell'upvote del post.");
+                return false;
+            }                
+        }                                             
+    });
+
+}
+
+
+function deletePost(button) {
+
+    let activeUser = JSON.parse(localStorage.getItem('user'));
+    let deleter = activeUser.username;
+
+    let postId = button.id.split('---')[0];
+    let authorUsername = button.id.split('---')[1];
+
+    if (authorUsername != deleter) { alert("Errore: non puoi eliminare un post che non ti appartiene!"); return -1; }
+
+    let obj = {
+        postId: postId,
+        deleter: deleter
+    }
+
+    $.ajax({
+        type: 'DELETE',
+        data: JSON.stringify(obj),
+        contentType: 'application/json',
+        url: 'https://localhost:8887/deletepost',      //SERVER POST
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        dataType: 'json',
+        //async: false,     //solo debugging
+        success: function(data){
+
+            if (data.status == 'OK'){
+                location.reload();
+                return true;
+            }
+            else{
+                alert("Errore nella cancellazione del post.");
                 return false;
             }                
         }                                             

@@ -3,6 +3,12 @@
     "version": "1.0.0",
     "description": "Api documentation for Sapiens social network",
     "title": "Sapiens apidoc",
-    "url" : "http://localhost:8080",
-    "sampleUrl" : "http://localhost:8080"
+    "url" : "http://localhost:3001",
+    "sampleUrl" : "http://localhost:8080",
+    "order": [
+      "User",
+      "Info",
+      "Activities",
+      "Social"
+    ]
   }

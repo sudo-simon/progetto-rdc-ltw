@@ -50,8 +50,11 @@ $(document).ready(function() {
                 email: email, 
                 password: psw,
                 nome: signupForm['exampleInputName1'].value,
-                cognome: signupForm['exampleInputSurname1'].value
+                cognome: signupForm['exampleInputSurname1'].value,
+                googleId: "",
+                profilePic: ""
             }
+            
             $.ajax({
                 type: 'PUT',
                 data: JSON.stringify(obj),
@@ -96,12 +99,16 @@ $(document).ready(function() {
     });
 });
 
-// SIGN AUTH STATUS CHANGES LISTENER
-auth.onAuthStateChanged(user => {
+
+ // SIGN AUTH STATUS CHANGES LISTENER
+ auth.onAuthStateChanged(user => {
     if(user) {
         console.log('user logged in: ',user);
     } else {
         console.log('user logged out');
-        localStorage.clear();
+        localStorage.clear();              //LOCALSTORAGE REMOVE
     }
 });
+
+
+
