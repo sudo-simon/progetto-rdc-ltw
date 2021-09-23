@@ -43,7 +43,6 @@ services:
         working_dir: /home/node/app
         volumes:
             - ./app:/home/node/app
-            - ./app/wsServer:/home/node/app/wsServer
         environment:
             - INSTANCE=node3
             - NODE_ENV=development
