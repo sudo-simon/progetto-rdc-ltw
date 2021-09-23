@@ -11,6 +11,45 @@ const port = process.env.PORT || 3001;
 const host= "http://localhost";
 
 /**
+ * @api {get} /api/user/number UserNumber
+ * @apiName UserNumber
+ * @apiGroup User
+ * 
+ * @apiDescription Returns the number of users
+ *
+ * @apiSuccess {Number} number Number of users 
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "number" : 10
+ *     }
+ *
+ * @apiError CantReachTheServer Unable to reach the server.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "CantReachTheServer"
+ *     }
+ *
+ * 
+ * 
+ * 
+ */
+
+ app.get('/api/user/number', function (req, res){
+        database.db.partitionInfo('user').then((data) => {
+            var response={number:data.doc_count}
+            res.status(200).json(response);
+    }).catch((err) => {
+        console.log("Risposta richiesta api non inviata correttamenta: CantReachTheServer");
+        res.status(404).send({error:"CantReachTheServer"}).end();
+        return -1;
+    });
+});
+
+/**
  * @api {get} /api/user/:username User
  * @apiName GetUser
  * @apiGroup User
