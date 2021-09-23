@@ -11,6 +11,45 @@ const port = process.env.PORT || 3001;
 const host= "http://localhost";
 
 /**
+ * @api {get} /api/user/number UserNumber
+ * @apiName UserNumber
+ * @apiGroup User
+ * 
+ * @apiDescription Returns the number of users
+ *
+ * @apiSuccess {Number} number Number of users 
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "number" : 10
+ *     }
+ *
+ * @apiError CantReachTheServer Unable to reach the server.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "CantReachTheServer"
+ *     }
+ *
+ * 
+ * 
+ * 
+ */
+
+ app.get('/api/user/number', function (req, res){
+        database.db.partitionInfo('user').then((data) => {
+            var response={number:data.doc_count}
+            res.status(200).json(response);
+    }).catch((err) => {
+        console.log("Risposta richiesta api non inviata correttamenta: CantReachTheServer");
+        res.status(404).send({error:"CantReachTheServer"}).end();
+        return -1;
+    });
+});
+
+/**
  * @api {get} /api/user/:username User
  * @apiName GetUser
  * @apiGroup User
@@ -19,14 +58,12 @@ const host= "http://localhost";
  *
  * @apiParam {String} username Unique username of the student (surname + student id).
  *
- * @apiSuccess {String} name Firstname of the User.
- * @apiSuccess {String} surname  Surname of the User.
+ * @apiSuccess {String} Username Username of the User.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "name": "Dario",
- *       "surname": "Basile"
+ *       "username":"basile.1845115"
  *     }
  *
  * @apiError UsernameNotFound The username User of the student was not found.
@@ -49,18 +86,14 @@ app.get('/api/user/:username', function (req, res){
         database.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
         if(data.docs.length != 0){
             var response={
-                name:data.docs[0].nome,
-                surname:data.docs[0].cognome
+                username:data.docs[0].username
             }
-            console.log("Risposta richiesta api inviata");
             res.status(200).json(response);
         }
-        else{ 
-            console.log("Risposta richiesta api non inviata correttamenta: UsernameNotFound");
+        else{
             res.status(404).send({error:"UsernameNotFound"}).end();
         }
     }).catch((err) => {
-        console.log("Risposta richiesta api non inviata correttamenta: CantReachTheServer");
         res.status(404).send({error:"CantReachTheServer"}).end();
         return -1;
     });
@@ -76,18 +109,14 @@ app.get('/api/user/:username', function (req, res){
  *
  * @apiParam {String} username Unique username of the student (surname + student id).
  *
- * @apiSuccess {String} name Firstname of the User.
- * @apiSuccess {String} surname Surname of the User.
- * @apiSuccess {String} email Email the user used during registration.
+ * @apiSuccess {String} username Username of the User.
  * @apiSuccess {String} description Description shown in the user profile page.
  * @apiSuccess {String} date Date of registration of the user.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "name": "Dario",
- *       "surname": "Basile",
- *       "email":"basile.1845116@studenti.uniroma1.it",
+ *       "username": "basile.1845115",
  *       "description":"this is my profile description",
  *       "date":"1/1/2021"
  *     }
@@ -112,9 +141,7 @@ app.get('/api/user/:username', function (req, res){
     return database.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
         if(data.docs.length != 0){
             var response={
-                name:data.docs[0].nome,
-                surname:data.docs[0].cognome,
-                email:data.docs[0].email,
+                username:data.docs[0].username,
                 description:data.docs[0].infos.description,
                 subscriptionDate:data.docs[0].infos.subscriptionDate
             }
@@ -138,8 +165,7 @@ app.get('/api/user/:username', function (req, res){
  *
  * @apiParam {String} username Unique username of the student (surname + student id).
  *
- * @apiSuccess {String} name Firstname of the User.
- * @apiSuccess {String} surname Surname of the User.
+ * @apiSuccess {String} username Username of the User.
  * @apiSuccess {Number} post Number of the post by the user.
  * @apiSuccess {Number} CFU Number of CFU assigned to this user by others.
  * @apiSuccess {String} last Date of the last post of the user.
@@ -148,8 +174,7 @@ app.get('/api/user/:username', function (req, res){
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "name": "Dario",
- *       "surname": "Basile",
+ *       "username": "basile.1845115",
  *       "post":12,
  *       "cfu":24,
  *       "last":"07/07/2021",
@@ -176,8 +201,7 @@ app.get('/api/user/:username', function (req, res){
     return database.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
         if(data.docs.length != 0){
             var response={
-                name:data.docs[0].nome,
-                surname:data.docs[0].cognome,
+                username:data.docs[0].username,
                 post:data.docs[0].postList.length,
                 cfu:data.docs[0].infos.cfu,
                 last:data.docs[0].postList[0].creationDate,
@@ -204,16 +228,14 @@ app.get('/api/user/:username', function (req, res){
  *
  * @apiParam {String} username Unique username of the student (surname + student id).
  *
- * @apiSuccess {String} name Firstname of the User.
- * @apiSuccess {String} surname Surname of the User.
+ * @apiSuccess {String} username Username of the User.
  * @apiSuccess {Number} chat Number of the chat the user is in.
  * @apiSuccess {Number} following Number of user followed by this user.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "name": "Dario",
- *       "surname": "Basile",
+ *       "username":"basile.1845115"
  *       "chat":2,
  *       "following":5
  *     }
@@ -237,8 +259,7 @@ app.get('/api/user/:username', function (req, res){
     return database.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
         if(data.docs.length != 0){
             var response={
-                name:data.docs[0].nome,
-                surname:data.docs[0].cognome,
+                username:data.docs[0].username,
                 chat:data.docs[0].chatList.length,
                 following:data.docs[0].friendList.length
             }

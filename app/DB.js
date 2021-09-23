@@ -15,127 +15,158 @@ class DB {
 
     addUser(username,nome,cognome,email,password,googleId,profilePic) {
 
-        return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
-            const database=this;
-            if(data.docs.length != 0){
-                return false;
-            }
-            else{
-                if (password == "" && googleId != "") {
-                    let newUser = new sapiens.User(username,nome,cognome,email,password,googleId,profilePic);
-                    return database.db.insert(newUser).then((data) => {
-                        return database.db.get(data.id);
-                    }).catch((err) => {
-                        console.log('DATABASE ERROR: '+err);
-                        return -1;
-                    });
-                }
+        const tmp = this;
 
-                else {
-                    return bcrypt.hash(password, saltRounds).then(function(hash) {
-
-                        let newUser = new sapiens.User(username,nome,cognome,email,hash,googleId,profilePic);
+        return new Promise(function(resolve,reject) {
+        
+            tmp.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
                 
-                        return database.db.insert(newUser).then((data) => {    
-                            return database.db.get(data.id);
+                if(data.docs.length != 0){
+                    return false;
+                }
+                else{
+                    if (password == "" && googleId != "") {
+                        let newUser = new sapiens.User(username,nome,cognome,email,password,googleId,profilePic);
+                        tmp.db.insert(newUser).then((data) => {
+                            resolve(tmp.db.get(data.id));
                         }).catch((err) => {
                             console.log('DATABASE ERROR: '+err);
-                            return -1;
+                            reject(-1);
                         });
+                    }
+
+                    else {
+                        bcrypt.hash(password, saltRounds).then(function(hash) {
+
+                            let newUser = new sapiens.User(username,nome,cognome,email,hash,googleId,profilePic);
                     
-                    });
+                            tmp.db.insert(newUser).then((data) => {    
+                                resolve(tmp.db.get(data.id));
+                            }).catch((err) => {
+                                console.log('DATABASE ERROR: '+err);
+                                reject(-1);
+                            });
+                        
+                        });
+                    }
                 }
-            }
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+            }).catch((err) => {
+                console.log('DATABASE ERROR: '+err);
+                reject(-1);
+            });
         });
 
     }
 
 
     getUser(username) {
-        return this.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
-            if(data.docs.length != 0){
-                return data.docs[0];
-            }
-            else{ return false; }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
-        });
-    }
 
-    verifyUser(email,password, googleId){          
-        return this.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
-            if(data.docs.length != 0){
-                
-                let user = data.docs[0];
+        const tmp = this;
 
-                if (password == "" && googleId != "") {
-                    if (user.googleId == googleId) { return user; }
-                    else { return false; }
+        return new Promise(function(resolve,reject) {
+            
+            tmp.db.partitionedFind('user',{ 'selector' : { 'username' : username}}).then((data) => {
+                if(data.docs.length != 0){
+                    resolve(data.docs[0]);
                 }
-
-                else {
-                    return bcrypt.compare(password, user.password).then(function(result) {
-                        if (result==true) {
-                            return user;
-                        }
-                        else {
-                            return false
-                        }
-                        // result == true	   //myPlaintextPassword è la password corretta
-                        // result == false     //myPlaintextPassword non è la password corretta
-                    });
-                }
-            }
-
-            else{ return false; }
-
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
-        });
-    }
-
-    addFriend(username,friendToAdd) {               //AGGIUNGE SOLO L'ID DELLO USER ALLA LISTA AMICI
-        let user;
-        return this.db.partitionedFind('user', { 'selector' : { 'username' : username}}).then((data) => {
-            user = data.docs[0];
-            user.friendList.push(friendToAdd);
-
-            return this.db.insert(user).then((data) => {
-                return 0;
+                else{ resolve(false); }       //if(getUser() != false) { L'UTENTE ESISTE NEL DATABASE }
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
-                return -1;
+                reject(-1);
             });
 
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+        });
+    }
+
+    verifyUser(email,password, googleId){    
+        
+        const tmp = this;
+
+        return new Promise(function(resolve,reject) {
+
+            tmp.db.partitionedFind('user', { 'selector' : { 'email' : email}}).then((data)  => {
+                if(data.docs.length != 0){
+                    
+                    let user = data.docs[0];
+
+                    if (password == "" && googleId != "") {
+                        if (user.googleId == googleId) { resolve(user); }
+                        else { resolve(false); }
+                    }
+
+                    else {
+                        bcrypt.compare(password, user.password).then(function(result) {
+                            if (result==true) {
+                                resolve(user);
+                            }
+                            else {
+                                resolve(false);
+                            }
+                            // result == true	   //myPlaintextPassword è la password corretta
+                            // result == false     //myPlaintextPassword non è la password corretta
+                        });
+                    }
+                }
+
+                else{ resolve(false); }
+
+            }).catch((err) => {
+                console.log('DATABASE ERROR: '+err);
+                reject(-1);
+            });
+
+        });
+    }
+
+    addFriend(username,friendToAdd) { 
+        //AGGIUNGE SOLO L'ID DELLO USER ALLA LISTA AMICI
+        const tmp = this;
+
+        return new Promise(function(resolve,reject) {
+
+            tmp.db.partitionedFind('user', { 'selector' : { 'username' : username}}).then((data) => {
+                let user = data.docs[0];
+                user.friendList.push(friendToAdd);
+
+                tmp.db.insert(user).then((data) => {
+                    resolve(0);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
+
+            }).catch((err) => {
+                console.log('DATABASE ERROR: '+err);
+                reject(-1);
+            });
+
         });
     }
 
     updateInfos(username,newNome,newCognome,newDesc,newProPic){     //Aggiorna le info modificabilii dall'utente nel DB.
-        let user;
-        return this.getUser(username).then((returned) => {
-            user = returned;
-            user.nome = newNome;
-            user.cognome = newCognome;
-            user.infos.description = newDesc;
-            if (newProPic != ""){ user.profilePic = newProPic; }
-            for(let post of user.postList){
-                if (newProPic != "") { post.authorProfilePic = newProPic; }
-                post.postAuthorName = newNome+' '+newCognome;
-            }
-            this.db.insert(user).then((data) => {
-                return 0;
-            }).catch((err) => {
-                console.log('DATABASE ERROR: '+err);
-                return -1;
-            })
+
+        const tmp = this;
+
+        return new Promise(function(resolve,reject) {
+
+            tmp.getUser(username).then((returned) => {
+                let user = returned;
+                user.nome = newNome;
+                user.cognome = newCognome;
+                user.infos.description = newDesc;
+                if (newProPic != ""){ user.profilePic = newProPic; }
+                for(let post of user.postList){
+                    if (newProPic != "") { post.authorProfilePic = newProPic; }
+                    post.postAuthorName = newNome+' '+newCognome;
+                }
+                tmp.db.insert(user).then((data) => {
+                    resolve(0);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                })
+            });
+
         });
     }
 
@@ -169,85 +200,113 @@ class DB {
     }
 
     getFriendList(username) {       //Metodo per facilitare la restituzione della lista amici.
-        let user;
-        return this.getUser(username).then((returned) => {
-            user = returned;
-            return user.friendList;
+
+        const tmp = this;
+
+        return new Promise(function(resolve,reject) {
+
+            tmp.getUser(username).then((returned) => {
+                let user = returned;
+                resolve(user.friendList);
+            });
+
         });
     }
 
     addCfu(/*post,*/postId,ownerUsername,voterUsername){        //Aggiunge un voto al post selezionato e all'autore del post.
-        return this.getUser(ownerUsername).then((returned) => {
-            let user = returned;
-            
-            let x = 0;
-            for(let i=0; i<user.postList.length; i++){
-                if(user.postList[i]._id == postId) { x = i; }
-            }
-            user.postList[x].cfu += 1;  
-            user.postList[x].upvoters.push(voterUsername);
 
-            //user.postList[user.postList.indexOf(post)].cfu += 1;
+        const tmp = this;
 
-            user.infos.cfu += 1; 
+        return new Promise(function(resolve,reject) {
 
-            this.db.insert(user).then((data) => {
-                return 0;
-            }).catch((err) => {
-                console.log('DATABASE ERROR: '+err);
-                return -1;
+            tmp.getUser(ownerUsername).then((returned) => {
+                let user = returned;
+                
+                let x = 0;
+                for(let i=0; i<user.postList.length; i++){
+                    if(user.postList[i]._id == postId) { x = i; }
+                }
+                user.postList[x].cfu += 1;  
+                user.postList[x].upvoters.push(voterUsername);
+
+                //user.postList[user.postList.indexOf(post)].cfu += 1;
+
+                user.infos.cfu += 1; 
+
+                tmp.db.insert(user).then((data) => {
+                    resolve(0);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
             });
+
         });
     }
 
     findUsersByName(nome) {         //Metodo di  ricerca usato nelle query.
-        let people = [];      
-        let lowerNome = nome.toLowerCase();
-        let upperNome = nome.charAt(0).toUpperCase() + nome.slice(1);
 
+        const tmp = this;
 
-        return this.db.partitionedFind('user', { 'selector' : { 'nome' : upperNome}}).then((data) => {
-            for(let person of data.docs){
-                people.push(person);
-            }
-            return this.db.partitionedFind('user', { 'selector' : { 'nome' : lowerNome}}).then((data) => {
+        return new Promise(function(resolve,reject) {
+
+            let people = [];      
+            let lowerNome = nome.toLowerCase();
+            let upperNome = nome.charAt(0).toUpperCase() + nome.slice(1);
+                
+            tmp.db.partitionedFind('user', { 'selector' : { 'nome' : upperNome}}).then((data) => {
                 for(let person of data.docs){
                     people.push(person);
                 }
-                return people;
+                tmp.db.partitionedFind('user', { 'selector' : { 'nome' : lowerNome}}).then((data) => {
+                    for(let person of data.docs){
+                        people.push(person);
+                    }
+                    resolve(people);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
+                
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
-                return -1;
+                reject(-1);
             });
-            
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+
         });
     }
 
     findUsersBySurname(cognome) {           //Metodo di ricerca usato nelle query.
-        let people = [];
-        let lowerCognome = cognome.toLowerCase();
-        let upperCognome = cognome.charAt(0).toUpperCase() + cognome.slice(1);
 
-        return this.db.partitionedFind('user', { 'selector' : { 'cognome' : upperCognome}}).then((data) => {
-            for(let person of data.docs){
-                people.push(person);
-            }
-            return this.db.partitionedFind('user', { 'selector' : { 'cognome' : lowerCognome}}).then((data) => {
+        const tmp = this;
+
+        return new Promise(function(resolve,reject) {
+
+            let people = [];
+            let lowerCognome = cognome.toLowerCase();
+            let upperCognome = cognome.charAt(0).toUpperCase() + cognome.slice(1);
+                
+            tmp.db.partitionedFind('user', { 'selector' : { 'cognome' : upperCognome}}).then((data) => {
+
+                
                 for(let person of data.docs){
                     people.push(person);
                 }
-                return people;
+                tmp.db.partitionedFind('user', { 'selector' : { 'cognome' : lowerCognome}}).then((data) => {
+                    for(let person of data.docs){
+                        people.push(person);
+                    }
+                    resolve(people);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
+                
             }).catch((err) => {
                 console.log('DATABASE ERROR: '+err);
-                return -1;
+                reject(-1);
             });
-            
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+
         });
     }
     
@@ -272,35 +331,45 @@ class DB {
     //----------------------------------------------- POST METHODS -------------------------------------
 
     addPost(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage) {      //Creazione nuovo post.
-        let newPost = new sapiens.Post(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage);
-        let user;
 
-        return this.getUser(username).then((returned) => {
-            user = returned;
-            newPost.authorProfilePic = user.profilePic;
-            newPost.postAuthorName = user.nome+' '+user.cognome;
-            user.postList.unshift(newPost);
-            
-            this.db.insert(user).then((data) => {
-                return newPost;
-            }).catch((err) => {
-                console.log('DATABASE ERROR: '+err);
-                return -1;
+        const tmp = this;
+
+        
+        return new Promise(function(resolve,reject) {
+
+            tmp.getUser(username).then((returned) => {
+
+                let newPost = new sapiens.Post(username,textContent,youtubeUrl,dbImage,dbVideo,dbAudio,driveImage);
+                let user = returned;
+
+                newPost.authorProfilePic = user.profilePic;
+                newPost.postAuthorName = user.nome+' '+user.cognome;
+                user.postList.unshift(newPost);
+                
+                tmp.db.insert(user).then((data) => {
+                    resolve(newPost);
+                }).catch((err) => {
+                    console.log('DATABASE ERROR: '+err);
+                    reject(-1);
+                });
+
             });
 
-        })   
+        });   
     }
 
     
     deletePost(postId,ownerUsername) {
+
+        const tmp = this;
         
         return new Promise(function(resolve,reject) { 
         
-            this.getUser(ownerUsername).then((data) => {
+            tmp.getUser(ownerUsername).then((data) => {
                 let owner = data;
                 let index = owner.postList.findIndex(elem => elem._id == postId);
                 owner.postList.splice(index,1);
-                this.db.insert(owner).then((data) => {      //? return needed?
+                tmp.db.insert(owner).then((data) => {      //? return needed?
                     resolve(0);
                 }).catch((err) => {
                     console.log('DATABASE ERROR: '+err);
@@ -317,32 +386,46 @@ class DB {
 
 
     getPostList(username) {         //Ritorna la lista dei post di un utente sotto forma di JSON.
-        let result = {};
-        let user;
-        return this.getUser(username).then((returned) => {
-            user = returned;
-            let postList = user.postList;
-            let i = 0;
-            for(let post of postList){
-                result[i.toString()] = post;
-                i++;
-            }
-            result.numItems = i;
-            return result;
-        }).catch((err) => {
-            console.log('DATABASE ERROR: '+err);
-            return -1;
+
+        const tmp = this;
+        
+        return new Promise(function(resolve,reject) {
+            
+            tmp.getUser(username).then((returned) => {
+                let result = {};
+                let user = returned;
+                let postList = user.postList;
+                let i = 0;
+                for(let post of postList){
+                    result[i.toString()] = post;
+                    i++;
+                }
+                result.numItems = i;
+                resolve(result);
+            }).catch((err) => {
+                console.log('DATABASE ERROR: '+err);
+                reject(-1);
+            });
+
         });
     }
 
 
     getHomeFeed(username) {         //Ritorna la lista dei post degli utenti seguiti da "username", da caricare nella home.
-        console.log();
-        var result = [];
-        return this.getUser(username).then((returned) => {
-            returned.friendList.push(username);
-            return this.auxFeedHomeP(returned.friendList,result)
-        }); 
+
+        const tmp = this;
+
+        //?console.log();
+        
+        return new Promise(function(resolve,reject) {
+
+            tmp.getUser(username).then((returned) => {
+                let result = [];
+                returned.friendList.push(username);
+                resolve(tmp.auxFeedHomeP(returned.friendList,result));
+            }); 
+
+        });
     }
     
     auxFeedHomeP(friendList,result){    //Ausiliaria di getHomeFeed.

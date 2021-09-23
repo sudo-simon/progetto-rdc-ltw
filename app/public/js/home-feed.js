@@ -161,12 +161,15 @@ function loadFeed(unsortedPostList,numArticoli) {
                 active = "active";
                 disabled = "disabled";
             }
+
+            let display = "display: none;"
+            if (currentUser == author) { display = ""; }
             
 
 
             feed.innerHTML += ('<!-- post -->'+                                             //Aggiunta dell'oggetto Post nel DOM.
-            '<div class="singolo-post p-3 rounded-3 shadow">'+              //TODO: aggiungere tasto "Cancella post" [ solo nel caso (currentUser == author) ]
-                '<div class="row">'+                                        //TODO: il button deve avere id: "(postId)+---+(author)" (come il button dell'upvote)
+            '<div class="singolo-post p-3 rounded-3 shadow">'+             
+                '<div class="row">'+                                        
                     '<div class="post-pic col-1">'+
                         '<a href="'+profile+'">'+
                             '<img src="'+propic+'" class="img-thumbnail rounded-2" alt="immagine_profilo">'+
@@ -204,7 +207,7 @@ function loadFeed(unsortedPostList,numArticoli) {
                         rating+' CFU'+
                     '</div>'+
 
-                    '<!--button type="button" class="btn btn-outline-secondary rounded-0">Salva</button-->'+
+                    '<button id="'+postId+'---'+author+'" type="button" onclick="deletePost(this)" class="btn btn-outline-secondary rounded-0" style="'+display+'">Cancella Post</button>'+
                 '</div>'+
             '</div>');
 
@@ -355,7 +358,7 @@ function addPost() {           //Creazione di un nuovo post da parte dell'utente
             success: function(data){
                 switch(data.status){
                     case "OK":
-                        document.location.reload();
+                        document.location.replace("https://localhost:8887");
                         break;
                     case "ERR":
                         alert("Errore nella creazione del post.");

@@ -415,14 +415,17 @@ app.delete('/deletepost', function(req,res) {
     if (returned == 0) {
       console.log("Post eliminato con successo\n  id: "+postId+"\n  owner: "+deleter);
       res.send(JSON.stringify({status: "OK"}));
+      return 0;
     }
     else {
-      console.log("Errore nella cancellazione dle post!\n  id: "+postId+"\n  owner: "+deleter);
+      console.log("Errore nella cancellazione del post!\n  id: "+postId+"\n  owner: "+deleter);
       res.send(JSON.stringify({status: "ERR"}));
+      return 0;
     }
   }).catch((err) => {
-    console.log("Errore nella cancellazione dle post!\n  id: "+postId+"\n  owner: "+deleter);
+    console.log("Errore nella cancellazione del post!\n  id: "+postId+"\n  owner: "+deleter);
     res.send(JSON.stringify({status: "ERR"}));
+    return 0;
   });
 
 });
